@@ -530,6 +530,20 @@ defaultOptions.fencedCode = false
 defaultOptions.footnotes = false
 %    \end{macrocode}
 %
+%   \Optitem[false]{inlineFootnotes}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] Enable the pandoc inline footnote syntax extension:
+%         \begin{Verbatim}
+% Here is an inline note.^[Inlines notes are easier to write, since
+% you don't have to pick an identifier and move down to type the
+% note.]
+%         \end{Verbatim}
+%       \item[false] Disable the pandoc inline footnote syntax extension.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.inlineFootnotes = false
+%    \end{macrocode}
+%
 %   \Optitem[false]{preserveTabs}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] Preserve all tabs in the input.
@@ -732,6 +746,7 @@ defaultOptions.tightLists = true
 \let\markdownOptionFencedCode\undefined
 \let\markdownOptionHashEnumerators\undefined
 \let\markdownOptionHybrid\undefined
+\let\markdownOptionInlineFootnotes\undefined
 \let\markdownOptionPreserveTabs\undefined
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
@@ -1449,6 +1464,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionHashEnumerators{#1}}%
 \define@key{markdownOptions}{hybrid}[true]{%
   \def\markdownOptionHybrid{#1}}%
+\define@key{markdownOptions}{inlineFotnotes}[true]{%
+  \def\markdownOptionInlineFootnotes{#1}}%
 \define@key{markdownOptions}{preserveTabs}[true]{%
   \def\markdownOptionPreserveTabs{#1}}%
 \define@key{markdownOptions}{smartEllipses}[true]{%
@@ -3548,6 +3565,9 @@ return M
 \fi
 \ifx\markdownOptionHybrid\undefined\else
   hybrid = \markdownOptionHybrid,
+\fi
+\ifx\markdownOptionInlineFootnotes\undefined\else
+  inlineFootnotes = \markdownOptionInlineFootnotes,
 \fi
 \ifx\markdownOptionPreserveTabs\undefined\else
   preserveTabs = \markdownOptionPreserveTabs,
