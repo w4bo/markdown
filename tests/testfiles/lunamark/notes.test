@@ -1,8 +1,8 @@
 \def\markdownOptionFootnotes{true}
 <<<
 Here is a footnote reference,[^1] and another.[^longnote]
-This should *not* be a footnote reference, because it
-contains a space.[^my note]
+This should *not* be a footnote reference, because it has not been
+defined.[^my note]
 
 [^longnote]: Here's the long note. This one contains multiple blocks.
 
