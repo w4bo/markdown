@@ -2593,7 +2593,7 @@ function M.reader.new(writer, options)
   local nonspacechar           = any - spacing
   local tightblocksep          = P("\001")
 
-  local specialchar            = S("*_`&[]<!\\.@-")
+  local specialchar            = S("*_`&[]<!\\.@-^")
 
   local normalchar             = any -
                                  (specialchar + spacing + tightblocksep)
@@ -3332,6 +3332,7 @@ function M.reader.new(writer, options)
       UlOrStarLine          = UlOrStarLine,
       Strong                = Strong,
       Emph                  = Emph,
+      InlineNote            = InlineNote,
       NoteRef               = NoteRef,
       Citations             = Citations,
       Link                  = Link,
