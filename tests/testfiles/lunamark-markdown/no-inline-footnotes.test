@@ -1,4 +1,3 @@
-\def\markdownOptionFootnotes{true}
 <<<
 This test ensures that the Lua `inlineFootnotes` option is disabled by default.
 The following inline footnotes should resolve to footnotes.

@@ -1,4 +1,3 @@
-\def\markdownOptionFootnotes{true}
 \def\markdownOptionInlineFootnotes{true}
 <<<
 This test ensures that the Lua `footnotes` and `inlineFootnotes` options

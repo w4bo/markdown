@@ -2603,7 +2603,10 @@ function M.reader.new(writer, options)
   local syntax
   local blocks_toplevel
   local blocks
-  local inlines, inlines_no_link, inlines_no_inline_note, inlines_nbsp
+  local inlines
+  local inlines_no_link
+  local inlines_no_inline_note
+  local inlines_nbsp
 
   local function create_parser(name, grammar)
     return function(str)
@@ -3366,8 +3369,9 @@ function M.reader.new(writer, options)
 
   if not options.footnotes then
     syntax.NoteRef = fail
-    syntax.InlineNote = fail
-  elseif not options.inlineFootnotes then
+  end
+
+  if not options.inlineFootnotes then
     syntax.InlineNote = fail
   end
 
