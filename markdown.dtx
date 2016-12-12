@@ -237,7 +237,20 @@ local md5 = require("md5")
 % engine (see \cite[Section~3.3]{luatex16}).
 %
 % The plain \TeX{} part of the package also requires that either the Lua\TeX{}
-% \m{directlua} primitive or the shell access file stream 18 is available.
+% \m{directlua} primitive or the shell access file stream 18 is available in
+% your \TeX{} engine. If only the shell access file stream is available in your
+% \TeX{} engine (as is the case with \hologo{pdfTeX} and \Hologo{XeTeX}) or if
+% you enforce the use of shell using the \m{markdownMode} macro, then note the
+% following:
+% \begin{itemize}
+%   \item Unless your \TeX{} engine is globally configured to enable shell
+%     access, you will need to provide the \t`-shell-escape` parameter to your
+%     engine when typesetting a document.
+%   \item You will need to avoid the use of the \t`-output-directory` \TeX{}
+%     parameter when typesetting a document. The parameter causes auxiliary
+%     files to be written to a specified output directory, but the shell will
+%     be executed in the current directory. Things will not work out.
+% \end{itemize}
 %
 % \iffalse
 %</tex>
