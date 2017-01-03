@@ -1,3 +1,6 @@
+\enableregime[utf]
+\usetypescript[modern][ec]
+\setupbodyfont[10pt,rm]
 \usemodule[t][markdown]
 \def\markdownOptionHashEnumerators{true}
 \def\markdownOptionDefinitionLists{true}
@@ -10,6 +13,6 @@
 \starttext
   \markdownInput{example.md}
   \startmarkdown
-This is a **farewell!**
+Here are some non-ASCII characters: *ěščřžýáíé*
   \stopmarkdown
 \stoptext

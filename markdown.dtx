@@ -4343,14 +4343,22 @@ local convert = md.new(\markdownLuaOptions)
 \fi
 %    \end{macrocode}
 %
-% If the shell escape bridge is being used, define the \m{markdownMakeOther}
-% macro, so that the pipe character (\t`|`) is inactive during the scanning.
+% When buffering user input, we should disable the bytes with the high bit set,
+% since these are made active by the \m{enableregime} command. We will do this
+% by redefining the \m{markdownMakeOther} macro accordingly. The code is
+% courtesy of Scott Pakin, the creator of the \pkg{filecontents} LaTeX package.
+%  \begin{macrocode}
+\def\markdownMakeOther{%
+  \count0=128\relax
+  \loop
+    \catcode\count0=11\relax
+    \advance\count0 by 1\relax
+  \ifnum\count0<256\repeat
+%    \end{macrocode}
+% On top of that, make the pipe character (\t`|`) inactive during the scanning.
 % This is necessary, since the character is active in \Hologo{ConTeXt}.
 %  \begin{macrocode}
-\ifnum\markdownMode<2\relax
-  \def\markdownMakeOther{%
-    \catcode`|=12}%
-\fi
+  \catcode`|=12}%
 %    \end{macrocode}
 % 
 % \subsubsection{Logging Facilities}
