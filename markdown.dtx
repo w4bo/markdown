@@ -3526,7 +3526,7 @@ return M
 \def\markdownRendererDlEndPrototype{}%
 \def\markdownRendererDlEndTightPrototype{}%
 \def\markdownRendererEmphasisPrototype#1{{\it#1}}%
-\def\markdownRendererStrongEmphasisPrototype#1{{\it#1}}%
+\def\markdownRendererStrongEmphasisPrototype#1{{\bf#1}}%
 \def\markdownRendererBlockQuoteBeginPrototype{\par\begingroup\it}%
 \def\markdownRendererBlockQuoteEndPrototype{\endgroup\par}%
 \def\markdownRendererInputVerbatimPrototype#1{%
@@ -4138,12 +4138,6 @@ local convert = md.new(\markdownLuaOptions)
   dlItem = {\item[#1]},
   dlEnd = {\end{description}},
   emphasis = {\emph{#1}},
-  strongEmphasis = {%
-    \ifx\alert\undefined
-      \textbf{\emph{#1}}%
-    \else % Beamer support
-      \alert{\emph{#1}}%
-    \fi},
   blockQuoteBegin = {\begin{quotation}},
   blockQuoteEnd = {\end{quotation}},
   inputVerbatim = {\VerbatimInput{#1}},
@@ -4170,7 +4164,27 @@ local convert = md.new(\markdownLuaOptions)
     \fi},
   horizontalRule = {\noindent\rule[0.5ex]{\linewidth}{1pt}},
   footnote = {\footnote{#1}}}}
-
+%    \end{macrocode}
+%
+% Support the nesting of strong emphasis.
+%  \begin{macrocode}
+\newif\ifmarkdownLATEXStrongEmphasisNested
+\markdownLATEXStrongEmphasisNestedfalse
+\markdownSetup{rendererPrototypes={
+  strongEmphasis = {%
+    \ifmarkdownLATEXStrongEmphasisNested
+      \markdownLATEXStrongEmphasisNestedfalse
+      \textmd{#1}%
+      \markdownLATEXStrongEmphasisNestedtrue
+    \else
+      \markdownLATEXStrongEmphasisNestedtrue
+      \textbf{#1}%
+      \markdownLATEXStrongEmphasisNestedfalse
+    \fi}}}
+%    \end{macrocode}
+%
+% Support \LaTeX{} document classes that do not provide chapters.
+%  \begin{macrocode}
 \ifx\chapter\undefined
   \markdownSetup{rendererPrototypes = {
     headingOne = {\section{#1}},
@@ -4444,7 +4458,7 @@ local convert = md.new(\markdownLuaOptions)
 \def\markdownRendererDlEndTightPrototype{%
   \stopMarkdownConTeXtDlTightPrototype}%
 \def\markdownRendererEmphasisPrototype#1{{\em#1}}%
-\def\markdownRendererStrongEmphasisPrototype#1{{\bf\em#1}}%
+\def\markdownRendererStrongEmphasisPrototype#1{{\bf#1}}%
 \def\markdownRendererBlockQuoteBeginPrototype{\startquotation}%
 \def\markdownRendererBlockQuoteEndPrototype{\stopquotation}%
 \def\markdownRendererInputVerbatimPrototype#1{\typefile{#1}}%
