@@ -777,6 +777,7 @@ defaultOptions.tightLists = true
 \let\markdownOptionBlankBeforeBlockquote\undefined
 \let\markdownOptionBlankBeforeCodeFence\undefined
 \let\markdownOptionBlankBeforeHeading\undefined
+\let\markdownOptionBreakableBlockquotes\undefined
 \let\markdownOptionCitations\undefined
 \let\markdownOptionCitationNbsps\undefined
 \let\markdownOptionDefinitionLists\undefined
@@ -1472,6 +1473,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionBlankBeforeCodeFence{#1}}%
 \define@key{markdownOptions}{blankBeforeHeading}[true]{%
   \def\markdownOptionBlankBeforeHeading{#1}}%
+\define@key{markdownOptions}{breakableBlockquotes}[true]{%
+  \def\markdownOptionBreakableBlockquotes{#1}}%
 \define@key{markdownOptions}{citations}[true]{%
   \def\markdownOptionCitations{#1}}%
 \define@key{markdownOptions}{citationNbsps}[true]{%
@@ -4095,6 +4098,9 @@ return M
 \fi
 \ifx\markdownOptionBlankBeforeHeading\undefined\else
   blankBeforeHeading = \markdownOptionBlankBeforeHeading,
+\fi
+\ifx\markdownOptionBreakableBlockquotes\undefined\else
+  breakableBlockquotes = \markdownOptionBreakableBlockquotes,
 \fi
 \ifx\markdownOptionCacheDir\undefined\else
   cacheDir = "\markdownOptionCacheDir",
