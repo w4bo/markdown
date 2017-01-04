@@ -4,9 +4,7 @@
 \input setup\relax
 \input plain-setup\relax
 % Load the test-specific setup.
-\input <TEST-SETUP-FILENAME>\relax
+\input TEST_SETUP_FILENAME\relax
 % Perform the test.
-\markdownBegin
-<TEST-INPUT-VERBATIM>
-\markdownEnd
+\markdownInput{TEST_INPUT_FILENAME}%
 \bye

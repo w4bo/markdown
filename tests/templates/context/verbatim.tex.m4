@@ -4,10 +4,10 @@
 \input setup\relax
 \input plain-setup\relax
 % Load the test-specific setup.
-\input <TEST-SETUP-FILENAME>\relax
+\input TEST_SETUP_FILENAME\relax
 % Perform the test.
 \starttext
   \startmarkdown
-<TEST-INPUT-VERBATIM>
+undivert(TEST_INPUT_FILENAME)dnl
   \stopmarkdown
 \stoptext
