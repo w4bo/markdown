@@ -1264,26 +1264,6 @@ defaultOptions.tightLists = true
 % error messages.
 %
 % \subsubsection{Miscellanea}
-% The \mdef{markdownLuaRegisterIBCallback} and
-% \mdef{markdownLuaUnregisterIBCallback} macros specify the Lua code for
-% registering and unregistering a callback for changing the contents of the
-% line input buffer before a \TeX{} engine that supports direct Lua access via
-% the \m{directlua} macro starts looking at it. The first argument of the
-% \m{markdownLuaRegisterIBCallback} macro corresponds to the callback function
-% being registered.
-%
-% Local members defined within \m{markdownLuaRegisterIBCallback} are guaranteed
-% to be visible from \m{markdownLuaUnregisterIBCallback} and the execution of
-% the two macros alternates, so it is not necessary to consider the case, when
-% one of the macros is called twice in a row.
-%  \begin{macrocode}
-\def\markdownLuaRegisterIBCallback#1{%
-  local old_callback = callback.find("process_input_buffer")
-  callback.register("process_input_buffer", #1)}%
-\def\markdownLuaUnregisterIBCallback{%
-  callback.register("process_input_buffer", old_callback)}%
-%    \end{macrocode}
-%
 % The \mdef{markdownMakeOther} macro is used by the package, when a \TeX{}
 % engine that does not support direct Lua access is starting to buffer a text.
 % The plain \TeX{} implementation changes the category code of plain \TeX{}
@@ -1344,7 +1324,12 @@ defaultOptions.tightLists = true
 \fi
 %    \end{macrocode}
 % 
-%
+% The following macros are no longer a part of the plain \TeX{} interface and
+% are only defined for backwards compatibility:
+%  \begin{macrocode}
+\def\markdownLuaRegisterIBCallback#1{\relax}%
+\def\markdownLuaUnregisterIBCallback#1{\relax}%
+%    \end{macrocode}
 % \iffalse
 %</tex>
 %<*latex>
@@ -3699,126 +3684,16 @@ local convert = md.new(\markdownLuaOptions)
 }%
 %    \end{macrocode}
 %
-% \subsubsection{Lua Shell Escape Bridge}\label{sec:luabridge}
-% The following \TeX{} code is intended for \TeX{} engines that do not provide
-% direct access to Lua, but expose the shell of the operating system. This
-% corresponds to the \m{markdownMode} values of \t`0` and \t`1`.
-%
-% The \m{markdownLuaExecute} and \m{markdownReadAndConvert} macros defined here
-% and in Section \ref{sec:directlua} are meant to be transparent to the
-% remaining code.
-%
-% The package assumes that although the user is not using the Lua\TeX{} engine,
-% their TeX distribution contains it, and uses shell access to produce and
-% execute Lua scripts using the \TeX{}Lua interpreter (see
-% \cite[Section~3.1.1]{luatex16}).
-%  \begin{macrocode}
-
-\ifnum\markdownMode<2\relax
-\ifnum\markdownMode=0\relax
-  \markdownInfo{Using mode 0: Shell escape via write18}%
-\else
-  \markdownInfo{Using mode 1: Shell escape via os.execute}%
-\fi
-%    \end{macrocode}
-%
+% \subsubsection{Buffering Markdown Input}
 % The macro \mdef{markdownLuaExecuteFileStream} contains the number of the output
 % file stream that will be used to store the helper Lua script in the file named
 % \m{markdownOptionHelperScriptFileName} during the expansion of the macro
-% \m{markdownLuaExecute}, and to store the markdown input in the file
-% named \m{markdownOptionInputTempFileName} during the expansion of the macro
+% \m{markdownLuaExecute} when the Lua shell escape bridge is in use, and to
+% store the markdown input in the file named
+% \m{markdownOptionInputTempFileName} during the expansion of the macro
 % \m{markdownReadAndConvert}.
 %  \begin{macrocode}
 \csname newwrite\endcsname\markdownLuaExecuteFileStream
-%    \end{macrocode}
-%
-% The \mdef{markdownExecuteShellEscape} macro contains the numeric value indicating
-% whether the shell access is enabled (\t`1`), disabled (\t`0`), or restricted
-% (\t`2`).
-% 
-% Inherit the value of the the \m{pdfshellescape} (Lua\TeX{}, \Hologo{pdfTeX})
-% or the \m{shellescape} (\Hologo{XeTeX}) commands. If neither of these
-% commands is defined and Lua is available, attempt to access the
-% \luam{status.shell_escape} configuration item.
-%
-% If you cannot detect, whether the shell access is enabled, act as if it were.
-%  \begin{macrocode}
-\ifx\pdfshellescape\undefined
-  \ifx\shellescape\undefined
-    \ifnum\markdownMode=0\relax
-      \def\markdownExecuteShellEscape{1}%
-    \else
-      \def\markdownExecuteShellEscape{%
-        \directlua{tex.sprint(status.shell_escape or "1")}}%
-    \fi
-  \else
-    \let\markdownExecuteShellEscape\shellescape
-  \fi
-\else
-  \let\markdownExecuteShellEscape\pdfshellescape
-\fi
-%    \end{macrocode}
-%
-% The \mdef{markdownExecuteDirect} macro executes the code it has received as
-% its first argument by writing it to the output file stream 18, if Lua is
-% unavailable, or by using the Lua \luam{markdown.execute} method otherwise.
-%  \begin{macrocode}
-\ifnum\markdownMode=0\relax
-  \def\markdownExecuteDirect#1{\immediate\write18{#1}}%
-\else
-  \def\markdownExecuteDirect#1{%
-    \directlua{os.execute("\luaescapestring{#1}")}}%
-\fi
-%    \end{macrocode}
-%
-% The \mdef{markdownExecute} macro is a wrapper on top of
-% \m{markdownExecuteDirect} that checks the value of
-% \m{markdownExecuteShellEscape} and prints an error message if the shell is
-% inaccessible.
-%  \begin{macrocode}
-\def\markdownExecute#1{%
-  \ifnum\markdownExecuteShellEscape=1\relax
-    \markdownExecuteDirect{#1}%
-  \else
-    \markdownError{I can not access the shell}{Either run the TeX
-      compiler with the --shell-escape or the --enable-write18 flag,
-      or set shell_escape=t in the texmf.cnf file}%
-  \fi}%
-%    \end{macrocode}
-%
-% The \mdef{markdownLuaExecute} macro executes the Lua code it has received as
-% its first argument. The Lua code may not directly interact with the \TeX{}
-% engine, but it can use the \luam{print} function in the same manner it
-% would use the \luam{tex.print} method.
-%  \begin{macrocode}
-\def\markdownLuaExecute#1{%
-%    \end{macrocode}
-% Create the file \m{markdownOptionHelperScriptFileName} and fill it with the
-% input Lua code prepended with \pkg{kpathsea} initialization, so that Lua
-% modules from the \TeX{} distribution are available.
-%  \begin{macrocode}
-  \immediate\openout\markdownLuaExecuteFileStream=%
-    \markdownOptionHelperScriptFileName
-  \markdownInfo{Writing a helper Lua script to the file
-    "\markdownOptionHelperScriptFileName"}%
-  \immediate\write\markdownLuaExecuteFileStream{%
-    local kpse = require('kpse')
-    kpse.set_program_name('luatex') #1}%
-  \immediate\closeout\markdownLuaExecuteFileStream
-%    \end{macrocode}
-% Execute the generated \m{markdownOptionHelperScriptFileName} Lua script using
-% the \TeX{}Lua binary and store the output in the
-% \m{markdownOptionOutputTempFileName} file.
-%  \begin{macrocode}
-  \markdownInfo{Executing a helper Lua script from the file
-    "\markdownOptionHelperScriptFileName" and storing the result in the
-    file "\markdownOptionOutputTempFileName"}%
-  \markdownExecute{texlua "\markdownOptionHelperScriptFileName" >
-    "\markdownOptionOutputTempFileName"}%
-%    \end{macrocode}
-% \m{input} the generated \m{markdownOptionOutputTempFileName} file.
-%  \begin{macrocode}
-  \input\markdownOptionOutputTempFileName\relax}%
 %    \end{macrocode}
 %
 % The \mdef{markdownReadAndConvertTab} macro contains the tab character literal.
@@ -3916,12 +3791,121 @@ local convert = md.new(\markdownLuaOptions)
 |endgroup
 %    \end{macrocode}
 %
+% \subsubsection{Lua Shell Escape Bridge}\label{sec:luabridge}
+% The following \TeX{} code is intended for \TeX{} engines that do not provide
+% direct access to Lua, but expose the shell of the operating system. This
+% corresponds to the \m{markdownMode} values of \t`0` and \t`1`.
+%
+% The \m{markdownLuaExecute} macro defined here and in Section
+% \ref{sec:directlua} are meant to be indistinguishable to the remaining code.
+%
+% The package assumes that although the user is not using the Lua\TeX{} engine,
+% their TeX distribution contains it, and uses shell access to produce and
+% execute Lua scripts using the \TeX{}Lua interpreter (see
+% \cite[Section~3.1.1]{luatex16}).
+%  \begin{macrocode}
+\ifnum\markdownMode<2\relax
+\ifnum\markdownMode=0\relax
+  \markdownInfo{Using mode 0: Shell escape via write18}%
+\else
+  \markdownInfo{Using mode 1: Shell escape via os.execute}%
+\fi
+%    \end{macrocode}
+%
+% The \mdef{markdownExecuteShellEscape} macro contains the numeric value indicating
+% whether the shell access is enabled (\t`1`), disabled (\t`0`), or restricted
+% (\t`2`).
+% 
+% Inherit the value of the the \m{pdfshellescape} (Lua\TeX{}, \Hologo{pdfTeX})
+% or the \m{shellescape} (\Hologo{XeTeX}) commands. If neither of these
+% commands is defined and Lua is available, attempt to access the
+% \luam{status.shell_escape} configuration item.
+%
+% If you cannot detect, whether the shell access is enabled, act as if it were.
+%  \begin{macrocode}
+\ifx\pdfshellescape\undefined
+  \ifx\shellescape\undefined
+    \ifnum\markdownMode=0\relax
+      \def\markdownExecuteShellEscape{1}%
+    \else
+      \def\markdownExecuteShellEscape{%
+        \directlua{tex.sprint(status.shell_escape or "1")}}%
+    \fi
+  \else
+    \let\markdownExecuteShellEscape\shellescape
+  \fi
+\else
+  \let\markdownExecuteShellEscape\pdfshellescape
+\fi
+%    \end{macrocode}
+%
+% The \mdef{markdownExecuteDirect} macro executes the code it has received as
+% its first argument by writing it to the output file stream 18, if Lua is
+% unavailable, or by using the Lua \luam{markdown.execute} method otherwise.
+%  \begin{macrocode}
+\ifnum\markdownMode=0\relax
+  \def\markdownExecuteDirect#1{\immediate\write18{#1}}%
+\else
+  \def\markdownExecuteDirect#1{%
+    \directlua{os.execute("\luaescapestring{#1}")}}%
+\fi
+%    \end{macrocode}
+%
+% The \mdef{markdownExecute} macro is a wrapper on top of
+% \m{markdownExecuteDirect} that checks the value of
+% \m{markdownExecuteShellEscape} and prints an error message if the shell is
+% inaccessible.
+%  \begin{macrocode}
+\def\markdownExecute#1{%
+  \ifnum\markdownExecuteShellEscape=1\relax
+    \markdownExecuteDirect{#1}%
+  \else
+    \markdownError{I can not access the shell}{Either run the TeX
+      compiler with the --shell-escape or the --enable-write18 flag,
+      or set shell_escape=t in the texmf.cnf file}%
+  \fi}%
+%    \end{macrocode}
+%
+% The \mdef{markdownLuaExecute} macro executes the Lua code it has received as
+% its first argument. The Lua code may not directly interact with the \TeX{}
+% engine, but it can use the \luam{print} function in the same manner it
+% would use the \luam{tex.print} method.
+%  \begin{macrocode}
+\def\markdownLuaExecute#1{%
+%    \end{macrocode}
+% Create the file \m{markdownOptionHelperScriptFileName} and fill it with the
+% input Lua code prepended with \pkg{kpathsea} initialization, so that Lua
+% modules from the \TeX{} distribution are available.
+%  \begin{macrocode}
+  \immediate\openout\markdownLuaExecuteFileStream=%
+    \markdownOptionHelperScriptFileName
+  \markdownInfo{Writing a helper Lua script to the file
+    "\markdownOptionHelperScriptFileName"}%
+  \immediate\write\markdownLuaExecuteFileStream{%
+    local kpse = require('kpse')
+    kpse.set_program_name('luatex') #1}%
+  \immediate\closeout\markdownLuaExecuteFileStream
+%    \end{macrocode}
+% Execute the generated \m{markdownOptionHelperScriptFileName} Lua script using
+% the \TeX{}Lua binary and store the output in the
+% \m{markdownOptionOutputTempFileName} file.
+%  \begin{macrocode}
+  \markdownInfo{Executing a helper Lua script from the file
+    "\markdownOptionHelperScriptFileName" and storing the result in the
+    file "\markdownOptionOutputTempFileName"}%
+  \markdownExecute{texlua "\markdownOptionHelperScriptFileName" >
+    "\markdownOptionOutputTempFileName"}%
+%    \end{macrocode}
+% \m{input} the generated \m{markdownOptionOutputTempFileName} file.
+%  \begin{macrocode}
+  \input\markdownOptionOutputTempFileName\relax}%
+%    \end{macrocode}
+%
 % \subsubsection{Direct Lua Access}\label{sec:directlua}
 % The following \TeX{} code is intended for \TeX{} engines that provide
-% direct access to Lua (Lua\TeX{}). The \m{markdownLuaExecute} and
-% \m{markdownReadAndConvert} defined here and in Section \ref{sec:luabridge}
-% are meant to be transparent to the remaining code. This corresponds to the
-% \m{markdownMode} value of \t`2`.
+% direct access to Lua (Lua\TeX{}). The macro \m{markdownLuaExecute} defined
+% here and in Section \ref{sec:luabridge} are meant to be indistinguishable to
+% the remaining code. This corresponds to the \m{markdownMode} value of \t`2`.
 %  \begin{macrocode}
 \else
 \markdownInfo{Using mode 2: Direct Lua access}%
@@ -3932,98 +3916,6 @@ local convert = md.new(\markdownLuaOptions)
 % \m{markdownLuaExecute} definition from Section \ref{sec:luabridge},
 %  \begin{macrocode}
 \def\markdownLuaExecute#1{\directlua{local print = tex.print #1}}%
-%    \end{macrocode}
-%
-% In the definition of the direct Lua access version of the
-% \m{markdownReadAndConvert} macro, we will be using the hash symbol
-% (\t`\#`), the underscore symbol (\t`_`), the circumflex symbol (\t`\^`), the
-% dollar sign (\t`\$`), the backslash symbol (\t`\textbackslash`), the percent
-% sign (\t`\%`), and the braces (\t`\{\}`) as a part of the Lua syntax.
-%  \begin{macrocode}
-\begingroup
-%    \end{macrocode}
-%
-% To this end, we will make the underscore symbol, the dollar sign, and
-% circumflex symbols ordinary characters,
-%  \begin{macrocode}
-    \catcode`\_=12%
-    \catcode`\$=12%
-    \catcode`\^=12%
-%    \end{macrocode}
-% swap the category code of the hash symbol with the slash symbol (\t`/`).
-%  \begin{macrocode}
-    \catcode`\/=6%
-    \catcode`\#=12%
-%    \end{macrocode}
-% swap the category code of the percent sign with the at symbol (\t`@`).
-%  \begin{macrocode}
-    \catcode`\@=14%
-    \catcode`\%=12%
-%    \end{macrocode}
-% swap the category code of the backslash symbol with the pipe symbol (\t`|`),
-%  \begin{macrocode}
-    \catcode`|=0@
-    \catcode`\\=12@
-%    \end{macrocode}
-% Braces are a part of the plain \TeX{} syntax, but they are not removed during
-% expansion, so we do not need to bother with changing their category codes.
-%  \begin{macrocode}
-    |gdef|markdownReadAndConvert/1/2{@
-%    \end{macrocode}
-% Make the \mdef{markdownReadAndConvertAfter} macro store the token sequence
-% that will be inserted into the document after the ending token sequence has
-% been found.
-%  \begin{macrocode}
-      |def|markdownReadAndConvertAfter{/2}@
-      |markdownInfo{Buffering markdown input and scanning for the
-        closing token sequence "/1"}@
-      |directlua{@
-%    \end{macrocode}
-% Set up an empty Lua table that will serve as our buffer.
-%  \begin{macrocode}
-        |markdownPrepare
-        local buffer = {}
-%    \end{macrocode}
-% Create a regex that will match the ending input sequence. Escape any special
-% regex characters (like a star inside \t`\textbackslash end\{markdown*\}`)
-% inside the input.
-%  \begin{macrocode}
-        local ending_sequence = "^.-" .. ([[/1]]):gsub(
-          "([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1")
-%    \end{macrocode}
-% Register a callback that will notify you about new lines of input.
-%  \begin{macrocode}
-        |markdownLuaRegisterIBCallback{function(line)
-%    \end{macrocode}
-% When the ending token sequence appears on a line, unregister the callback,
-% convert the contents of our buffer from markdown to plain \TeX{}, and insert
-% the result into the input line buffer of \TeX{}.
-%  \begin{macrocode}
-          if line:match(ending_sequence) then
-            |markdownLuaUnregisterIBCallback;
-            local input = table.concat(buffer, "\n") .. "\n"
-            local output = convert(input)
-            return [[\markdownInfo{The ending token sequence was found}]] ..
-              output .. [[\markdownReadAndConvertAfter]]
-%    \end{macrocode}
-% When the ending token sequence does not appear on a line, store the line in
-% our buffer, and insert either \m{fi}, if this is the first line of input,
-% or an empty token list to the input line buffer of \TeX{}.
-%  \begin{macrocode}
-          else
-            buffer[#buffer+1] = line
-            return [[\]] .. (#buffer == 1 and "fi" or "relax")
-          end
-        end}}@
-%    \end{macrocode}
-% Insert \m{iffalse} after the \m{markdownReadAndConvert} macro in order to
-% consume the rest of the first line of input.
-%  \begin{macrocode}
-      |iffalse}@
-%    \end{macrocode}
-% Reset the character categories back to the former state.
-%  \begin{macrocode}
-  |endgroup
 \fi
 %    \end{macrocode}
 %
@@ -4331,37 +4223,6 @@ local convert = md.new(\markdownLuaOptions)
 %    \end{macrocode}
 %
 % \subsubsection{Miscellanea}
-% Unlike base Lua\TeX{}, which only allows for a single registered function per
-% a callback (see \cite[Section~8.1]{luatex16}), the \Hologo{LaTeX2e} format
-% disables the \luam{callback.register} method and exposes the
-% \luam{luatexbase.add_to_callback} and \luam{luatexbase.remove_from_callback}
-% methods that enable the user code to hook several functions on a single
-% callback (see \cite[Section~73.4]{latex16}).
-%
-% To make our code function with the \Hologo{LaTeX2e} format, we need to
-% redefine the \m{markdownLuaRegisterIBCallback} and
-% \m{markdownLuaUnregisterIBCallback} macros accordingly.
-%  \begin{macrocode}
-\let\markdownLuaRegisterIBCallbackPrevious
-  \markdownLuaRegisterIBCallback
-\let\markdownLuaUnregisterIBCallbackPrevious
-  \markdownLuaUnregisterIBCallback
-\renewcommand\markdownLuaRegisterIBCallback[1]{%
-  if luatexbase and luatexbase.add_to_callback then
-    luatexbase.add_to_callback("process_input_buffer", #1, %
-      "The markdown input processor")
-  else
-    \markdownLuaRegisterIBCallbackPrevious{#1}
-  end}
-\renewcommand\markdownLuaUnregisterIBCallback{%
-  if luatexbase and luatexbase.add_to_callback then
-    luatexbase.remove_from_callback("process_input_buffer",%
-      "The markdown input processor")
-  else
-    \markdownLuaUnregisterIBCallbackPrevious;
-  end}
-%    \end{macrocode}
-%
 % When buffering user input, we should disable the bytes with the high bit set,
 % since these are made active by the \pkg{inputenc} package. We will do this by
 % redefining the \m{markdownMakeOther} macro accordingly. The code is courtesy
@@ -4389,48 +4250,11 @@ local convert = md.new(\markdownLuaOptions)
 %  \begin{macrocode}
 \def\dospecials{\do\ \do\\\do\{\do\}\do\$\do\&%
   \do\#\do\^\do\_\do\%\do\~}%
-%    \end{macrocode}
-% When there is no Lua support, then just load the plain \TeX{} implementation.
-%  \begin{macrocode}
-\ifx\directlua\undefined
-  \input markdown
-\else
-%    \end{macrocode}
-% When there is Lua support, check if we can set the \t`process_input_buffer`
-% Lua\TeX{} callback.
-%  \begin{macrocode}
-  \directlua{%
-    local function unescape(str)
-      return (str:gsub("|", string.char(92))) end
-    local old_callback = callback.find("process_input_buffer")
-    callback.register("process_input_buffer", function() end)
-    local new_callback = callback.find("process_input_buffer")
-%    \end{macrocode}
-%
-% If we can not, we are probably using ConTeXt Mark IV. In ConTeXt Mark IV, the
-% \t`process_input_buffer` callback is currently frozen (inaccessible from the
-% user code) and, due to the lack of available documentation, it is unclear to
-% me how to emulate it. As a workaround, we will force the plain \TeX{}
-% implementation to use the Lua shell escape bridge (see Section
-% \ref{sec:luabridge}) by setting the \m{markdownMode} macro to the value of
-% \t`1`.
-%  \begin{macrocode}
-    if new_callback == false then
-      tex.print(unescape([[|def|markdownMode{1}|input markdown]]))
-%    \end{macrocode}
-%
-% If we can set the \t`process_input_buffer` Lua\TeX{} callback, then just load
-% the plain \TeX{} implementation.
-%  \begin{macrocode}
-    else
-      callback.register("process_input_buffer", old_callback)
-      tex.print(unescape("|input markdown"))
-    end}%
-\fi
+\input markdown
 %    \end{macrocode}
 %
 % When buffering user input, we should disable the bytes with the high bit set,
-% since these are made active by the \m{enableregime} command. We will do this
+% since these are made active by the \m{enableregime} macro. We will do this
 % by redefining the \m{markdownMakeOther} macro accordingly. The code is
 % courtesy of Scott Pakin, the creator of the \pkg{filecontents} LaTeX package.
 %  \begin{macrocode}
@@ -4540,7 +4364,7 @@ local convert = md.new(\markdownLuaOptions)
   \else
 %    \end{macrocode}
 % The code fence infostring is used as a name from the \Hologo{ConTeXt}
-% \m{definetyping} command. This allows the user to set up code highlighting
+% \m{definetyping} macro. This allows the user to set up code highlighting
 % mapping as follows:
 % \begin{Verbatim}
 % % Map the `TEX` syntax highlighter to the `latex` infostring.
