@@ -2562,6 +2562,26 @@ parsers.bullet = ( parsers.bulletchar * #parsers.spacing
                                  * parsers.bulletchar * #parsers.spacing
                  )
 %    \end{macrocode}
+% \paragraph{Parsers used for Markdown Code Spans}
+%  \begin{macrocode}
+parsers.openticks   = Cg(parsers.backtick^1, "ticks")
+
+local function captures_equal_length(s,i,a,b)
+  return #a == #b and i
+end
+
+parsers.closeticks  = parsers.space^-1
+                    * Cmt(C(parsers.backtick^1)
+                         * Cb("ticks"), captures_equal_length)
+
+parsers.intickschar = (parsers.any - S(" \n\r`"))
+                    + (parsers.newline * -parsers.blankline)
+                    + (parsers.space - parsers.closeticks)
+                    + (parsers.backtick^1 - parsers.closeticks)
+
+parsers.inticks     = parsers.openticks * parsers.space^-1
+                    * C(parsers.intickschar^0) * parsers.closeticks
+%    \end{macrocode}
 % 
 % \subsubsection{Markdown Reader}\label{sec:markdownreader}
 % This section documents the \luam{reader} object, which implements the
@@ -2680,23 +2700,6 @@ function M.reader.new(writer, options)
                      + parsers.space * parsers.space * C(larsers.dig^1
                                      * parsers.period) * #parsers.spacing
 %    \end{macrocode}
-% \paragraph{Code Span \acro{peg} Patterns}
-%  \begin{macrocode}
-  local openticks   = Cg(parsers.backtick^1, "ticks")
-
-  local function captures_equal_length(s,i,a,b)
-    return #a == #b and i
-  end
-
-  local closeticks  = parsers.space^-1 *
-                      Cmt(C(parsers.backtick^1) * Cb("ticks"), captures_equal_length)
-
-  local intickschar = (parsers.any - S(" \n\r`"))
-                    + (parsers.newline * -parsers.blankline)
-                    + (parsers.space - closeticks)
-                    + (parsers.backtick^1 - closeticks)
-
-  local inticks     = openticks * parsers.space^-1 * C(intickschar^0) * closeticks
 % \paragraph{Fenced Code \acro{peg} Patterns}
 %  \begin{macrocode}
   local function captures_geq_length(s,i,a,b)
@@ -2765,7 +2768,7 @@ function M.reader.new(writer, options)
   local tag           = parsers.lbracket
                       * Cs((parsers.alphanumeric^1
                            + bracketed
-                           + inticks
+                           + parsers.inticks
                            + (parsers.anyescaped - (parsers.rbracket
                                                    + parsers.blankline^2)))^0)
                       * parsers.rbracket
@@ -2803,7 +2806,7 @@ function M.reader.new(writer, options)
   local citation_body_prenote
                       = Cs((parsers.alphanumeric^1
                            + bracketed
-                           + inticks
+                           + parsers.inticks
                            + (parsers.anyescaped
                              - (parsers.rbracket + parsers.blankline^2))
                            - (parsers.spnl * parsers.dash^-1 * parsers.at))^0)
@@ -2811,7 +2814,7 @@ function M.reader.new(writer, options)
   local citation_body_postnote
                       = Cs((parsers.alphanumeric^1
                            + bracketed
-                           + inticks
+                           + parsers.inticks
                            + (parsers.anyescaped
                              - (parsers.rbracket + parsers.semicolon 
                                + parsers.blankline^2))
@@ -2829,7 +2832,7 @@ function M.reader.new(writer, options)
   local citation_headless_body_postnote
                       = Cs((parsers.alphanumeric^1
                            + bracketed
-                           + inticks
+                           + parsers.inticks
                            + (parsers.anyescaped
                              - (parsers.rbracket + parsers.at
                                + parsers.semicolon + parsers.blankline^2))
@@ -2980,7 +2983,7 @@ function M.reader.new(writer, options)
 %    \end{macrocode}
 % \paragraph{Inline Code Block \acro{peg} Rules}
 %  \begin{macrocode}
-  local Code      = inticks / writer.code
+  local Code      = parsers.inticks / writer.code
 %    \end{macrocode}
 % \paragraph{Spacing \acro{peg} Rules}
 %  \begin{macrocode}
