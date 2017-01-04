@@ -2736,9 +2736,16 @@ end
 parsers.RawNoteRef = #(parsers.lbracket * parsers.circumflex)
                    * parsers.tag / strip_first_char
 %    \end{macrocode}
+% \paragraph{Helpers for Links and References}
+%  \begin{macrocode}
+-- parse a reference definition:  [foo]: /bar "title"
+parsers.define_reference_parser = parsers.leader * parsers.tag * parsers.colon
+                                * parsers.spacechar^0 * parsers.url
+                                * parsers.optionaltitle * parsers.blankline^1
+%    \end{macrocode}
 % \paragraph{Inline Elements}
 %  \begin{macrocode}
-parsers.Inline = V("Inline")
+parsers.Inline       = V("Inline")
 
 -- parse many p between starter and ender
 parsers.between = function(p, starter, ender)
@@ -2746,7 +2753,27 @@ parsers.between = function(p, starter, ender)
   return (starter * #parsers.nonspacechar * Ct(p * (p - ender2)^0) * ender2)
 end
 
-parsers.urlchar = parsers.anyescaped - parsers.newline - parsers.more
+parsers.urlchar      = parsers.anyescaped - parsers.newline - parsers.more
+%    \end{macrocode}
+% \paragraph{Block Elements (local)}
+%  \begin{macrocode}
+parsers.Block        = V("Block")
+  
+parsers.TildeFencedCode
+                     = parsers.fencehead(parsers.tilde)
+                     * Cs(parsers.fencedline(parsers.tilde)^0)
+                     * parsers.fencetail(parsers.tilde)
+
+parsers.BacktickFencedCode
+                     = parsers.fencehead(parsers.backtick)
+                     * Cs(parsers.fencedline(parsers.backtick)^0)
+                     * parsers.fencetail(parsers.backtick)
+
+parsers.lineof = function(c)
+    return (parsers.leader * (P(c) * parsers.optionalspace)^3
+           * (parsers.newline * parsers.blankline^1
+             + parsers.newline^-1 * parsers.eof))
+end
 %    \end{macrocode}
 % 
 % \subsubsection{Markdown Reader}\label{sec:markdownreader}
@@ -2923,7 +2950,7 @@ function M.reader.new(writer, options)
                      * (parsers.tag / larsers.parse_inlines_no_inline_note) -- no notes inside notes
                      / writer.note
 %    \end{macrocode}
-% \paragraph{Link and Image \acro{peg} Patterns}
+% \paragraph{Helpers for Links and References (local)}
 %  \begin{macrocode}
   -- List of references defined in the document
   local references
@@ -2933,11 +2960,6 @@ function M.reader.new(writer, options)
       references[normalize_tag(tag)] = { url = url, title = title }
       return ""
   end
-
-  -- parse a reference definition:  [foo]: /bar "title"
-  local define_reference_parser = parsers.leader * parsers.tag * parsers.colon
-                                * parsers.spacechar^0 * parsers.url
-                                * parsers.optionaltitle * parsers.blankline^1
 
   -- lookup link reference and return either
   -- the link or nil and fallback text.
@@ -3135,54 +3157,31 @@ function M.reader.new(writer, options)
 
   larsers.EscapedChar   = S("\\") * C(parsers.escapable) / writer.string
 %    \end{macrocode}
-% \paragraph{Code Block \acro{peg} Rules}
+% \paragraph{Block Elements (local)}
 %  \begin{macrocode}
-  local Block          = V("Block")
-
-  local Verbatim       = Cs( (parsers.blanklines
+  larsers.Verbatim     = Cs( (parsers.blanklines
                            * ((parsers.indentedline - parsers.blankline))^1)^1
                            ) / expandtabs / writer.verbatim
-  
-  local TildeFencedCode
-                       = parsers.fencehead(parsers.tilde)
-                       * Cs(parsers.fencedline(parsers.tilde)^0)
-                       * parsers.fencetail(parsers.tilde)
 
-  local BacktickFencedCode
-                       = parsers.fencehead(parsers.backtick)
-                       * Cs(parsers.fencedline(parsers.backtick)^0)
-                       * parsers.fencetail(parsers.backtick)
-
-  local FencedCode     = (TildeFencedCode + BacktickFencedCode)
+  larsers.FencedCode   = (parsers.TildeFencedCode
+                         + parsers.BacktickFencedCode)
                        / function(infostring, code)
-                             return writer.fencedCode(
-                                 writer.string(infostring),
-                                 expandtabs(code))
+                           return writer.fencedCode(writer.string(infostring),
+                                                    expandtabs(code))
                          end
-%    \end{macrocode}
-% \paragraph{Blockquote \acro{peg} Patterns}
-%  \begin{macrocode}
+
   -- strip off leading > and indents, and run through blocks
-  local Blockquote     = Cs((((parsers.leader * parsers.more * parsers.space^-1)/""
+  larsers.Blockquote   = Cs((((parsers.leader * parsers.more * parsers.space^-1)/""
                              * parsers.linechar^0 * parsers.newline)^1
                             * (-parsers.blankline * parsers.linechar^1
                               * parsers.newline)^0
                             * (parsers.blankline^0 / "")
                            )^1) / larsers.parse_blocks_toplevel
                                 / writer.blockquote
-
-  local function lineof(c)
-      return (parsers.leader * (P(c) * parsers.optionalspace)^3
-             * (parsers.newline * parsers.blankline^1
-               + parsers.newline^-1 * parsers.eof))
-  end
-%    \end{macrocode}
-% \paragraph{Horizontal Rule \acro{peg} Rules}
-%  \begin{macrocode}
-  local HorizontalRule = ( lineof(parsers.asterisk)
-                         + lineof(parsers.dash)
-                         + lineof(parsers.underscore)
-                         ) / writer.hrule
+  larsers.HorizontalRule = ( parsers.lineof(parsers.asterisk)
+                           + parsers.lineof(parsers.dash)
+                           + parsers.lineof(parsers.underscore)
+                           ) / writer.hrule
 %    \end{macrocode}
 % \paragraph{List \acro{peg} Rules}
 %  \begin{macrocode}
@@ -3202,13 +3201,13 @@ function M.reader.new(writer, options)
                               * ListBlock
 
   local function TightListItem(starter)
-      return -HorizontalRule
+      return -larsers.HorizontalRule
              * (Cs(starter / "" * ListBlock * NestedList^-1) / larsers.parse_blocks)
              * -(parsers.blanklines * parsers.indent)
   end
 
   local function LooseListItem(starter)
-      return -HorizontalRule
+      return -larsers.HorizontalRule
              * Cs( starter / "" * ListBlock * Cc("\n")
                * (NestedList + ListContinuationBlock^0)
                * (parsers.blanklines / "\n\n")
@@ -3275,18 +3274,15 @@ function M.reader.new(writer, options)
                              * (parsers.skipblanklines * -DefinitionListItemLoose
                                                        * Cc(true))
                           ) / writer.definitionlist
-%    \end{macrocode}
-% \paragraph{Blank Line \acro{peg} Rules}
-%  \begin{macrocode}
-  local Reference      = define_reference_parser / register_link
+
+  larsers.Reference    = parsers.define_reference_parser / register_link
+
   local Blank          = parsers.blankline / ""
                        + larsers.NoteBlock
-                       + Reference
+                       + larsers.Reference
                        + (parsers.tightblocksep / "\n")
-%    \end{macrocode}
-% \paragraph{Paragraph \acro{peg} Rules}
-%  \begin{macrocode}
-  local Paragraph      = parsers.nonindentspace * Ct(parsers.Inline^1)
+
+  larsers.Paragraph    = parsers.nonindentspace * Ct(parsers.Inline^1)
                        * parsers.newline
                        * ( parsers.blankline^1
                          + #parsers.hash
@@ -3294,7 +3290,7 @@ function M.reader.new(writer, options)
                          )
                        / writer.paragraph
 
-  local ToplevelParagraph
+  larsers.ToplevelParagraph
                        = parsers.nonindentspace * Ct(parsers.Inline^1)
                        * ( parsers.newline
                        * ( parsers.blankline^1
@@ -3305,7 +3301,7 @@ function M.reader.new(writer, options)
                        + parsers.eof )
                        / writer.paragraph
 
-  local Plain          = parsers.nonindentspace * Ct(parsers.Inline^1)
+  larsers.Plain        = parsers.nonindentspace * Ct(parsers.Inline^1)
                        / writer.plain
 %    \end{macrocode}
 % \paragraph{Heading \acro{peg} Rules}
@@ -3342,9 +3338,9 @@ function M.reader.new(writer, options)
   local syntax =
     { "Blocks",
 
-      Blocks                = Blank^0 * Block^-1
+      Blocks                = Blank^0 * parsers.Block^-1
                             * (Blank^0 / function() return writer.interblocksep end
-                                       * Block)^0 *
+                                       * parsers.Block)^0 *
                               Blank^0 * parsers.eof,
 
       Blank                 = Blank,
@@ -3360,17 +3356,16 @@ function M.reader.new(writer, options)
                             + V("Paragraph")
                             + V("Plain"),
 
-      Blockquote            = Blockquote,
-      Verbatim              = Verbatim,
-      FencedCode            = FencedCode,
-      HorizontalRule        = HorizontalRule,
+      Blockquote            = larsers.Blockquote,
+      Verbatim              = larsers.Verbatim,
+      FencedCode            = larsers.FencedCode,
+      HorizontalRule        = larsers.HorizontalRule,
       BulletList            = BulletList,
       OrderedList           = OrderedList,
       Heading               = Heading,
       DefinitionList        = DefinitionList,
-      DisplayHtml           = DisplayHtml,
-      Paragraph             = Paragraph,
-      Plain                 = Plain,
+      Paragraph             = larsers.Paragraph,
+      Plain                 = larsers.Plain,
 
       Inline                = V("Str")
                             + V("Space")
@@ -3436,7 +3431,7 @@ function M.reader.new(writer, options)
   end
 
   local blocks_toplevel_t = util.table_copy(syntax)
-  blocks_toplevel_t.Paragraph = ToplevelParagraph
+  blocks_toplevel_t.Paragraph = larsers.ToplevelParagraph
   larsers.blocks_toplevel = Ct(blocks_toplevel_t)
 
   larsers.blocks = Ct(syntax)
