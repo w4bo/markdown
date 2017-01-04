@@ -2736,6 +2736,18 @@ end
 parsers.RawNoteRef = #(parsers.lbracket * parsers.circumflex)
                    * parsers.tag / strip_first_char
 %    \end{macrocode}
+% \paragraph{Inline Elements}
+%  \begin{macrocode}
+parsers.Inline = V("Inline")
+
+-- parse many p between starter and ender
+parsers.between = function(p, starter, ender)
+  local ender2 = B(parsers.nonspacechar) * ender
+  return (starter * #parsers.nonspacechar * Ct(p * (p - ender2)^0) * ender2)
+end
+
+parsers.urlchar = parsers.anyescaped - parsers.newline - parsers.more
+%    \end{macrocode}
 % 
 % \subsubsection{Markdown Reader}\label{sec:markdownreader}
 % This section documents the \luam{reader} object, which implements the
@@ -2854,6 +2866,31 @@ function M.reader.new(writer, options)
                      + parsers.space * parsers.space * C(larsers.dig^1
                                      * parsers.period) * #parsers.spacing
 %    \end{macrocode}
+% \paragraph{Parsers Used for Citations (local)}
+%  \begin{macrocode}
+  larsers.citations = function(text_cites, raw_cites)
+      local function normalize(str)
+          if str == "" then
+              str = nil
+          else
+              str = (options.citationNbsps and larsers.parse_inlines_nbsp or
+                larsers.parse_inlines)(str)
+          end
+          return str
+      end
+
+      local cites = {}
+      for i = 1,#raw_cites,4 do
+          cites[#cites+1] = {
+              prenote = normalize(raw_cites[i]),
+              suppress_author = raw_cites[i+1] == "-",
+              name = writer.string(raw_cites[i+2]),
+              postnote = normalize(raw_cites[i+3]),
+          }
+      end
+      return writer.citations(text_cites, cites)
+  end
+%    \end{macrocode}
 % \paragraph{Parsers Used for Footnotes (local)}
 %  \begin{macrocode}
   local rawnotes = {}
@@ -2952,193 +2989,151 @@ function M.reader.new(writer, options)
     end
   end
 %    \end{macrocode}
-% \paragraph{Spacing \acro{peg} Patterns}
+% \paragraph{Inline Elements (local)}
 %  \begin{macrocode}
-  local bqstart      = parsers.more
-  local headerstart  = parsers.hash
-                     + (parsers.line * (parsers.equal^1 + parsers.dash^1)
-                             * parsers.optionalspace * parsers.newline)
-  local fencestart   = parsers.fencehead(parsers.backtick)
-                     + parsers.fencehead(parsers.tilde)
+  larsers.Str      = parsers.normalchar^1 / writer.string
+
+  larsers.Symbol   = (parsers.specialchar - parsers.tightblocksep)
+                   / writer.string
+
+  larsers.Ellipsis = P("...") / writer.ellipsis
+
+  larsers.Smart    = larsers.Ellipsis
+
+  larsers.Code     = parsers.inticks / writer.code
 
   if options.blankBeforeBlockquote then
-    bqstart = parsers.fail
+    larsers.bqstart = parsers.fail
+  else
+    larsers.bqstart = parsers.more
   end
 
   if options.blankBeforeHeading then
-    headerstart = parsers.fail
+    larsers.headerstart = parsers.fail
+  else
+    larsers.headerstart = parsers.hash
+                        + (parsers.line * (parsers.equal^1 + parsers.dash^1)
+                        * parsers.optionalspace * parsers.newline)
   end
 
   if not options.fencedCode or options.blankBeforeCodeFence then
-    fencestart = parsers.fail
+    larsers.fencestart = parsers.fail
+  else
+    larsers.fencestart = parsers.fencehead(parsers.backtick)
+                       + parsers.fencehead(parsers.tilde)
   end
-%    \end{macrocode}
-% \paragraph{String \acro{peg} Rules}
-%  \begin{macrocode}
-  local Inline    = V("Inline")
 
-  local Str       = parsers.normalchar^1 / writer.string
-
-  local Symbol    = (parsers.specialchar - parsers.tightblocksep) / writer.string
-%    \end{macrocode}
-% \paragraph{Ellipsis \acro{peg} Rules}
-%  \begin{macrocode}
-  local Ellipsis  = P("...") / writer.ellipsis
-
-  local Smart     = Ellipsis
-%    \end{macrocode}
-% \paragraph{Inline Code Block \acro{peg} Rules}
-%  \begin{macrocode}
-  local Code      = parsers.inticks / writer.code
-%    \end{macrocode}
-% \paragraph{Spacing \acro{peg} Rules}
-%  \begin{macrocode}
-  local Endline   = parsers.newline * -( -- newline, but not before...
+  larsers.Endline   = parsers.newline * -( -- newline, but not before...
                         parsers.blankline -- paragraph break
                       + parsers.tightblocksep  -- nested list
                       + parsers.eof       -- end of document
-                      + bqstart
-                      + headerstart
-                      + fencestart
+                      + larsers.bqstart
+                      + larsers.headerstart
+                      + larsers.fencestart
                     ) * parsers.spacechar^0 / writer.space
 
-  local Space     = parsers.spacechar^2 * Endline / writer.linebreak
-                  + parsers.spacechar^1 * Endline^-1 * parsers.eof / ""
-                  + parsers.spacechar^1 * Endline^-1
-                                        * parsers.optionalspace / writer.space
+  larsers.Space      = parsers.spacechar^2 * larsers.Endline / writer.linebreak
+                     + parsers.spacechar^1 * larsers.Endline^-1 * parsers.eof / ""
+                     + parsers.spacechar^1 * larsers.Endline^-1
+                                           * parsers.optionalspace / writer.space
 
-  local NonbreakingEndline
-                  = parsers.newline * -( -- newline, but not before...
+  larsers.NonbreakingEndline
+                    = parsers.newline * -( -- newline, but not before...
                         parsers.blankline -- paragraph break
                       + parsers.tightblocksep  -- nested list
                       + parsers.eof       -- end of document
-                      + bqstart
-                      + headerstart
-                      + fencestart
+                      + larsers.bqstart
+                      + larsers.headerstart
+                      + larsers.fencestart
                     ) * parsers.spacechar^0 / writer.nbsp
 
-  local NonbreakingSpace
-                  = parsers.spacechar^2 * Endline / writer.linebreak
-                  + parsers.spacechar^1 * Endline^-1 * parsers.eof / ""
-                  + parsers.spacechar^1 * Endline^-1
+  larsers.NonbreakingSpace
+                  = parsers.spacechar^2 * larsers.Endline / writer.linebreak
+                  + parsers.spacechar^1 * larsers.Endline^-1 * parsers.eof / ""
+                  + parsers.spacechar^1 * larsers.Endline^-1
                                         * parsers.optionalspace / writer.nbsp
 
-  -- parse many p between starter and ender
-  local function between(p, starter, ender)
-      local ender2 = B(parsers.nonspacechar) * ender
-      return (starter * #parsers.nonspacechar * Ct(p * (p - ender2)^0) * ender2)
-  end
-%    \end{macrocode}
-% \paragraph{Emphasis \acro{peg} Rules}
-%  \begin{macrocode}
-  local Strong = ( between(Inline, parsers.doubleasterisks, parsers.doubleasterisks)
-                 + between(Inline, parsers.doubleunderscores, parsers.doubleunderscores)
-                 ) / writer.strong
+  larsers.Strong = ( parsers.between(parsers.Inline, parsers.doubleasterisks,
+                                     parsers.doubleasterisks)
+                   + parsers.between(parsers.Inline, parsers.doubleunderscores,
+                                     parsers.doubleunderscores)
+                   ) / writer.strong
 
-  local Emph   = ( between(Inline, parsers.asterisk, parsers.asterisk)
-                 + between(Inline, parsers.underscore, parsers.underscore)
-                 ) / writer.emphasis
-%    \end{macrocode}
-% \paragraph{Link \acro{peg} Rules}
-%  \begin{macrocode}
-  local urlchar = parsers.anyescaped - parsers.newline - parsers.more
+  larsers.Emph   = ( parsers.between(parsers.Inline, parsers.asterisk,
+                                     parsers.asterisk)
+                   + parsers.between(parsers.Inline, parsers.underscore,
+                                     parsers.underscore)
+                   ) / writer.emphasis
 
-  local AutoLinkUrl   = parsers.less
-                      * C(parsers.alphanumeric^1 * P("://") * urlchar^1)
-                      * parsers.more
-                      / function(url)
-                        return writer.link(writer.string(url), url)
-                      end
+  larsers.AutoLinkUrl    = parsers.less
+                         * C(parsers.alphanumeric^1 * P("://") * parsers.urlchar^1)
+                         * parsers.more
+                         / function(url)
+                             return writer.link(writer.string(url), url)
+                           end
 
-  local AutoLinkEmail = parsers.less
-                      * C((parsers.alphanumeric + S("-._+"))^1 * P("@") * urlchar^1)
-                      * parsers.more
-                      / function(email)
-                        return writer.link(writer.string(email),
-                                           "mailto:"..email)
-                      end
+  larsers.AutoLinkEmail = parsers.less
+                        * C((parsers.alphanumeric + S("-._+"))^1
+                        * P("@") * parsers.urlchar^1)
+                        * parsers.more
+                        / function(email)
+                            return writer.link(writer.string(email),
+                                               "mailto:"..email)
+                          end
 
-  local DirectLink    = (parsers.tag / larsers.parse_inlines_no_link)  -- no links inside links
-                      * parsers.spnl
-                      * parsers.lparent
-                      * (parsers.url + Cc(""))  -- link can be empty [foo]()
-                      * parsers.optionaltitle
-                      * parsers.rparent
-                      / writer.link
+  larsers.DirectLink    = (parsers.tag / larsers.parse_inlines_no_link)  -- no links inside links
+                        * parsers.spnl
+                        * parsers.lparent
+                        * (parsers.url + Cc(""))  -- link can be empty [foo]()
+                        * parsers.optionaltitle
+                        * parsers.rparent
+                        / writer.link
 
-  local IndirectLink = parsers.tag * (C(parsers.spnl) * parsers.tag)^-1
-                     / indirect_link
+  larsers.IndirectLink  = parsers.tag * (C(parsers.spnl) * parsers.tag)^-1
+                        / indirect_link
 
   -- parse a link or image (direct or indirect)
-  local Link          = DirectLink + IndirectLink
-%    \end{macrocode}
-% \paragraph{Image \acro{peg} Rules}
-%  \begin{macrocode}
-  local DirectImage   = parsers.exclamation
-                      * (parsers.tag / larsers.parse_inlines)
-                      * parsers.spnl
-                      * parsers.lparent
-                      * (parsers.url + Cc(""))  -- link can be empty [foo]()
-                      * parsers.optionaltitle
-                      * parsers.rparent
-                      / writer.image
+  larsers.Link          = larsers.DirectLink + larsers.IndirectLink
 
-  local IndirectImage = parsers.exclamation * parsers.tag
-                      * (C(parsers.spnl) * parsers.tag)^-1 / indirect_image
+  larsers.DirectImage   = parsers.exclamation
+                        * (parsers.tag / larsers.parse_inlines)
+                        * parsers.spnl
+                        * parsers.lparent
+                        * (parsers.url + Cc(""))  -- link can be empty [foo]()
+                        * parsers.optionaltitle
+                        * parsers.rparent
+                        / writer.image
 
-  local Image         = DirectImage + IndirectImage
-%    \end{macrocode}
-% \paragraph{Miscellaneous Inline \acro{peg} Rules}
-%  \begin{macrocode}
-  -- avoid parsing long strings of * or _ as emph/strong
-  local UlOrStarLine  = parsers.asterisk^4 + parsers.underscore^4 / writer.string
+  larsers.IndirectImage = parsers.exclamation * parsers.tag
+                        * (C(parsers.spnl) * parsers.tag)^-1 / indirect_image
 
-  local EscapedChar   = S("\\") * C(parsers.escapable) / writer.string
-%    \end{macrocode}
-% \paragraph{Citations \acro{peg} Rules}
-%  \begin{macrocode}
-  larsers.citations = function(text_cites, raw_cites)
-      local function normalize(str)
-          if str == "" then
-              str = nil
-          else
-              str = (options.citationNbsps and larsers.parse_inlines_nbsp or
-                larsers.parse_inlines)(str)
-          end
-          return str
-      end
+  larsers.Image         = larsers.DirectImage + larsers.IndirectImage
 
-      local cites = {}
-      for i = 1,#raw_cites,4 do
-          cites[#cites+1] = {
-              prenote = normalize(raw_cites[i]),
-              suppress_author = raw_cites[i+1] == "-",
-              name = writer.string(raw_cites[i+2]),
-              postnote = normalize(raw_cites[i+3]),
-          }
-      end
-      return writer.citations(text_cites, cites)
-  end
-
-  local TextCitations = Ct(Cc("")
-                      * parsers.citation_name
-                      * ((parsers.spnl
-                           * parsers.lbracket
-                           * parsers.citation_headless_body
-                           * parsers.rbracket) + Cc(""))) /
-                        function(raw_cites)
+  larsers.TextCitations = Ct(Cc("")
+                        * parsers.citation_name
+                        * ((parsers.spnl
+                            * parsers.lbracket
+                            * parsers.citation_headless_body
+                            * parsers.rbracket) + Cc("")))
+                        / function(raw_cites)
                             return larsers.citations(true, raw_cites)
-                        end
+                          end
   
-  local ParenthesizedCitations
-                      = Ct(parsers.lbracket
-                      * parsers.citation_body
-                      * parsers.rbracket) /
-                        function(raw_cites)
+  larsers.ParenthesizedCitations
+                        = Ct(parsers.lbracket
+                        * parsers.citation_body
+                        * parsers.rbracket)
+                        / function(raw_cites)
                             return larsers.citations(false, raw_cites)
-                        end
+                          end
 
-  local Citations     = TextCitations + ParenthesizedCitations
+  larsers.Citations     = larsers.TextCitations + larsers.ParenthesizedCitations
+
+  -- avoid parsing long strings of * or _ as emph/strong
+  larsers.UlOrStarLine  = parsers.asterisk^4 + parsers.underscore^4
+                        / writer.string
+
+  larsers.EscapedChar   = S("\\") * C(parsers.escapable) / writer.string
 %    \end{macrocode}
 % \paragraph{Code Block \acro{peg} Rules}
 %  \begin{macrocode}
@@ -3291,7 +3286,8 @@ function M.reader.new(writer, options)
 %    \end{macrocode}
 % \paragraph{Paragraph \acro{peg} Rules}
 %  \begin{macrocode}
-  local Paragraph      = parsers.nonindentspace * Ct(Inline^1) * parsers.newline
+  local Paragraph      = parsers.nonindentspace * Ct(parsers.Inline^1)
+                       * parsers.newline
                        * ( parsers.blankline^1
                          + #parsers.hash
                          + #(parsers.leader * parsers.more * parsers.space^-1)
@@ -3299,7 +3295,8 @@ function M.reader.new(writer, options)
                        / writer.paragraph
 
   local ToplevelParagraph
-                       = parsers.nonindentspace * Ct(Inline^1) * (parsers.newline
+                       = parsers.nonindentspace * Ct(parsers.Inline^1)
+                       * ( parsers.newline
                        * ( parsers.blankline^1
                          + #parsers.hash
                          + #(parsers.leader * parsers.more * parsers.space^-1)
@@ -3308,7 +3305,8 @@ function M.reader.new(writer, options)
                        + parsers.eof )
                        / writer.paragraph
 
-  local Plain          = parsers.nonindentspace * Ct(Inline^1) / writer.plain
+  local Plain          = parsers.nonindentspace * Ct(parsers.Inline^1)
+                       / writer.plain
 %    \end{macrocode}
 % \paragraph{Heading \acro{peg} Rules}
 %  \begin{macrocode}
@@ -3392,25 +3390,25 @@ function M.reader.new(writer, options)
                             + V("Smart")
                             + V("Symbol"),
 
-      Str                   = Str,
-      Space                 = Space,
-      Endline               = Endline,
-      UlOrStarLine          = UlOrStarLine,
-      Strong                = Strong,
-      Emph                  = Emph,
+      Str                   = larsers.Str,
+      Space                 = larsers.Space,
+      Endline               = larsers.Endline,
+      UlOrStarLine          = larsers.UlOrStarLine,
+      Strong                = larsers.Strong,
+      Emph                  = larsers.Emph,
       InlineNote            = larsers.InlineNote,
       NoteRef               = larsers.NoteRef,
-      Citations             = Citations,
-      Link                  = Link,
-      Image                 = Image,
-      Code                  = Code,
-      AutoLinkUrl           = AutoLinkUrl,
-      AutoLinkEmail         = AutoLinkEmail,
-      InlineHtml            = InlineHtml,
-      HtmlEntity            = HtmlEntity,
-      EscapedChar           = EscapedChar,
-      Smart                 = Smart,
-      Symbol                = Symbol,
+      Citations             = larsers.Citations,
+      Link                  = larsers.Link,
+      Image                 = larsers.Image,
+      Code                  = larsers.Code,
+      AutoLinkUrl           = larsers.AutoLinkUrl,
+      AutoLinkEmail         = larsers.AutoLinkEmail,
+      InlineHtml            = larsers.InlineHtml,
+      HtmlEntity            = larsers.HtmlEntity,
+      EscapedChar           = larsers.EscapedChar,
+      Smart                 = larsers.Smart,
+      Symbol                = larsers.Symbol,
     }
 
   if not options.definitionLists then
@@ -3445,7 +3443,7 @@ function M.reader.new(writer, options)
 
   local inlines_t = util.table_copy(syntax)
   inlines_t[1] = "Inlines"
-  inlines_t.Inlines = Inline^0 * (parsers.spacing^0 * parsers.eof / "")
+  inlines_t.Inlines = parsers.Inline^0 * (parsers.spacing^0 * parsers.eof / "")
   larsers.inlines = Ct(inlines_t)
 
   local inlines_no_link_t = util.table_copy(inlines_t)
@@ -3457,8 +3455,8 @@ function M.reader.new(writer, options)
   larsers.inlines_no_inline_note = Ct(inlines_no_inline_note_t)
 
   local inlines_nbsp_t = util.table_copy(inlines_t)
-  inlines_nbsp_t.Endline = NonbreakingEndline
-  inlines_nbsp_t.Space = NonbreakingSpace
+  inlines_nbsp_t.Endline = larsers.NonbreakingEndline
+  inlines_nbsp_t.Space = larsers.NonbreakingSpace
   larsers.inlines_nbsp = Ct(inlines_nbsp_t)
 %    \end{macrocode}
 %
