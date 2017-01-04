@@ -2582,6 +2582,37 @@ parsers.intickschar = (parsers.any - S(" \n\r`"))
 parsers.inticks     = parsers.openticks * parsers.space^-1
                     * C(parsers.intickschar^0) * parsers.closeticks
 %    \end{macrocode}
+% \paragraph{Parsers Used for Fenced Code Blocks}
+%  \begin{macrocode}
+local function captures_geq_length(s,i,a,b)
+  return #a >= #b and i
+end
+
+parsers.infostring     = (parsers.linechar - (parsers.backtick
+                       + parsers.space^1 * (parsers.newline + parsers.eof)))^0
+
+local fenceindent
+parsers.fencehead    = function(char)
+  return               C(parsers.nonindentspace) / function(s) fenceindent = #s end
+                     * Cg(char^3, "fencelength")
+                     * parsers.optionalspace * C(parsers.infostring)
+                     * parsers.optionalspace * (parsers.newline + parsers.eof)
+end
+
+parsers.fencetail    = function(char)
+  return               parsers.nonindentspace
+                     * Cmt(C(char^3) * Cb("fencelength"), captures_geq_length)
+                     * parsers.optionalspace * (parsers.newline + parsers.eof)
+                     + parsers.eof
+end
+
+parsers.fencedline   = function(char)
+  return               C(parsers.line - parsers.fencetail(char))
+                     / function(s)
+                           return s:gsub("^" .. string.rep(" ?", fenceindent), "")
+                       end
+end
+%    \end{macrocode}
 % 
 % \subsubsection{Markdown Reader}\label{sec:markdownreader}
 % This section documents the \luam{reader} object, which implements the
@@ -2699,39 +2730,6 @@ function M.reader.new(writer, options)
                                      * (parsers.tab + parsers.space^-1)
                      + parsers.space * parsers.space * C(larsers.dig^1
                                      * parsers.period) * #parsers.spacing
-%    \end{macrocode}
-% \paragraph{Fenced Code \acro{peg} Patterns}
-%  \begin{macrocode}
-  local function captures_geq_length(s,i,a,b)
-    return #a >= #b and i
-  end
-
-  local infostring     = (parsers.linechar - (parsers.backtick
-                         + parsers.space^1 * (parsers.newline + parsers.eof)))^0
-
-  local fenceindent
-  local function fencehead(char)
-    return               C(parsers.nonindentspace) / function(s) fenceindent = #s end
-                       * Cg(char^3, "fencelength")
-                       * parsers.optionalspace * C(infostring)
-                       * parsers.optionalspace * (parsers.newline + parsers.eof)
-  end
-
-  local function fencetail(char)
-    return               parsers.nonindentspace
-                       * Cmt(C(char^3) * Cb("fencelength"),
-                             captures_geq_length)
-                       * parsers.optionalspace * (parsers.newline + parsers.eof)
-                       + parsers.eof
-  end
-
-  local function fencedline(char)
-    return               C(parsers.line - fencetail(char))
-                       / function(s)
-                             return s:gsub("^" .. string.rep(" ?",
-                                 fenceindent), "")
-                         end
-  end
 %    \end{macrocode}
 % \paragraph{Tag \acro{peg} Patterns}
 %  \begin{macrocode}
@@ -2953,7 +2951,8 @@ function M.reader.new(writer, options)
   local headerstart  = parsers.hash
                      + (parsers.line * (parsers.equal^1 + parsers.dash^1)
                              * parsers.optionalspace * parsers.newline)
-  local fencestart   = fencehead(parsers.backtick) + fencehead(parsers.tilde)
+  local fencestart   = parsers.fencehead(parsers.backtick)
+                     + parsers.fencehead(parsers.tilde)
 
   if options.blankBeforeBlockquote then
     bqstart = parsers.fail
@@ -3142,14 +3141,14 @@ function M.reader.new(writer, options)
                            ) / expandtabs / writer.verbatim
   
   local TildeFencedCode
-                       = fencehead(parsers.tilde)
-                       * Cs(fencedline(parsers.tilde)^0)
-                       * fencetail(parsers.tilde)
+                       = parsers.fencehead(parsers.tilde)
+                       * Cs(parsers.fencedline(parsers.tilde)^0)
+                       * parsers.fencetail(parsers.tilde)
 
   local BacktickFencedCode
-                       = fencehead(parsers.backtick)
-                       * Cs(fencedline(parsers.backtick)^0)
-                       * fencetail(parsers.backtick)
+                       = parsers.fencehead(parsers.backtick)
+                       * Cs(parsers.fencedline(parsers.backtick)^0)
+                       * parsers.fencetail(parsers.backtick)
 
   local FencedCode     = (TildeFencedCode + BacktickFencedCode)
                        / function(infostring, code)
