@@ -2887,19 +2887,41 @@ function M.reader.new(writer, options)
     end
   end
     
-  larsers.parse_blocks = create_parser("parse_blocks",
-    function() return larsers.blocks end)
-  larsers.parse_blocks_toplevel = create_parser("parse_blocks_toplevel",
-    function() return larsers.blocks_toplevel end)
-  larsers.parse_inlines = create_parser("parse_inlines",
-    function() return larsers.inlines end)
-  larsers.parse_inlines_no_link = create_parser("parse_inlines_no_link",
-    function() return larsers.inlines_no_link end)
-  larsers.parse_inlines_no_inline_note = create_parser(
-    "parse_inlines_no_inline_note",
-    function() return larsers.inlines_no_inline_note end)
-  larsers.parse_inlines_nbsp = create_parser("parse_inlines_nbsp",
-    function() return larsers.inlines_nbsp end)
+  local parse_blocks
+    = create_parser("parse_blocks",
+                    function()
+                      return larsers.blocks
+                    end)
+
+  local parse_blocks_toplevel
+    = create_parser("parse_blocks_toplevel",
+                    function()
+                      return larsers.blocks_toplevel
+                    end)
+
+  local parse_inlines
+    = create_parser("parse_inlines",
+                    function()
+                      return larsers.inlines
+                    end)
+
+  local parse_inlines_no_link
+    = create_parser("parse_inlines_no_link",
+                    function()
+                      return larsers.inlines_no_link
+                    end)
+
+  local parse_inlines_no_inline_note
+    = create_parser("parse_inlines_no_inline_note",
+                    function()
+                      return larsers.inlines_no_inline_note
+                    end)
+
+  local parse_inlines_nbsp
+    = create_parser("parse_inlines_nbsp",
+                    function()
+                      return larsers.inlines_nbsp
+                    end)
 %    \end{macrocode}
 % \paragraph{Parsers Used for Markdown Lists (local)}
 %  \begin{macrocode}
@@ -2929,8 +2951,8 @@ function M.reader.new(writer, options)
           if str == "" then
               str = nil
           else
-              str = (options.citationNbsps and larsers.parse_inlines_nbsp or
-                larsers.parse_inlines)(str)
+              str = (options.citationNbsps and parse_inlines_nbsp or
+                parse_inlines)(str)
           end
           return str
       end
@@ -2956,9 +2978,9 @@ function M.reader.new(writer, options)
     return function()
       local found = rawnotes[normalize_tag(ref)]
       if found then
-        return writer.note(larsers.parse_blocks_toplevel(found))
+        return writer.note(parse_blocks_toplevel(found))
       else
-        return {"[", larsers.parse_inlines("^" .. ref), "]"}
+        return {"[", parse_inlines("^" .. ref), "]"}
       end
     end
   end
@@ -2976,7 +2998,7 @@ function M.reader.new(writer, options)
                      / register_note
 
   larsers.InlineNote = parsers.circumflex
-                     * (parsers.tag / larsers.parse_inlines_no_inline_note) -- no notes inside notes
+                     * (parsers.tag / parse_inlines_no_inline_note) -- no notes inside notes
                      / writer.note
 %    \end{macrocode}
 % \paragraph{Helpers for Links and References (local)}
@@ -3001,7 +3023,7 @@ function M.reader.new(writer, options)
           tag = label
           tagpart = "[]"
       else
-          tagpart = {"[", larsers.parse_inlines(tag), "]"}
+          tagpart = {"[", parse_inlines(tag), "]"}
       end
       if sps then
         tagpart = {sps, tagpart}
@@ -3010,7 +3032,7 @@ function M.reader.new(writer, options)
       if r then
         return r
       else
-        return nil, {"[", larsers.parse_inlines(label), "]", tagpart}
+        return nil, {"[", parse_inlines(label), "]", tagpart}
       end
   end
 
@@ -3020,7 +3042,7 @@ function M.reader.new(writer, options)
     return function()
       local r,fallback = lookup_reference(label,sps,tag)
       if r then
-        return writer.link(larsers.parse_inlines_no_link(label), r.url, r.title)
+        return writer.link(parse_inlines_no_link(label), r.url, r.title)
       else
         return fallback
       end
@@ -3132,7 +3154,7 @@ function M.reader.new(writer, options)
                                                "mailto:"..email)
                           end
 
-  larsers.DirectLink    = (parsers.tag / larsers.parse_inlines_no_link)  -- no links inside links
+  larsers.DirectLink    = (parsers.tag / parse_inlines_no_link)  -- no links inside links
                         * parsers.spnl
                         * parsers.lparent
                         * (parsers.url + Cc(""))  -- link can be empty [foo]()
@@ -3147,7 +3169,7 @@ function M.reader.new(writer, options)
   larsers.Link          = larsers.DirectLink + larsers.IndirectLink
 
   larsers.DirectImage   = parsers.exclamation
-                        * (parsers.tag / larsers.parse_inlines)
+                        * (parsers.tag / parse_inlines)
                         * parsers.spnl
                         * parsers.lparent
                         * (parsers.url + Cc(""))  -- link can be empty [foo]()
@@ -3205,7 +3227,7 @@ function M.reader.new(writer, options)
                             * (-parsers.blankline * parsers.linechar^1
                               * parsers.newline)^0
                             * (parsers.blankline^0 / "")
-                           )^1) / larsers.parse_blocks_toplevel
+                           )^1) / parse_blocks_toplevel
                                 / writer.blockquote
   larsers.HorizontalRule = ( parsers.lineof(parsers.asterisk)
                            + parsers.lineof(parsers.dash)
@@ -3258,7 +3280,7 @@ function M.reader.new(writer, options)
   larsers.TightListItem = function(starter)
       return -larsers.HorizontalRule
              * (Cs(starter / "" * larsers.ListBlock * larsers.NestedList^-1)
-               / larsers.parse_blocks)
+               / parse_blocks)
              * -(parsers.blanklines * parsers.indent)
   end
 
@@ -3267,7 +3289,7 @@ function M.reader.new(writer, options)
              * Cs( starter / "" * larsers.ListBlock * Cc("\n")
                * (larsers.NestedList + larsers.ListContinuationBlock^0)
                * (parsers.blanklines / "\n\n")
-               ) / larsers.parse_blocks
+               ) / parse_blocks
   end
 
   larsers.BulletList = ( Ct(larsers.TightListItem(parsers.bullet)^1) * Cc(true)
@@ -3295,18 +3317,18 @@ function M.reader.new(writer, options)
                       ) * Cb("listtype") / ordered_list
 
   local function definition_list_item(term, defs, tight)
-    return { term = larsers.parse_inlines(term), definitions = defs }
+    return { term = parse_inlines(term), definitions = defs }
   end
 
   larsers.DefinitionListItemLoose = C(parsers.line) * parsers.skipblanklines
                                   * Ct((parsers.defstart
                                        * parsers.indented_blocks(parsers.dlchunk)
-                                       / larsers.parse_blocks_toplevel)^1)
+                                       / parse_blocks_toplevel)^1)
                                   * Cc(false) / definition_list_item
 
   larsers.DefinitionListItemTight = C(parsers.line)
                                   * Ct((parsers.defstart * parsers.dlchunk
-                                       / larsers.parse_blocks)^1)
+                                       / parse_blocks)^1)
                                   * Cc(true) / definition_list_item
 
   larsers.DefinitionList = ( Ct(larsers.DefinitionListItemLoose^1) * Cc(false)
@@ -3327,20 +3349,20 @@ function M.reader.new(writer, options)
   -- parse atx header
   larsers.AtxHeading = Cg(parsers.HeadingStart,"level")
                      * parsers.optionalspace
-                     * (C(parsers.line) / strip_atx_end / larsers.parse_inlines)
+                     * (C(parsers.line) / strip_atx_end / parse_inlines)
                      * Cb("level")
                      / writer.heading
 
   -- parse setext header
   larsers.SetextHeading = #(parsers.line * S("=-"))
-                        * Ct(parsers.line / larsers.parse_inlines)
+                        * Ct(parsers.line / parse_inlines)
                         * parsers.HeadingLevel
                         * parsers.optionalspace * parsers.newline
                         / writer.heading
 
   larsers.Heading = larsers.AtxHeading + larsers.SetextHeading
 %    \end{macrocode}
-% \paragraph{Top Level \acro{peg} Specification}
+% \paragraph{Syntax Specification}
 %  \begin{macrocode}
   local syntax =
     { "Blocks",
@@ -3491,7 +3513,7 @@ function M.reader.new(writer, options)
 % method, and return the result.
 %  \begin{macrocode}
     local name = util.cache(options.cacheDir, input, salt, function(input)
-        return util.rope_to_string(larsers.parse_blocks_toplevel(input)) .. writer.eof
+        return util.rope_to_string(parse_blocks_toplevel(input)) .. writer.eof
       end, ".md" .. writer.suffix)
     return writer.pack(name)
   end
