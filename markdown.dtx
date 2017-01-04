@@ -2791,6 +2791,19 @@ parsers.defstart     = ( parsers.defstartchar * #parsers.spacing
 
 parsers.dlchunk = Cs(parsers.line * (parsers.indentedline - parsers.blankline)^0)
 %    \end{macrocode}
+% \paragraph{Headings}
+%  \begin{macrocode}
+-- parse Atx heading start and return level
+parsers.HeadingStart = #parsers.hash * C(parsers.hash^-6)
+                     * -parsers.hash / length
+
+-- parse setext header ending and return level
+parsers.HeadingLevel = parsers.equal^1 * Cc(1) + parsers.dash^1 * Cc(2)
+
+local function strip_atx_end(s)
+  return s:gsub("[#%s]*\n$","")
+end
+%    \end{macrocode}
 % 
 % \subsubsection{Markdown Reader}\label{sec:markdownreader}
 % This section documents the \luam{reader} object, which implements the
@@ -3302,41 +3315,30 @@ function M.reader.new(writer, options)
                              * -larsers.DefinitionListItemLoose * Cc(true))
                            ) / writer.definitionlist
 %    \end{macrocode}
-% \paragraph{Blank}
+% \paragraph{Blank (local)}
 %  \begin{macrocode}
   larsers.Blank        = parsers.blankline / ""
                        + larsers.NoteBlock
                        + larsers.Reference
                        + (parsers.tightblocksep / "\n")
 %    \end{macrocode}
-% \paragraph{Heading \acro{peg} Rules}
+% \paragraph{Headings (local)}
 %  \begin{macrocode}
-  -- parse Atx heading start and return level
-  local HeadingStart = #parsers.hash * C(parsers.hash^-6)
-                     * -parsers.hash / length
-
-  -- parse setext header ending and return level
-  local HeadingLevel = parsers.equal^1 * Cc(1) + parsers.dash^1 * Cc(2)
-
-  local function strip_atx_end(s)
-    return s:gsub("[#%s]*\n$","")
-  end
-
   -- parse atx header
-  local AtxHeading = Cg(HeadingStart,"level")
-                   * parsers.optionalspace
-                   * (C(parsers.line) / strip_atx_end / larsers.parse_inlines)
-                   * Cb("level")
-                   / writer.heading
+  larsers.AtxHeading = Cg(parsers.HeadingStart,"level")
+                     * parsers.optionalspace
+                     * (C(parsers.line) / strip_atx_end / larsers.parse_inlines)
+                     * Cb("level")
+                     / writer.heading
 
   -- parse setext header
-  local SetextHeading = #(parsers.line * S("=-"))
-                      * Ct(parsers.line / larsers.parse_inlines)
-                      * HeadingLevel
-                      * parsers.optionalspace * parsers.newline
-                      / writer.heading
+  larsers.SetextHeading = #(parsers.line * S("=-"))
+                        * Ct(parsers.line / larsers.parse_inlines)
+                        * parsers.HeadingLevel
+                        * parsers.optionalspace * parsers.newline
+                        / writer.heading
 
-  local Heading = AtxHeading + SetextHeading
+  larsers.Heading = larsers.AtxHeading + larsers.SetextHeading
 %    \end{macrocode}
 % \paragraph{Top Level \acro{peg} Specification}
 %  \begin{macrocode}
@@ -3369,7 +3371,7 @@ function M.reader.new(writer, options)
       HorizontalRule        = larsers.HorizontalRule,
       BulletList            = larsers.BulletList,
       OrderedList           = larsers.OrderedList,
-      Heading               = Heading,
+      Heading               = larsers.Heading,
       DefinitionList        = larsers.DefinitionList,
       Paragraph             = larsers.Paragraph,
       Plain                 = larsers.Plain,
