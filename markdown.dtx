@@ -3201,11 +3201,6 @@ function M.reader.new(writer, options)
 
   larsers.Reference    = parsers.define_reference_parser / register_link
 
-  local Blank          = parsers.blankline / ""
-                       + larsers.NoteBlock
-                       + larsers.Reference
-                       + (parsers.tightblocksep / "\n")
-
   larsers.Paragraph    = parsers.nonindentspace * Ct(parsers.Inline^1)
                        * parsers.newline
                        * ( parsers.blankline^1
@@ -3307,6 +3302,13 @@ function M.reader.new(writer, options)
                              * -larsers.DefinitionListItemLoose * Cc(true))
                            ) / writer.definitionlist
 %    \end{macrocode}
+% \paragraph{Blank}
+%  \begin{macrocode}
+  larsers.Blank        = parsers.blankline / ""
+                       + larsers.NoteBlock
+                       + larsers.Reference
+                       + (parsers.tightblocksep / "\n")
+%    \end{macrocode}
 % \paragraph{Heading \acro{peg} Rules}
 %  \begin{macrocode}
   -- parse Atx heading start and return level
@@ -3341,12 +3343,14 @@ function M.reader.new(writer, options)
   local syntax =
     { "Blocks",
 
-      Blocks                = Blank^0 * parsers.Block^-1
-                            * (Blank^0 / function() return writer.interblocksep end
+      Blocks                = larsers.Blank^0 * parsers.Block^-1
+                            * (larsers.Blank^0 / function()
+                                                   return writer.interblocksep
+                                                 end
                                        * parsers.Block)^0 *
-                              Blank^0 * parsers.eof,
+                              larsers.Blank^0 * parsers.eof,
 
-      Blank                 = Blank,
+      Blank                 = larsers.Blank,
 
       Block                 = V("Blockquote")
                             + V("Verbatim")
