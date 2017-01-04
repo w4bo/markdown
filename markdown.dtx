@@ -3341,7 +3341,7 @@ function M.reader.new(writer, options)
 %    \end{macrocode}
 % \paragraph{Top Level \acro{peg} Specification}
 %  \begin{macrocode}
-  larsers.syntax =
+  local syntax =
     { "Blocks",
 
       Blocks                = Blank^0 * Block^-1
@@ -3414,36 +3414,36 @@ function M.reader.new(writer, options)
     }
 
   if not options.definitionLists then
-    larsers.syntax.DefinitionList = parsers.fail
+    syntax.DefinitionList = parsers.fail
   end
 
   if not options.fencedCode then
-    larsers.syntax.FencedCode = parsers.fail
+    syntax.FencedCode = parsers.fail
   end
 
   if not options.citations then
-    larsers.syntax.Citations = parsers.fail
+    syntax.Citations = parsers.fail
   end
 
   if not options.footnotes then
-    larsers.syntax.NoteRef = parsers.fail
+    syntax.NoteRef = parsers.fail
   end
 
   if not options.inlineFootnotes then
-    larsers.syntax.InlineNote = parsers.fail
+    syntax.InlineNote = parsers.fail
   end
 
   if not options.smartEllipses then
-    larsers.syntax.Smart = parsers.fail
+    syntax.Smart = parsers.fail
   end
 
-  local blocks_toplevel_t = util.table_copy(larsers.syntax)
+  local blocks_toplevel_t = util.table_copy(syntax)
   blocks_toplevel_t.Paragraph = ToplevelParagraph
   larsers.blocks_toplevel = Ct(blocks_toplevel_t)
 
-  larsers.blocks = Ct(larsers.syntax)
+  larsers.blocks = Ct(syntax)
 
-  local inlines_t = util.table_copy(larsers.syntax)
+  local inlines_t = util.table_copy(syntax)
   inlines_t[1] = "Inlines"
   inlines_t.Inlines = Inline^0 * (parsers.spacing^0 * parsers.eof / "")
   larsers.inlines = Ct(inlines_t)
