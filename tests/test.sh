@@ -7,9 +7,9 @@ for TESTFILE; do
   printf 'Testfile %s\n' $TESTFILE
   for FORMAT in templates/*/; do
     printf '  Format %s\n' $FORMAT
-    for TEMPLATE in ${FORMAT}*.tex; do
+    for TEMPLATE in ${FORMAT}*.tex.m4; do
       printf '    Template %s\n' $TEMPLATE
-      sed 's/<FILENAME>/test.tex/g' <$FORMAT/COMMANDS |
+      m4 -DTEST_FILENAME=test.tex <$FORMAT/COMMANDS.m4 |
       (while read COMMAND; do
         printf '      Command %s\n' "$COMMAND"
 
@@ -24,15 +24,8 @@ for TESTFILE; do
           <${TESTFILE##*/} >test-input.md
         sed -n '/^\s*>>>\s*$/,${/^\s*>>>\s*$/!p}' \
           <${TESTFILE##*/} >test-expected.log
-        sed 's/<TEST-SETUP-FILENAME>/test-setup.tex/g;
-             s/<TEST-INPUT-FILENAME>/test-input.md/g' <../$TEMPLATE |
-          (IFS=; while read -r LINE; do
-            if printf '%s\n' "$LINE" | grep -q '^\s*<TEST-INPUT-VERBATIM>\s*$'; then
-              cat test-input.md
-            else
-              printf '%s\n' "$LINE"
-            fi
-          done) >test.tex
+        m4 -DTEST_SETUP_FILENAME=test-setup.tex \
+           -DTEST_INPUT_FILENAME=test-input.md <../$TEMPLATE >test.tex
 
         # Run the test, filter the output and concatenate adjacent lines.
         eval $COMMAND >/dev/null 2>&1

@@ -5,12 +5,9 @@
 \input setup\relax
 \usepackage{catchfile}
 \CatchFileDef{\LATEXOPTIONS}{latex-setup}\relax
-\expandafter\markdownSetup\expandafter{\LATEXOPTIONS}
 % Load the test-specific setup.
-\input <TEST-SETUP-FILENAME>\relax
+\input TEST_SETUP_FILENAME\relax
 \begin{document}
 % Perform the test.
-\begin{markdown}
-<TEST-INPUT-VERBATIM>
-\end{markdown}
+\expandafter\markdownInput\expandafter[\LATEXOPTIONS]{TEST_INPUT_FILENAME}%
 \end{document}

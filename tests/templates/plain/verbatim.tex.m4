@@ -1,11 +1,12 @@
 % Load the package.
-\usemodule[t][markdown]
+\input markdown\relax
 % Load the support files.
 \input setup\relax
 \input plain-setup\relax
 % Load the test-specific setup.
-\input <TEST-SETUP-FILENAME>\relax
+\input TEST_SETUP_FILENAME\relax
 % Perform the test.
-\starttext
-  \markdownInput{<TEST-INPUT-FILENAME>}%
-\stoptext
+\markdownBegin
+undivert(TEST_INPUT_FILENAME)dnl
+\markdownEnd
+\bye
