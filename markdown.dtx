@@ -46,9 +46,9 @@
   \hyperref[lua:#1]{\t`#1`}}
 \def\t`#1`{% Inline code
   \textcolor{spot}{\text{\texttt{#1}}}}
-\newcommand\Optitem[2][]{% An option item definition
+\newcommand\Optitem[2][]{\penalty -1000\relax % An option item definition
   \phantomsection\label{opt:#2}\optitem[#1]{#2}}
-\newcommand\Valitem[2][]{% A value item definition
+\newcommand\Valitem[2][]{\penalty -1000\relax % A value item definition
   \phantomsection\label{opt:#2}\valitem[#1]{#2}}
 \newcommand\Opt[1]{% An option / value item reference
   \hyperref[opt:#1]{\t`#1`}}
