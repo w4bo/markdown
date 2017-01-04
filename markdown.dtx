@@ -2562,7 +2562,7 @@ parsers.bullet = ( parsers.bulletchar * #parsers.spacing
                                  * parsers.bulletchar * #parsers.spacing
                  )
 %    \end{macrocode}
-% \paragraph{Parsers used for Markdown Code Spans}
+% \paragraph{Parsers Used for Markdown Code Spans}
 %  \begin{macrocode}
 parsers.openticks   = Cg(parsers.backtick^1, "ticks")
 
@@ -2839,7 +2839,7 @@ function M.reader.new(writer, options)
     return defaultOptions[key] end })
 %    \end{macrocode}
 %
-% \paragraph{Top-level Helper Functions}
+% \paragraph{Top-Level Helper Functions}
 % Define \luamdef{normalize_tag} as a function that normalizes a markdown
 % reference tag by lowercasing it, and by collapsing any adjacent whitespace
 % characters.
@@ -2874,7 +2874,7 @@ function M.reader.new(writer, options)
 %  \begin{macrocode}
   local larsers    = {}
 %    \end{macrocode}
-% \paragraph{Top-level Parser Functions}
+% \paragraph{Top-Level Parser Functions}
 %  \begin{macrocode}
   local function create_parser(name, grammar)
     return function(str)
