@@ -469,6 +469,22 @@ defaultOptions.definitionLists = false
 %  \begin{macrocode}
 defaultOptions.hashEnumerators = false
 %    \end{macrocode}
+% 
+%   \Optitem[false]{html}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true]  Enable the recognition of \textsc{html} tags, block
+%                    elements, comments, \textsc{html} instructions, and
+%                    entities in the input. Tags, block elements (along with
+%                    contents), \textsc{html} instructions, and comments will
+%                    be ignored and \textsc{html} entities will be replaced
+%                    with the corresponding Unicode codepoints.
+%       \item[true]  Disable the recognition of \textsc{html} markup. Any
+%                    \textsc{html} markup in the input will be rendered as
+%                    plain text.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.html = false
+%    \end{macrocode}
 %
 %   \Optitem[false]{hybrid}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
@@ -758,6 +774,7 @@ defaultOptions.tightLists = true
 \let\markdownOptionFootnotes\undefined
 \let\markdownOptionFencedCode\undefined
 \let\markdownOptionHashEnumerators\undefined
+\let\markdownOptionHtml\undefined
 \let\markdownOptionHybrid\undefined
 \let\markdownOptionInlineFootnotes\undefined
 \let\markdownOptionPreserveTabs\undefined
@@ -1460,6 +1477,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionFencedCode{#1}}%
 \define@key{markdownOptions}{hashEnumerators}[true]{%
   \def\markdownOptionHashEnumerators{#1}}%
+\define@key{markdownOptions}{html}[true]{%
+  \def\markdownOptionHtml{#1}}%
 \define@key{markdownOptions}{hybrid}[true]{%
   \def\markdownOptionHybrid{#1}}%
 \define@key{markdownOptions}{inlineFootnotes}[true]{%
@@ -3114,8 +3133,8 @@ parsers.in_matched = function(s)
 end
 
 local function parse_matched_tags(s,pos)
-  local t = lower(lpegmatch(C(parsers.keyword),s,pos))
-  return lpegmatch(parsers.in_matched(t),s,pos-1)
+  local t = string.lower(lpeg.match(C(parsers.keyword),s,pos))
+  return lpeg.match(parsers.in_matched(t),s,pos-1)
 end
 
 parsers.in_matched_block_tags = parsers.less
@@ -4079,6 +4098,9 @@ return M
 \fi
 \ifx\markdownOptionHashEnumerators\undefined\else
   hashEnumerators = \markdownOptionHashEnumerators,
+\fi
+\ifx\markdownOptionHtml\undefined\else
+  html = \markdownOptionHtml,
 \fi
 \ifx\markdownOptionHybrid\undefined\else
   hybrid = \markdownOptionHybrid,
