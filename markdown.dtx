@@ -383,6 +383,15 @@ defaultOptions.blankBeforeCodeFence = false
 defaultOptions.blankBeforeHeading = false
 %    \end{macrocode}
 %
+%   \Optitem[false]{breakableBlockquotes}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] A blank line separates block quotes.
+%       \item[false] Blank lines in the middle of a block quote are ignored.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.breakableBlockquotes = false
+%    \end{macrocode}
+%
 %   \Valitem[.]{cacheDir}{directory}
 %     The path to the directory containing auxiliary cache files.
 % 
@@ -768,6 +777,7 @@ defaultOptions.tightLists = true
 \let\markdownOptionBlankBeforeBlockquote\undefined
 \let\markdownOptionBlankBeforeCodeFence\undefined
 \let\markdownOptionBlankBeforeHeading\undefined
+\let\markdownOptionBreakableBlockquotes\undefined
 \let\markdownOptionCitations\undefined
 \let\markdownOptionCitationNbsps\undefined
 \let\markdownOptionDefinitionLists\undefined
@@ -1463,6 +1473,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionBlankBeforeCodeFence{#1}}%
 \define@key{markdownOptions}{blankBeforeHeading}[true]{%
   \def\markdownOptionBlankBeforeHeading{#1}}%
+\define@key{markdownOptions}{breakableBlockquotes}[true]{%
+  \def\markdownOptionBreakableBlockquotes{#1}}%
 \define@key{markdownOptions}{citations}[true]{%
   \def\markdownOptionCitations{#1}}%
 \define@key{markdownOptions}{citationNbsps}[true]{%
@@ -3369,6 +3381,20 @@ function M.reader.new(writer, options)
                      + parsers.space * parsers.space * C(larsers.dig^1
                                      * parsers.period) * #parsers.spacing
 %    \end{macrocode}
+% \paragraph{Parsers Used for Blockquotes (local)}
+%  \begin{macrocode}
+  -- strip off leading > and indents, and run through blocks
+  larsers.blockquote_body = ((parsers.leader * parsers.more * parsers.space^-1)/""
+                             * parsers.linechar^0 * parsers.newline)^1
+                            * (-(parsers.leader * parsers.more
+                                + parsers.blankline) * parsers.linechar^1
+                              * parsers.newline)^0
+                            
+  if not options.breakableBlockquotes then
+    larsers.blockquote_body = larsers.blockquote_body
+                            * (parsers.blankline^0 / "")
+  end
+%    \end{macrocode}
 % \paragraph{Parsers Used for Citations (local)}
 %  \begin{macrocode}
   larsers.citations = function(text_cites, raw_cites)
@@ -3655,14 +3681,9 @@ function M.reader.new(writer, options)
                                                     expandtabs(code))
                          end
 
-  -- strip off leading > and indents, and run through blocks
-  larsers.Blockquote   = Cs((((parsers.leader * parsers.more * parsers.space^-1)/""
-                             * parsers.linechar^0 * parsers.newline)^1
-                            * (-parsers.blankline * parsers.linechar^1
-                              * parsers.newline)^0
-                            * (parsers.blankline^0 / "")
-                           )^1) / parse_blocks_toplevel
-                                / writer.blockquote
+  larsers.Blockquote   = Cs(larsers.blockquote_body^1)
+                       / parse_blocks_toplevel / writer.blockquote
+
   larsers.HorizontalRule = ( parsers.lineof(parsers.asterisk)
                            + parsers.lineof(parsers.dash)
                            + parsers.lineof(parsers.underscore)
@@ -4077,6 +4098,9 @@ return M
 \fi
 \ifx\markdownOptionBlankBeforeHeading\undefined\else
   blankBeforeHeading = \markdownOptionBlankBeforeHeading,
+\fi
+\ifx\markdownOptionBreakableBlockquotes\undefined\else
+  breakableBlockquotes = \markdownOptionBreakableBlockquotes,
 \fi
 \ifx\markdownOptionCacheDir\undefined\else
   cacheDir = "\markdownOptionCacheDir",
