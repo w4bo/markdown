@@ -12,7 +12,7 @@ definitions:
  2. `TEST_INPUT_FILENAME` corresponds to the name of the file containing the
     test markdown source code.
 
-The `COMMANDS` file contains a newline-separated list of commands that will
+The `COMMANDS.m4` file contains a newline-separated list of commands that will
 be used to typeset the pre-processed TeX source code templates. Before use,
 the commands will preprocessed with the following macro definitions:
 
