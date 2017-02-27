@@ -1,0 +1,17 @@
+<<<
+This test ensures that the Lua `contentBlocks` option is disabled by default.
+/not/a/translusion.md
+
+http://example.com/minard.jpg (Napoleon's disastrous Russian campaign of 1812)
+/Flowchart.png "Engineering Flowchart"
+
+/Savings Account.csv 'Recent Transactions'
+/Example.swift
+/Lorem Ipsum.txt
+
+There will be no interblock separator prior to this text.
+>>>
+codeSpan: contentBlocks
+interblockSeparator
+interblockSeparator
+interblockSeparator

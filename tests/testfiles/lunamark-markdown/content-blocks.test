@@ -1,0 +1,40 @@
+\def\markdownOptionContentBlocks{true}
+<<<
+This test ensures that the Lua `contentBlocks` option correctly propagates
+through the plain TeX interface.
+/not/a/translusion.md
+
+http://example.com/minard.jpg (Napoleon's disastrous Russian campaign of 1812)
+/Flowchart.png "Engineering Flowchart"
+
+/Savings Account.csv 'Recent Transactions'
+/Example.swift
+/Lorem Ipsum.txt
+
+There will be no interblock separator prior to this text.
+>>>
+codeSpan: contentBlocks
+BEGIN contentBlock
+- URI: http://example.com/minard.jpg
+- title: Napoleon's disastrous Russian campaign of 1812
+END contentBlock
+BEGIN contentBlock
+- URI: Flowchart.png
+- title: Engineering Flowchart
+END contentBlock
+BEGIN contentBlock
+- URI: Saving Account.csv
+- title: Recent Transactions
+END contentBlock
+BEGIN contentBlock
+- URI: Saving Account.csv
+- title: Recent Transactions
+END contentBlock
+BEGIN contentBlock
+- URI: Example.swift
+- title: 
+END contentBlock
+BEGIN contentBlock
+- URI: Lorem ipsum.txt
+- title: 
+END contentBlock
