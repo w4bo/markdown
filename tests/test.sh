@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 # Run a test for each testfile passed as an argument. If a testfile does not
 # contain the expected test result, generate one.
 set -e
-trap 'rm -rf build/' INT
+BUILDDIR=`mktemp -d`
+trap 'rm -rf $BUILDDIR' INT TERM
 for TESTFILE; do
   printf 'Testfile %s\n' $TESTFILE
   for FORMAT in templates/*/; do
@@ -14,10 +15,8 @@ for TESTFILE; do
         printf '      Command %s\n' "$COMMAND"
 
         # Set up the testing directory.
-        rm -rf build/
-        mkdir build/
-        cp support/* $TESTFILE build/
-        cd build/
+        cp support/* $TESTFILE $BUILDDIR
+        cd $BUILDDIR
         sed -r '/^\s*<<<\s*$/{x;q}' \
           <${TESTFILE##*/} >test-setup.tex
         sed -rn '/^\s*<<<\s*$/,/^\s*>>>\s*$/{/^\s*(<<<|>>>)\s*$/!p}' \
@@ -25,7 +24,7 @@ for TESTFILE; do
         sed -n '/^\s*>>>\s*$/,${/^\s*>>>\s*$/!p}' \
           <${TESTFILE##*/} >test-expected.log
         m4 -DTEST_SETUP_FILENAME=test-setup.tex \
-           -DTEST_INPUT_FILENAME=test-input.md <../$TEMPLATE >test.tex
+           -DTEST_INPUT_FILENAME=test-input.md <"$OLDPWD"/$TEMPLATE >test.tex
 
         # Run the test, filter the output and concatenate adjacent lines.
         eval $COMMAND >/dev/null 2>&1
@@ -44,15 +43,15 @@ for TESTFILE; do
         fi
 
         # Compare the expected outcome against the actual outcome.
-        diff test-expected.log test-actual.log # ||
+        diff -c $BUILDDIR/test-expected.log $BUILDDIR/test-actual.log # ||
 #          (sed -n '1,/^\s*>>>\s*$/p' <${TESTFILE##*/} && 
 #            cat test-actual.log) >../$TESTFILE
 
         # Clean up the testing directory.
-        cd ..
-        rm -rf build/ # && break
-
+        cd "$OLDPWD"
+        find $BUILDDIR -mindepth 1 -exec rm -rf {} + # && break
       done) # && break
     done # && break
   done
 done
+rm -rf $BUILDDIR
