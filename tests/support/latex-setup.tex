@@ -64,6 +64,13 @@ renderers = {%
     \TYPE{- title:          #3}%
     \TYPE{END contentBlock}%
   },
+  contentBlock = {%
+    \TYPE{BEGIN contentBlock}%
+    \TYPE{- suffix:         #1}%
+    \TYPE{- URI:            #2}%
+    \TYPE{- title:          #4}%
+    \TYPE{END contentBlock}%
+  },
   ulBegin = {%
     \TYPE{ulBegin}},
   ulBeginTight = {%

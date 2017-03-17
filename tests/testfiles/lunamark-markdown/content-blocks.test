@@ -4,37 +4,60 @@ This test ensures that the Lua `contentBlocks` option correctly propagates
 through the plain TeX interface.
 /not/a/translusion.md
 
-http://example.com/minard.jpg (Napoleon's disastrous Russian campaign of 1812)
+/not/a/
+transclusion/either.md
+
+<http://example.com/minard.jpg>
+<http://example.com/minard.jpg> <-- This is just a link.
+
+htt(p:/)/exam(ple.c)om/m\(inard.jpg (Napoleon's disastrous Russian campaign of 1812)
 /Flowchart.png "Engineering Flowchart"
 
 /Savings Account.csv 'Recent Transactions'
-/Example.swift
+/Example.swift (Source code)
 /Lorem Ipsum.txt
-
-There will be no interblock separator prior to this text.
 >>>
 codeSpan: contentBlocks
+interblockSeparator
+interblockSeparator
 BEGIN contentBlock
+- suffix: jpg
 - URI: http://example.com/minard.jpg
+- title: 
+END contentBlock
+interblockSeparator
+BEGIN link
+- label: http://example.com/minard.jpg
+- URI: http://example.com/minard.jpg
+- title: 
+END link
+interblockSeparator
+BEGIN contentBlock
+- suffix: jpg
+- URI: htt(p:/)/exam(ple.c)om/m(inard.jpg
 - title: Napoleon's disastrous Russian campaign of 1812
 END contentBlock
+interblockSeparator
 BEGIN contentBlock
+- suffix: png
 - URI: Flowchart.png
 - title: Engineering Flowchart
 END contentBlock
+interblockSeparator
 BEGIN contentBlock
-- URI: Saving Account.csv
+- suffix: csv
+- URI: Savings Account.csv
 - title: Recent Transactions
 END contentBlock
+interblockSeparator
 BEGIN contentBlock
-- URI: Saving Account.csv
-- title: Recent Transactions
-END contentBlock
-BEGIN contentBlock
+- suffix: swift
 - URI: Example.swift
-- title: 
+- title: Source code
 END contentBlock
+interblockSeparator
 BEGIN contentBlock
-- URI: Lorem ipsum.txt
+- suffix: txt
+- URI: Lorem Ipsum.txt
 - title: 
 END contentBlock

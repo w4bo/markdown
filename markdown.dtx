@@ -453,7 +453,7 @@ defaultOptions.citations = false
 % /Example.swift
 % /Lorem Ipsum.txt
 %         \end{Verbatim}
-%       \item[false] Disable the iA\,Writer content blocks syntax extension:
+%       \item[false] Disable the iA\,Writer content blocks syntax extension.
 %     \end{valuelist}
 %  \begin{macrocode}
 defaultOptions.contentBlocks = false
@@ -903,13 +903,23 @@ defaultOptions.tightLists = true
 %    \end{macrocode}
 %
 % \paragraph{Image Renderer}
-% The \mdef{markdownRendererImage} macro represents an image. It receives four
+% The \mdef{markdownRendererImage} macro represents an image. It receives
 % four arguments: the label, the fully escaped \acro{uri} that can be directly
 % typeset, the raw \acro{uri} that can be used outside typesetting, and the
 % title of the link.
 %  \begin{macrocode}
 \def\markdownRendererImage{%
   \markdownRendererImagePrototype}%
+%    \end{macrocode}
+%
+% \paragraph{Content Block Renderer}
+% The \mdef{markdownRendererContentBlock} macro represents an iA\,Writer content
+% block. It receives four arguments: the local file or online image extension,
+% the fully escaped \acro{uri} that can be directly typeset, the raw \acro{uri}
+% that can be used outside typesetting, and the title of the code block.
+%  \begin{macrocode}
+\def\markdownRendererContentBlock{%
+  \markdownRendererContentBlock}%
 %    \end{macrocode}
 %
 % \paragraph{Bullet List Renderers}
@@ -1254,6 +1264,7 @@ defaultOptions.tightLists = true
 \def\markdownRendererCodeSpanPrototype#1{}%
 \def\markdownRendererLinkPrototype#1#2#3#4{}%
 \def\markdownRendererImagePrototype#1#2#3#4{}%
+\def\markdownRendererContentBlock#1#2#3#4{}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
 \def\markdownRendererUlItemPrototype{}%
@@ -1578,6 +1589,8 @@ defaultOptions.tightLists = true
   \renewcommand\markdownRendererCodeSpan[1]{#1}}%
 \define@key{markdownRenderers}{link}{%
   \renewcommand\markdownRendererLink[4]{#1}}%
+\define@key{markdownRenderers}{contentBlock}{%
+  \renewcommand\markdownRendererContentBlock[4]{#1}}%
 \define@key{markdownRenderers}{image}{%
   \renewcommand\markdownRendererImage[4]{#1}}%
 \define@key{markdownRenderers}{ulBegin}{%
@@ -1709,6 +1722,8 @@ defaultOptions.tightLists = true
   \renewcommand\markdownRendererCodeSpanPrototype[1]{#1}}%
 \define@key{markdownRendererPrototypes}{link}{%
   \renewcommand\markdownRendererLinkPrototype[4]{#1}}%
+\define@key{markdownRendererPrototypes}{contentBlock}{%
+  \renewcommand\markdownRendererContentBlockPrototype[4]{#1}}%
 \define@key{markdownRendererPrototypes}{image}{%
   \renewcommand\markdownRendererImagePrototype[4]{#1}}%
 \define@key{markdownRendererPrototypes}{ulBegin}{%
@@ -2110,7 +2125,7 @@ function util.pathname(dir, file)
   end
 end
 %    \end{macrocode}
-% \subsubsection{\textsc{html} entities}
+% \subsubsection{\textsc{html} Entities}
 % This section documents the \textsc{html} entities recognized by the
 % markdown reader.  These functions are encapsulated in the \t`entities`
 % object. The functions were originally located in the
@@ -2585,6 +2600,20 @@ function M.writer.new(options)
   end
 %    \end{macrocode}
 %
+% Define \luamdef{writer->contentblock} as a function that will transform an
+% input content block to the output format, where \t`src` corresponds to the
+% \acro{uri} prefix, \t`suf` to the \acro{uri} suffix, and \t`tit` to the title
+% of the content block.
+%  \begin{macrocode}
+  function self.contentblock(src,suf,tit)
+    src = src.."."..suf
+    return {"\\markdownRendererContentBlock{",suf,"}",
+                           "{",self.string(src),"}",
+                           "{",self.uri(src),"}",
+                           "{",self.string(tit or ""),"}"}
+  end
+%    \end{macrocode}
+%
 % Define \luamdef{writer->bulletlist} as a function that will transform an input
 % bulleted list to the output format, where \t`items` is an array of the list
 % items and \t`tight` specifies, whether the list is tight or not.
@@ -2959,7 +2988,7 @@ end
 %  \begin{macrocode}
 parsers.leader      = parsers.space^-3
 
--- in balanced brackets, parentheses, quotes:
+-- content in balanced brackets, parentheses, or quotes:
 parsers.bracketed   = P{ parsers.lbracket
                        * ((parsers.anyescaped - (parsers.lbracket
                                                 + parsers.rbracket
@@ -2986,22 +3015,24 @@ parsers.dquoted     = P{ parsers.dquote * parsers.alphanumeric
                           ) + V(1))^0
                        * parsers.dquote }
 
--- bracketed 'tag' for markdown links, allowing nested brackets:
+-- bracketed tag for markdown links, allowing nested brackets:
 parsers.tag         = parsers.lbracket
                     * Cs((parsers.alphanumeric^1
                          + parsers.bracketed
                          + parsers.inticks
-                         + (parsers.anyescaped - (parsers.rbracket
-                                                 + parsers.blankline^2)))^0)
+                         + (parsers.anyescaped
+                           - (parsers.rbracket + parsers.blankline^2)))^0)
                     * parsers.rbracket
 
--- url for markdown links, allowing balanced parentheses:
-parsers.url         = parsers.less * Cs((parsers.anyescaped-parsers.more)^0)
+-- url for markdown links, allowing nested brackets:
+parsers.url         = parsers.less * Cs((parsers.anyescaped
+                                        - parsers.more)^0)
                                    * parsers.more
                     + Cs((parsers.inparens + (parsers.anyescaped
-                                             -parsers.spacing-parsers.rparent))^1)
+                                             - parsers.spacing
+                                             - parsers.rparent))^1)
 
--- quoted text possibly with nested quotes:
+-- quoted text, possibly with nested quotes:
 parsers.title_s     = parsers.squote * Cs(((parsers.anyescaped-parsers.squote)
                                            + parsers.squoted)^0)
                                      * parsers.squote
@@ -3019,6 +3050,51 @@ parsers.title       = parsers.title_d + parsers.title_s + parsers.title_p
 parsers.optionaltitle
                     = parsers.spnl * parsers.title * parsers.spacechar^0
                     + Cc("")
+%    \end{macrocode}
+% \paragraph{Parsers Used for iA\,Writer Content Blocks}
+%  \begin{macrocode}
+parsers.contentblock_tail
+                    = parsers.optionaltitle
+                    * (parsers.newline + parsers.eof)
+
+parsers.onlineimagesuffix
+                    = P("png") + P("jpg") + P("jpeg") + P("gif")
+                    + P("tif") + P("tiff")
+
+-- online image url for iA Writer content blocks with mandatory suffix,
+-- allowing nested brackets:
+parsers.onlineimageurl
+                    = parsers.less
+                    * Cs((parsers.anyescaped
+                         - parsers.more
+                         - #(parsers.period
+                            * parsers.onlineimagesuffix
+                            * parsers.more
+                            * parsers.contentblock_tail))^0)
+                    * parsers.period
+                    * Cs(parsers.onlineimagesuffix)
+                    * parsers.more
+                    + (Cs((parsers.inparens
+                          + (parsers.anyescaped
+                            - parsers.spacing
+                            - parsers.rparent
+                            - #(parsers.period
+                               * parsers.onlineimagesuffix
+                               * parsers.contentblock_tail)))^0)
+                      * parsers.period
+                      * Cs(parsers.onlineimagesuffix))
+
+-- filename for iA Writer content blocks with mandatory suffix:
+parsers.localfilepath
+                    = parsers.slash
+                    * Cs((parsers.anyescaped
+                         - parsers.tab
+                         - parsers.newline
+                         - #(parsers.period
+                            * parsers.alphanumeric^1
+                            * parsers.contentblock_tail))^1)
+                    * parsers.period
+                    * Cs(parsers.alphanumeric^1)
 %    \end{macrocode}
 % \paragraph{Parsers Used for Citations}
 %  \begin{macrocode}
@@ -3195,7 +3271,7 @@ parsers.decentity = parsers.ampersand * parsers.hash
 parsers.tagentity = parsers.ampersand * C(parsers.alphanumeric^1)
                   * parsers.semicolon
 %    \end{macrocode}
-% \paragraph{Helpers for Links and References}
+% \paragraph{Helpers for References}
 %  \begin{macrocode}
 -- parse a reference definition:  [foo]: /bar "title"
 parsers.define_reference_parser = parsers.leader * parsers.tag * parsers.colon
@@ -3217,7 +3293,17 @@ parsers.urlchar      = parsers.anyescaped - parsers.newline - parsers.more
 % \paragraph{Block Elements}
 %  \begin{macrocode}
 parsers.Block        = V("Block")
-  
+
+parsers.OnlineImageURL
+                     = parsers.leader
+                     * parsers.onlineimageurl
+                     * parsers.optionaltitle
+
+parsers.LocalFilePath
+                     = parsers.leader
+                     * parsers.localfilepath
+                     * parsers.optionaltitle
+
 parsers.TildeFencedCode
                      = parsers.fencehead(parsers.tilde)
                      * Cs(parsers.fencedline(parsers.tilde)^0)
@@ -3689,6 +3775,11 @@ function M.reader.new(writer, options)
 %    \end{macrocode}
 % \paragraph{Block Elements (local)}
 %  \begin{macrocode}
+  larsers.ContentBlock = parsers.leader
+                       * (parsers.localfilepath + parsers.onlineimageurl)
+                       * parsers.contentblock_tail
+                       / writer.contentblock
+
   larsers.DisplayHtml  = C(parsers.displayhtml)
                        / expandtabs / writer.display_html
 
@@ -3853,7 +3944,8 @@ function M.reader.new(writer, options)
 
       Blank                 = larsers.Blank,
 
-      Block                 = V("Blockquote")
+      Block                 = V("ContentBlock")
+                            + V("Blockquote")
                             + V("Verbatim")
                             + V("FencedCode")
                             + V("HorizontalRule")
@@ -3865,6 +3957,7 @@ function M.reader.new(writer, options)
                             + V("Paragraph")
                             + V("Plain"),
 
+      ContentBlock          = larsers.ContentBlock,
       Blockquote            = larsers.Blockquote,
       Verbatim              = larsers.Verbatim,
       FencedCode            = larsers.FencedCode,
@@ -3928,6 +4021,10 @@ function M.reader.new(writer, options)
 
   if not options.citations then
     syntax.Citations = parsers.fail
+  end
+
+  if not options.contentBlocks then
+    syntax.ContentBlock = parsers.fail
   end
 
   if not options.footnotes then
@@ -4062,6 +4159,7 @@ return M
 \def\markdownRendererPipePrototype{|}%
 \def\markdownRendererCodeSpanPrototype#1{{\tt#1}}%
 \def\markdownRendererLinkPrototype#1#2#3#4{#2}%
+\def\markdownRendererContentBlockPrototype#1#2#3#4{#1}%
 \def\markdownRendererImagePrototype#1#2#3#4{#2}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
@@ -4134,7 +4232,7 @@ return M
   citationNbsps = \markdownOptionCitationNbsps,
 \fi
 \ifx\markdownOptionContentBlocks\undefined\else
-  citationNbsps = \markdownOptionContentBlocks,
+  contentBlocks = \markdownOptionContentBlocks,
 \fi
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
