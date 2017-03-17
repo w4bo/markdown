@@ -442,6 +442,23 @@ defaultOptions.citationNbsps = true
 defaultOptions.citations = false
 %    \end{macrocode}
 %
+%   \Optitem[false]{contentBlocks}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] Enable the iA\,Writer content blocks syntax extension:
+%         \begin{Verbatim}
+% http://example.com/minard.jpg (Napoleon’s disastrous
+% Russian campaign of 1812)
+% /Flowchart.png "Engineering Flowchart"
+% /Savings Account.csv 'Recent Transactions'
+% /Example.swift
+% /Lorem Ipsum.txt
+%         \end{Verbatim}
+%       \item[false] Disable the iA\,Writer content blocks syntax extension:
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.contentBlocks = false
+%    \end{macrocode}
+%
 %   \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] Enable the pandoc definition list syntax extension:
@@ -782,6 +799,7 @@ defaultOptions.tightLists = true
 \let\markdownOptionBreakableBlockquotes\undefined
 \let\markdownOptionCitations\undefined
 \let\markdownOptionCitationNbsps\undefined
+\let\markdownOptionContentBlocks\undefined
 \let\markdownOptionDefinitionLists\undefined
 \let\markdownOptionFootnotes\undefined
 \let\markdownOptionFencedCode\undefined
@@ -1483,6 +1501,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionCitationNbsps{#1}}%
 \define@key{markdownOptions}{cacheDir}{%
   \def\markdownOptionCacheDir{#1}}%
+\define@key{markdownOptions}{contentBlocks}[true]{%
+  \def\markdownOptionContentBlocks{#1}}%
 \define@key{markdownOptions}{definitionLists}[true]{%
   \def\markdownOptionDefinitionLists{#1}}%
 \define@key{markdownOptions}{footnotes}[true]{%
@@ -4112,6 +4132,9 @@ return M
 \fi
 \ifx\markdownOptionCitationNbsps\undefined\else
   citationNbsps = \markdownOptionCitationNbsps,
+\fi
+\ifx\markdownOptionContentBlocks\undefined\else
+  citationNbsps = \markdownOptionContentBlocks,
 \fi
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
