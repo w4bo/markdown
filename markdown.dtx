@@ -295,6 +295,9 @@ local md5 = require("md5")
 %     for the verbatim inclusion of files containing code.  It is used to
 %     provide the corresponding default token renderer prototype (see Section
 %     \ref{sec:texrendererprototypes}).
+%   \item[\pkg{csvsimple}] A package that provides the default token renderer
+%     prototype for iA\,Writer content blocks with the \acro{csv} filename
+%     extension (see Section \ref{sec:texrendererprototypes}).
 % \end{description}
 %
 % \iffalse
@@ -303,8 +306,13 @@ local md5 = require("md5")
 % \fi
 % \subsubsection{\Hologo{ConTeXt} prerequisites}
 % The \Hologo{ConTeXt} part of the package requires that either the Mark II or
-% the Mark IV format is loaded and all the plain \TeX{} prerequisites (see
-% Section \ref{sec:texprerequisites}).
+% the Mark IV format is loaded, all the plain \TeX{} prerequisites (see
+% Section \ref{sec:texprerequisites}), and the following modules:
+% \begin{description}
+%   \item[\pkg{m-database}] A module that provides the default token renderer
+%     prototype for iA\,Writer content blocks with the \acro{csv} filename
+%     extension (see Section \ref{sec:texrendererprototypes}).
+% \end{description}
 %
 % \section{User Guide}\label{sec:interfaces}
 % This part of the manual describes the interfaces exposed by the package
@@ -4266,7 +4274,8 @@ return M
 \def\markdownRendererPipePrototype{|}%
 \def\markdownRendererCodeSpanPrototype#1{{\tt#1}}%
 \def\markdownRendererLinkPrototype#1#2#3#4{#2}%
-\def\markdownRendererContentBlockPrototype#1#2#3#4{#1}%
+\def\markdownRendererContentBlockPrototype#1#2#3#4{%
+  \markdownInput{#3}}%
 \def\markdownRendererImagePrototype#1#2#3#4{#2}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
@@ -4788,6 +4797,7 @@ local convert = md.new(\markdownLuaOptions)
     dlBeginTight = {\markdownRendererDlBegin},
     dlEndTight = {\markdownRendererDlEnd}}}}
 \RequirePackage{fancyvrb}
+\RequirePackage{csvsimple}
 \markdownSetup{rendererPrototypes={
   lineBreak = {\\},
   leftBrace = {\textbraceleft},
@@ -4801,6 +4811,10 @@ local convert = md.new(\markdownLuaOptions)
   codeSpan = {\texttt{#1}},
   link = {#1\footnote{\ifx\empty#4\empty\else#4:
     \fi\texttt<\url{#3}\texttt>}},
+  contentBlock = {%
+    \ifthenelse{\equal{#1}{csv}}{%
+      \csvautotabular{#3}}{%
+      \markdownInput{#3}}},
   image = {\begin{figure}
       \begin{center}%
         \includegraphics{#3}%
@@ -5034,6 +5048,21 @@ local convert = md.new(\markdownLuaOptions)
 \def\markdownRendererLinkPrototype#1#2#3#4{%
   \useURL[#1][#3][][#4]#1\footnote[#1]{\ifx\empty#4\empty\else#4:
   \fi\tt<\hyphenatedurl{#3}>}}%
+\usemodule[database]
+\defineseparatedlist
+ [MarkdownConTeXtCSV]
+ [separator={,},
+  before=\bTABLE,after=\eTABLE,
+  first=\bTR,last=\eTR,
+  left=\bTD,right=\eTD]
+\def\markdownConTeXtCSV{csv}
+\def\markdownRendererContentBlockPrototype#1#2#3#4{%
+  \def\markdownConTeXtCSV@arg{#1}%
+	\ifx\markdownConTeXtCSV@arg\markdownConTeXtCSV
+		\processdatabasefile[MarkdownConTeXtCSV][#3]%
+	\else
+		\markdownInput{#3}%
+	\fi}%
 \def\markdownRendererImagePrototype#1#2#3#4{%
   \placefigure[][fig:#1]{#4}{\externalfigure[#3]}}%
 \def\markdownRendererUlBeginPrototype{\startitemize}%
