@@ -2695,11 +2695,11 @@ function M.writer.new(options)
     suf = suf:lower()
     if options.contentBlockPolymorphism then
       if languages_json[suf] then
-        return {"\\markdownRendererInputFencedCode{",src,"}",
+        return {"\\markdownRendererInputFencedCode{",self.uri(src),"}",
                            "{",languages_json[suf],"}"}
       end
       if onlineimagesuffixes[suf] then
-        return self.image(src,src,tit)
+        return self.image(self.string(src),src,tit)
       end
     end
     return {"\\markdownRendererContentBlock{",suf,"}",
