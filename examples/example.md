@@ -17,6 +17,8 @@ This is inline `code`. This is a [link](http://google.cz "Google").  _This is an
 
   ![tux](tux.pdf "Tux by Larry Ewing <lewing@isc.tamu.edu> (created in GIMP)")
 
+  /scientists.csv (The great minds of the 19th century rendered via a content block)
+
 This is a fenced code block:
 
 ``` latex

@@ -4813,9 +4813,18 @@ local convert = md.new(\markdownLuaOptions)
     \fi\texttt<\url{#3}\texttt>}},
   contentBlock = {%
     \ifthenelse{\equal{#1}{csv}}{%
-      \csvautotabular{#3}}{%
+      \begin{table}%
+        \begin{center}%
+          \csvautotabular{#3}%
+        \end{center}
+        \ifx\empty#4\empty\else
+          \caption{#4}%
+        \fi
+        \label{tab:#1}%
+      \end{table}}{%
       \markdownInput{#3}}},
-  image = {\begin{figure}
+  image = {%
+    \begin{figure}%
       \begin{center}%
         \includegraphics{#3}%
       \end{center}%
@@ -5050,16 +5059,17 @@ local convert = md.new(\markdownLuaOptions)
   \fi\tt<\hyphenatedurl{#3}>}}%
 \usemodule[database]
 \defineseparatedlist
- [MarkdownConTeXtCSV]
- [separator={,},
-  before=\bTABLE,after=\eTABLE,
-  first=\bTR,last=\eTR,
-  left=\bTD,right=\eTD]
+  [MarkdownConTeXtCSV]
+  [separator={,},
+   before=\bTABLE,after=\eTABLE,
+   first=\bTR,last=\eTR,
+   left=\bTD,right=\eTD]
 \def\markdownConTeXtCSV{csv}
 \def\markdownRendererContentBlockPrototype#1#2#3#4{%
   \def\markdownConTeXtCSV@arg{#1}%
 	\ifx\markdownConTeXtCSV@arg\markdownConTeXtCSV
-		\processdatabasefile[MarkdownConTeXtCSV][#3]%
+    \placetable[][tab:#1]{#4}{%
+      \processseparatedfile[MarkdownConTeXtCSV][#3]}%
 	\else
 		\markdownInput{#3}%
 	\fi}%
