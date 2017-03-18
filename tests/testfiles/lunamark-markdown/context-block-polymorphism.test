@@ -1,0 +1,63 @@
+\def\markdownOptionContentBlocks{true}
+\def\markdownOptionContentBlockPolymorphism{true}
+<<<
+This test ensures that the Lua `contentBlockPolymorphism` option correctly
+propagates through the plain TeX interface.
+/not/a/translusion.md
+
+/not/a/
+transclusion/either.md
+
+<http://example.com/minard.JPG>
+<http://example.com/minard.JPG> <-- This is just a link.
+
+htt(p:/)/exam(ple.c)om/m\(inard.jpg (Napoleon's disastrous Russian campaign of 1812)
+/Flowchart.png "Engineering Flowchart"
+
+/Savings Account.csv 'Recent Transactions'
+/Example.jS (Source code)
+/Lorem Ipsum.txt
+>>>
+codeSpan: contentBlockPolymorphism
+interblockSeparator
+interblockSeparator
+BEGIN image
+- label: http://example.com/minard.JPG
+- URI: http://example.com/minard.JPG
+- title: 
+END image
+interblockSeparator
+BEGIN link
+- label: http://example.com/minard.JPG
+- URI: http://example.com/minard.JPG
+- title: 
+END link
+interblockSeparator
+BEGIN image
+- label: htt(p:/)/exam(ple.c)om/m(inard.jpg
+- URI: htt(p:/)/exam(ple.c)om/m(inard.jpg
+- title: Napoleon's disastrous Russian campaign of 1812
+END image
+interblockSeparator
+BEGIN image
+- label: Flowchart.png
+- URI: Flowchart.png
+- title: Engineering Flowchart
+END image
+interblockSeparator
+BEGIN contentBlock
+- suffix: csv
+- URI: Savings Account.csv
+- title: Recent Transactions
+END contentBlock
+interblockSeparator
+BEGIN fencedCode
+- src: Example.jS
+- infostring: javascript
+END fencedCode
+interblockSeparator
+BEGIN contentBlock
+- suffix: txt
+- URI: Lorem Ipsum.txt
+- title: 
+END contentBlock
