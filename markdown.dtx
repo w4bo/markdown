@@ -474,28 +474,6 @@ defaultOptions.citations = false
 defaultOptions.contentBlocks = false
 %    \end{macrocode}
 %
-%   \Optitem[false]{contentBlockPolymorphism}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable polymorphic iA\,Writer content blocks. Common image
-%         and programming language filename extensions will be detected and
-%         instead of generic \m{markdownRendererContentBlock} macros,
-%         \m{markdownRendererImage} and \m{markdownRendererInputFencedCode}
-%         macros will be produced instead.
-%  
-%         The mapping from programming language filename extensions to fence
-%         infostrings is defined inside the \texttt{Languages.json} file
-%         distributed along with the package. This file was created and
-%         released under the \acro{cc-by-sa} 4.0 license by
-%         \citeauthor{sotkov17}~\cite{sotkov17}. All \texttt{Languages.json}
-%         files found by \pkg{kpathsea} will be considered, so you may provide
-%         your own \texttt{Languages.json} file with additional mappings inside
-%         your private \TeX{} directory tree or in the working directory.
-%         \item[false] Disable polymorphic iA\,Writer content blocks.
-%     \end{valuelist}
-%  \begin{macrocode}
-defaultOptions.contentBlockPolymorphism = false
-%    \end{macrocode}
-%
 %   \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] Enable the pandoc definition list syntax extension:
@@ -837,7 +815,6 @@ defaultOptions.tightLists = true
 \let\markdownOptionCitations\undefined
 \let\markdownOptionCitationNbsps\undefined
 \let\markdownOptionContentBlocks\undefined
-\let\markdownOptionContentBlockPolymorphism\undefined
 \let\markdownOptionDefinitionLists\undefined
 \let\markdownOptionFootnotes\undefined
 \let\markdownOptionFencedCode\undefined
@@ -950,15 +927,39 @@ defaultOptions.tightLists = true
   \markdownRendererImagePrototype}%
 %    \end{macrocode}
 %
-% \paragraph{Content Block Renderer}
+% \paragraph{Content Block Renderers}
 % The \mdef{markdownRendererContentBlock} macro represents an iA\,Writer content
 % block. It receives four arguments: the local file or online image filename
 % extension cast to the lower case, the fully escaped \acro{uri} that can be
 % directly typeset, the raw \acro{uri} that can be used outside typesetting,
-% and the title of the code block.
+% and the title of the content block.
 %  \begin{macrocode}
 \def\markdownRendererContentBlock{%
   \markdownRendererContentBlockPrototype}%
+%    \end{macrocode}
+%
+% The \mdef{markdownRendererContentBlockOnlineImage} macro represents an
+% iA\,Writer online image content block. The macro receives the same arguments
+% as \m{markdownRendererContentBlock}.
+%  \begin{macrocode}
+\def\markdownRendererContentBlockOnlineImage{%
+  \markdownRendererContentBlockOnlineImagePrototype}%
+%    \end{macrocode}
+%
+% The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
+% content block that was recognized as a file in a known language by its
+% filename extension $s$. If any \t`Languages.json` file found by \pkg{kpathsea}
+% contains a record with the key $k$ and the value $v$, then a content block
+% with the filename extension $s, s$\t`:lower() == `$k$ is considered to be in
+% a known language $v$.
+% 
+% The macro receives four arguments: the local file or online image filename
+% extension $s$ cast to the lower case, the language $v$, the fully escaped
+% \acro{uri} that can be directly typeset, the raw \acro{uri} that can be used
+% outside typesetting, and the title of the content block.
+%  \begin{macrocode}
+\def\markdownRendererContentBlockCode{%
+  \markdownRendererContentBlockCodePrototype}%
 %    \end{macrocode}
 %
 % \paragraph{Bullet List Renderers}
@@ -1304,6 +1305,8 @@ defaultOptions.tightLists = true
 \def\markdownRendererLinkPrototype#1#2#3#4{}%
 \def\markdownRendererImagePrototype#1#2#3#4{}%
 \def\markdownRendererContentBlockPrototype#1#2#3#4{}%
+\def\markdownRendererContentBlockOnlineImagePrototype#1#2#3#4{}%
+\def\markdownRendererContentBlockCodePrototype#1#2#3#4{}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
 \def\markdownRendererUlItemPrototype{}%
@@ -1553,8 +1556,6 @@ defaultOptions.tightLists = true
   \def\markdownOptionCacheDir{#1}}%
 \define@key{markdownOptions}{contentBlocks}[true]{%
   \def\markdownOptionContentBlocks{#1}}%
-\define@key{markdownOptions}{contentBlockPolymorphism}[true]{%
-  \def\markdownOptionContentBlockPolymorphism{#1}}%
 \define@key{markdownOptions}{definitionLists}[true]{%
   \def\markdownOptionDefinitionLists{#1}}%
 \define@key{markdownOptions}{footnotes}[true]{%
@@ -1632,6 +1633,10 @@ defaultOptions.tightLists = true
   \renewcommand\markdownRendererLink[4]{#1}}%
 \define@key{markdownRenderers}{contentBlock}{%
   \renewcommand\markdownRendererContentBlock[4]{#1}}%
+\define@key{markdownRenderers}{contentBlockOnlineImage}{%
+  \renewcommand\markdownRendererContentBlockOnlineImage[4]{#1}}%
+\define@key{markdownRenderers}{contentBlockCode}{%
+  \renewcommand\markdownRendererContentBlockCode[5]{#1}}%
 \define@key{markdownRenderers}{image}{%
   \renewcommand\markdownRendererImage[4]{#1}}%
 \define@key{markdownRenderers}{ulBegin}{%
@@ -1765,6 +1770,10 @@ defaultOptions.tightLists = true
   \renewcommand\markdownRendererLinkPrototype[4]{#1}}%
 \define@key{markdownRendererPrototypes}{contentBlock}{%
   \renewcommand\markdownRendererContentBlockPrototype[4]{#1}}%
+\define@key{markdownRendererPrototypes}{contentBlockOnlineImage}{%
+  \renewcommand\markdownRendererContentBlockOnlineImagePrototype[4]{#1}}%
+\define@key{markdownRendererPrototypes}{contentBlockCode}{%
+  \renewcommand\markdownRendererContentBlockCodePrototype[5]{#1}}%
 \define@key{markdownRendererPrototypes}{image}{%
   \renewcommand\markdownRendererImagePrototype[4]{#1}}%
 \define@key{markdownRendererPrototypes}{ulBegin}{%
@@ -2454,19 +2463,6 @@ function entities.char_entity(s)
 end
 %    \end{macrocode}
 % \subsubsection{Content Block Polymorphism}
-% This section documents the data structures used for the automatic recognition
-% of the type of an iA\,Writer content block based on the local file or online
-% image extension.
-%
-% The \luamdef{onlineimagesuffixes} table records the set of supported online
-% image filename extensions according to the specification~\cite{sotkov17}.
-% The extensions are recorded in lower case, although the matching is
-% case-insensitive.
-%  \begin{macrocode}
-local onlineimagesuffixes = { png=true, jpg=true, jpeg=true
-                            , gif=true, tif=true, tiff=true }
-%    \end{macrocode}
-%
 % The \luamdef{languages_json} table maps programming language filename
 % extensions to fence infostrings. All \texttt{Languages.json} files located by
 % \pkg{kpathsea} are loaded into a chain of tables; \luam{languages_json}
@@ -2684,28 +2680,31 @@ function M.writer.new(options)
 %    \end{macrocode}
 %
 % Define \luamdef{writer->contentblock} as a function that will transform an
-% input content block to the output format, where \t`src` corresponds to the
-% \acro{uri} prefix, \t`suf` to the \acro{uri} extension, and \t`tit` to the
-% title of the content block. When content block polymorphism is enabled, the
-% content block may be rendered as an image or a fenced code block based on
-% the \acro{uri} extension.
+% input iA\,Writer content block to the output format, where \t`src`
+% corresponds to the \acro{uri} prefix, \t`suf` to the \acro{uri} extension,
+% \t`type` to the type of the content block (\t`localfile` or \t`onlineimage`),
+% and \t`tit` to the title of the content block.
 %  \begin{macrocode}
-  function self.contentblock(src,suf,tit)
+  function self.contentblock(src,suf,type,tit)
     src = src.."."..suf
     suf = suf:lower()
-    if options.contentBlockPolymorphism then
-      if languages_json[suf] then
-        return {"\\markdownRendererInputFencedCode{",self.uri(src),"}",
-                           "{",languages_json[suf],"}"}
-      end
-      if onlineimagesuffixes[suf] then
-        return self.image(self.string(src),src,tit)
-      end
+    if type == "onlineimage" then
+      return {"\\markdownRendererContentBlockOnlineImage{",suf,"}",
+                             "{",self.string(src),"}",
+                             "{",self.uri(src),"}",
+                             "{",self.string(tit or ""),"}"}
+    elseif languages_json[suf] then
+      return {"\\markdownRendererContentBlockCode{",suf,"}",
+                             "{",self.string(languages_json[suf]),"}",
+                             "{",self.string(src),"}",
+                             "{",self.uri(src),"}",
+                             "{",self.string(tit or ""),"}"}
+    else
+      return {"\\markdownRendererContentBlock{",suf,"}",
+                             "{",self.string(src),"}",
+                             "{",self.uri(src),"}",
+                             "{",self.string(tit or ""),"}"}
     end
-    return {"\\markdownRendererContentBlock{",suf,"}",
-                           "{",self.string(src),"}",
-                           "{",self.uri(src),"}",
-                           "{",self.string(tit or ""),"}"}
   end
 %    \end{macrocode}
 %
@@ -3154,9 +3153,9 @@ parsers.contentblock_tail
 
 -- case insensitive online image suffix:
 parsers.onlineimagesuffix
-                    = (function()
+                    = (function(...)
                         local parser = nil
-                        for suffix,_ in pairs(onlineimagesuffixes) do
+                        for _,suffix in ipairs({...}) do
                           local pattern=nil
                           for i=1,#suffix do
                             local char=suffix:sub(i,i)
@@ -3174,30 +3173,31 @@ parsers.onlineimagesuffix
                           end
                         end
                         return parser
-                      end)()
+                      end)("png", "jpg", "jpeg", "gif", "tif", "tiff")
 
 -- online image url for iA Writer content blocks with mandatory suffix,
 -- allowing nested brackets:
 parsers.onlineimageurl
-                    = parsers.less
-                    * Cs((parsers.anyescaped
-                         - parsers.more
-                         - #(parsers.period
-                            * parsers.onlineimagesuffix
-                            * parsers.more
-                            * parsers.contentblock_tail))^0)
-                    * parsers.period
-                    * Cs(parsers.onlineimagesuffix)
-                    * parsers.more
-                    + (Cs((parsers.inparens
-                          + (parsers.anyescaped
-                            - parsers.spacing
-                            - parsers.rparent
-                            - #(parsers.period
-                               * parsers.onlineimagesuffix
-                               * parsers.contentblock_tail)))^0)
+                    = (parsers.less
+                      * Cs((parsers.anyescaped
+                           - parsers.more
+                           - #(parsers.period
+                              * parsers.onlineimagesuffix
+                              * parsers.more
+                              * parsers.contentblock_tail))^0)
                       * parsers.period
-                      * Cs(parsers.onlineimagesuffix))
+                      * Cs(parsers.onlineimagesuffix)
+                      * parsers.more
+                      + (Cs((parsers.inparens
+                            + (parsers.anyescaped
+                              - parsers.spacing
+                              - parsers.rparent
+                              - #(parsers.period
+                                 * parsers.onlineimagesuffix
+                                 * parsers.contentblock_tail)))^0)
+                        * parsers.period
+                        * Cs(parsers.onlineimagesuffix))
+                      ) * Cc("onlineimage")
 
 -- filename for iA Writer content blocks with mandatory suffix:
 parsers.localfilepath
@@ -3210,6 +3210,7 @@ parsers.localfilepath
                             * parsers.contentblock_tail))^1)
                     * parsers.period
                     * Cs(parsers.alphanumeric^1)
+                    * Cc("localfile")
 %    \end{macrocode}
 % \paragraph{Parsers Used for Citations}
 %  \begin{macrocode}
@@ -4276,6 +4277,10 @@ return M
 \def\markdownRendererLinkPrototype#1#2#3#4{#2}%
 \def\markdownRendererContentBlockPrototype#1#2#3#4{%
   \markdownInput{#3}}%
+\def\markdownRendererContentBlockOnlineImagePrototype{%
+  \markdownRendererImage}%
+\def\markdownRendererContentBlockCodePrototype#1#2#3#4#5{%
+  \markdownRendererInputFencedCode{#3}{#2}}%
 \def\markdownRendererImagePrototype#1#2#3#4{#2}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
@@ -4349,9 +4354,6 @@ return M
 \fi
 \ifx\markdownOptionContentBlocks\undefined\else
   contentBlocks = \markdownOptionContentBlocks,
-\fi
-\ifx\markdownOptionContentBlockPolymorphism\undefined\else
-  contentBlockPolymorphism = \markdownOptionContentBlockPolymorphism,
 \fi
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
