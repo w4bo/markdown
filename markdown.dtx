@@ -4571,7 +4571,7 @@ local convert = md.new(\markdownLuaOptions)
 %
 % The \mdef{markdownExecuteDirect} macro executes the code it has received as
 % its first argument by writing it to the output file stream 18, if Lua is
-% unavailable, or by using the Lua \luam{markdown.execute} method otherwise.
+% unavailable, or by using the Lua \luam{os.execute} method otherwise.
 %  \begin{macrocode}
 \ifnum\markdownMode=0\relax
   \def\markdownExecuteDirect#1{\immediate\write18{#1}}%
