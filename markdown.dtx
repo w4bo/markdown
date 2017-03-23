@@ -63,10 +63,13 @@
   title={A Markdown Interpreter for \TeX{}},
   subtitle={},
   url={https://github.com/witiko/markdown},
-  author={Vít Novotný (based on the work of John MacFarlane and Hans Hagen)},
+  author={Vít Novotný},
   email={witiko@mail.muni.cz},
   revision={\input VERSION},
   date={\today}}
+\hypersetup{%
+  pdftitle={A Markdown Interpreter for \TeX{}},
+  pdfauthor={Vít Novotný}}
 \CodelineIndex
 
 % Set up the bibliography.
@@ -948,15 +951,22 @@ defaultOptions.tightLists = true
 %
 % The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
 % content block that was recognized as a file in a known language by its
-% filename extension $s$. If any \t`Languages.json` file found by \pkg{kpathsea}
-% contains a record with the key $k$ and the value $v$, then a content block
-% with the filename extension $s, s$\t`:lower() == `$k$ is considered to be in
-% a known language $v$.
+% filename extension $s$. If any \t`markdown-languages.json` file found by
+% \pkg{kpathsea} (local files take precedence) contains a record with the key
+% $k$ and the value $v$, then a non-online-image content block with the
+% filename extension $s, s$\t`:lower()`${}=k$ is considered to be in a known
+% language $v$.
 % 
 % The macro receives four arguments: the local file or online image filename
 % extension $s$ cast to the lower case, the language $v$, the fully escaped
 % \acro{uri} that can be directly typeset, the raw \acro{uri} that can be used
 % outside typesetting, and the title of the content block.
+%
+% Note that you may place your own \t`markdown-languages.json` file inside your
+% working directory or inside your local TeX directory structure. In this file,
+% you may define a mapping between filename extensions and the language names
+% recognized by your favorite syntax highlighter. There may be other creative
+% uses beside syntax highlighting.
 %  \begin{macrocode}
 \def\markdownRendererContentBlockCode{%
   \markdownRendererContentBlockCodePrototype}%
@@ -2464,16 +2474,16 @@ end
 %    \end{macrocode}
 % \subsubsection{Content Block Polymorphism}
 % The \luamdef{languages_json} table maps programming language filename
-% extensions to fence infostrings. All \texttt{Languages.json} files located by
-% \pkg{kpathsea} are loaded into a chain of tables; \luam{languages_json}
-% corresponds to the first table and is chained with the rest via Lua
-% metatables.
+% extensions to fence infostrings. All \texttt{markdown-languages.json} files
+% located by \pkg{kpathsea} are loaded into a chain of tables;
+% \luam{languages_json} corresponds to the first table and is chained with the
+% rest via Lua metatables.
 %  \begin{macrocode}
 local languages_json = (function()
   local kpse = require('kpse')
   kpse.set_program_name('luatex')
   local base, prev, curr
-  for _, file in ipairs{kpse.lookup("Languages.json", { all=true })} do
+  for _, file in ipairs{kpse.lookup("markdown-languages.json", { all=true })} do
     json = assert(io.open(file, "r")):read("*all"):gsub('("[^\n]-"):','[%1]=')
     curr = (function()
       local _ENV={ json=json, load=load } -- run in sandbox
