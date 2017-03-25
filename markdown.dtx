@@ -962,11 +962,12 @@ defaultOptions.tightLists = true
 % \acro{uri} that can be directly typeset, the raw \acro{uri} that can be used
 % outside typesetting, and the title of the content block.
 %
-% Note that you may place your own \t`markdown-languages.json` file inside your
-% working directory or inside your local TeX directory structure. In this file,
-% you may define a mapping between filename extensions and the language names
-% recognized by your favorite syntax highlighter. There may be other creative
-% uses beside syntax highlighting.
+% Note that you will need to place place a \t`markdown-languages.json` file
+% inside your working directory or inside your local TeX directory structure.
+% In this file, you will define a mapping between filename extensions and the
+% language names recognized by your favorite syntax highlighter; there may
+% exist other creative uses beside syntax highlighting. The \t`Languages.json`
+% file provided by \cite{sotkov17} is a good starting point.
 %  \begin{macrocode}
 \def\markdownRendererContentBlockCode{%
   \markdownRendererContentBlockCodePrototype}%

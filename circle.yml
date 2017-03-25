@@ -9,10 +9,9 @@ dependencies:
 test:
   override:
     - xetex markdown.ins
-    - mkdir -p                          ~/texmf/tex/{luatex,generic,latex,context/third}/markdown
-    - cp -f markdown.lua Languages.json ~/texmf/tex/luatex/markdown/
-    - cp -f Languages.json              ~/texmf/tex/luatex/markdown/
-    - cp -f markdown.tex                ~/texmf/tex/generic/markdown/
-    - cp -f markdown.sty                ~/texmf/tex/latex/markdown/
-    - cp -f t-markdown.tex              ~/texmf/tex/context/third/markdown/
+    - mkdir -p             ~/texmf/tex/{luatex,generic,latex,context/third}/markdown
+    - cp -f markdown.lua   ~/texmf/tex/luatex/markdown/
+    - cp -f markdown.tex   ~/texmf/tex/generic/markdown/
+    - cp -f markdown.sty   ~/texmf/tex/latex/markdown/
+    - cp -f t-markdown.tex ~/texmf/tex/context/third/markdown/
     - make test

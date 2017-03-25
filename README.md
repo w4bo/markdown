@@ -20,9 +20,8 @@ TeX engine, such as XeTeX (`xetex markdown.ins`) or LuaTeX
 
 ## Local installation ##
 
-To perform a local installation, place these files along with the
-`Languages.json` file into your TeX directory structure. This is generally
-where the individual files should be placed:
+To perform a local installation, place these files into your TeX directory
+structure. This is generally where the individual files should be placed:
 
  * `<TEXMF>/tex/luatex/markdown/markdown.lua`
  * `<TEXMF>/tex/luatex/markdown/Language.json`
