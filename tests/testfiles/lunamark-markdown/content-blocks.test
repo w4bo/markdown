@@ -52,7 +52,7 @@ END contentBlock
 interblockSeparator
 BEGIN contentBlockCode
 - suffix: js
-- language: javascript
+- language: JavaScript
 - URI: Example.jS
 - title: Source code
 END contentBlockCode

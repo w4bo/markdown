@@ -410,7 +410,7 @@ defaultOptions.blankBeforeHeading = false
 defaultOptions.breakableBlockquotes = false
 %    \end{macrocode}
 %
-%   \Valitem[.]{cacheDir}{directory}
+%   \Valitem[.]{cacheDir}{directory name}
 %     The path to the directory containing auxiliary cache files.
 % 
 %     When iteratively writing and typesetting a markdown document, the cache
@@ -475,6 +475,14 @@ defaultOptions.citations = false
 %     \end{valuelist}
 %  \begin{macrocode}
 defaultOptions.contentBlocks = false
+%    \end{macrocode}
+%
+%   \Valitem[markdown-languages.json]{contentBlocksLanguageMap}{filename}
+%     The filename of the \acro{json} file that maps filename extensions to
+%     programming language names in the iA\,Writer content blocks. See
+%     Section~\ref{sec:texcontentblockrenderers} for more information.
+%  \begin{macrocode}
+defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 %    \end{macrocode}
 %
 %   \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
@@ -810,6 +818,10 @@ defaultOptions.tightLists = true
 % interface (see Section \ref{sec:luaoptions}) and are not processed by the
 % plain \TeX{} implementation, only passed along to Lua. They are undefined, which
 % makes them fall back to the default values provided by the Lua interface.
+% 
+% For the macros that correspond to the non-boolean options recognized by the
+% Lua interface, the same limitations apply here in the case of the
+% \m{markdownOptionHelperScriptFileName} macro.
 %  \begin{macrocode}
 \let\markdownOptionBlankBeforeBlockquote\undefined
 \let\markdownOptionBlankBeforeCodeFence\undefined
@@ -818,6 +830,7 @@ defaultOptions.tightLists = true
 \let\markdownOptionCitations\undefined
 \let\markdownOptionCitationNbsps\undefined
 \let\markdownOptionContentBlocks\undefined
+\let\markdownOptionContentBlocksLanguageMap\undefined
 \let\markdownOptionDefinitionLists\undefined
 \let\markdownOptionFootnotes\undefined
 \let\markdownOptionFencedCode\undefined
@@ -930,7 +943,7 @@ defaultOptions.tightLists = true
   \markdownRendererImagePrototype}%
 %    \end{macrocode}
 %
-% \paragraph{Content Block Renderers}
+% \paragraph{Content Block Renderers}\label{sec:texcontentblockrenderers}
 % The \mdef{markdownRendererContentBlock} macro represents an iA\,Writer content
 % block. It receives four arguments: the local file or online image filename
 % extension cast to the lower case, the fully escaped \acro{uri} that can be
@@ -950,17 +963,18 @@ defaultOptions.tightLists = true
 %    \end{macrocode}
 %
 % The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
-% content block that was recognized as a file in a known language by its
-% filename extension $s$. If any \t`markdown-languages.json` file found by
-% \pkg{kpathsea} (local files take precedence) contains a record with the key
-% $k$ and the value $v$, then a non-online-image content block with the
-% filename extension $s, s$\t`:lower()`${}=k$ is considered to be in a known
-% language $v$.
+% content block that was recognized as a file in a known programming language
+% by its filename extension $s$. If any \t`markdown-languages.json` file found
+% by \pkg{kpathsea}\footnote{Local files take precedence. Filenames other
+% than \t`markdown-languages.json` may be specified using the
+% \t`contentBlocksLanguageMap` Lua option.} contains a record $(k, v)$, then a
+% non-online-image content block with the filename extension $s,
+% s$\t`:lower()`${}=k$ is considered to be in a known programming language $v$.
 % 
-% The macro receives four arguments: the local file or online image filename
-% extension $s$ cast to the lower case, the language $v$, the fully escaped
-% \acro{uri} that can be directly typeset, the raw \acro{uri} that can be used
-% outside typesetting, and the title of the content block.
+% The macro receives four arguments: the local file name extension $s$ cast to
+% the lower case, the language $v$, the fully escaped \acro{uri} that can be
+% directly typeset, the raw \acro{uri} that can be used outside typesetting,
+% and the title of the content block.
 %
 % Note that you will need to place place a \t`markdown-languages.json` file
 % inside your working directory or inside your local TeX directory structure.
@@ -1567,6 +1581,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionCacheDir{#1}}%
 \define@key{markdownOptions}{contentBlocks}[true]{%
   \def\markdownOptionContentBlocks{#1}}%
+\define@key{markdownOptions}{contentBlocksLanguageMap}{%
+  \def\markdownOptionContentBlocksLanguageMap{#1}}%
 \define@key{markdownOptions}{definitionLists}[true]{%
   \def\markdownOptionDefinitionLists{#1}}%
 \define@key{markdownOptions}{footnotes}[true]{%
@@ -2473,35 +2489,6 @@ function entities.char_entity(s)
   return unicode.utf8.char(n)
 end
 %    \end{macrocode}
-% \subsubsection{Content Block Polymorphism}
-% The \luamdef{languages_json} table maps programming language filename
-% extensions to fence infostrings. All \texttt{markdown-languages.json} files
-% located by \pkg{kpathsea} are loaded into a chain of tables;
-% \luam{languages_json} corresponds to the first table and is chained with the
-% rest via Lua metatables.
-%  \begin{macrocode}
-local languages_json = (function()
-  local kpse = require('kpse')
-  kpse.set_program_name('luatex')
-  local base, prev, curr
-  for _, file in ipairs{kpse.lookup("markdown-languages.json", { all=true })} do
-    json = assert(io.open(file, "r")):read("*all"):gsub('("[^\n]-"):','[%1]=')
-    curr = (function()
-      local _ENV={ json=json, load=load } -- run in sandbox
-      return load("return "..json)()
-    end)()
-    if type(curr) == "table" then
-      if base == nil then
-        base = curr
-      else
-        setmetatable(prev, { __index = curr })
-      end
-      prev = curr
-    end
-  end
-  return base or {}
-end)()
-%    \end{macrocode}
 %
 % \subsubsection{Plain \TeX{} Writer}\label{sec:texwriter}
 % This section documents the \luam{writer} object, which implements the
@@ -2688,6 +2675,37 @@ function M.writer.new(options)
                            "{",self.uri(src),"}",
                            "{",self.string(tit or ""),"}"}
   end
+%    \end{macrocode}
+%
+% The \luamdef{languages_json} table maps programming language filename
+% extensions to fence infostrings. All \luam{options.contentBlocksLanguageMap}
+% files located by \pkg{kpathsea} are loaded into a chain of tables.
+% \luam{languages_json} corresponds to the first table and is chained with
+% the rest via Lua metatables.
+%  \begin{macrocode}
+local languages_json = (function()
+  local kpse = require('kpse')
+  kpse.set_program_name('luatex')
+  local base, prev, curr
+  for _, file in ipairs{kpse.lookup(options.contentBlocksLanguageMap,
+                                    { all=true })} do
+    json = assert(io.open(file, "r")):read("*all")
+                                     :gsub('("[^\n]-"):','[%1]=')
+    curr = (function()
+      local _ENV={ json=json, load=load } -- run in sandbox
+      return load("return "..json)()
+    end)()
+    if type(curr) == "table" then
+      if base == nil then
+        base = curr
+      else
+        setmetatable(prev, { __index = curr })
+      end
+      prev = curr
+    end
+  end
+  return base or {}
+end)()
 %    \end{macrocode}
 %
 % Define \luamdef{writer->contentblock} as a function that will transform an
@@ -4337,9 +4355,7 @@ return M
 % \subsubsection{Lua Snippets}
 % The \mdef{markdownLuaOptions} macro expands to a Lua table that
 % contains the plain \TeX{} options (see Section \ref{sec:texoptions}) in a
-% format recognized by Lua (see Section \ref{sec:luaoptions}). Note that the
-% boolean options are not sanitized and expect the plain \TeX{} option macros
-% to expand to either \t`true` or \t`false`.
+% format recognized by Lua (see Section \ref{sec:luaoptions}).
 %  \begin{macrocode}
 \def\markdownLuaOptions{{%
 \ifx\markdownOptionBlankBeforeBlockquote\undefined\else
@@ -4365,6 +4381,10 @@ return M
 \fi
 \ifx\markdownOptionContentBlocks\undefined\else
   contentBlocks = \markdownOptionContentBlocks,
+\fi
+\ifx\markdownOptionContentBlocksLanguageMap\undefined\else
+  contentBlocksLanguageMap =
+    "\markdownOptionContentBlocksLanguageMap",
 \fi
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
