@@ -63,15 +63,24 @@
   title={A Markdown Interpreter for \TeX{}},
   subtitle={},
   url={https://github.com/witiko/markdown},
-  author={Vít Novotný (based on the work of John MacFarlane and Hans Hagen)},
+  author={Vít Novotný},
   email={witiko@mail.muni.cz},
   revision={\input VERSION},
   date={\today}}
+\hypersetup{%
+  pdftitle={A Markdown Interpreter for \TeX{}},
+  pdfauthor={Vít Novotný}}
 \CodelineIndex
 
 % Set up the bibliography.
 \usepackage{filecontents}
 \begin{filecontents}{markdown.bib}
+  @online{sotkov17,
+    author    = {Sotkov, Anton},
+    title     = {File transclusion syntax for Markdown},
+    date      = {2017-01-19},
+    url       = {https://github.com/iainc/Markdown-Content-Blocks},
+    urldate   = {2017-03-18}}
   @book{luatex16,
     author    = {{Lua\TeX{} development team}},
     title     = {Lua\TeX{} reference manual},
@@ -289,6 +298,9 @@ local md5 = require("md5")
 %     for the verbatim inclusion of files containing code.  It is used to
 %     provide the corresponding default token renderer prototype (see Section
 %     \ref{sec:texrendererprototypes}).
+%   \item[\pkg{csvsimple}] A package that provides the default token renderer
+%     prototype for iA\,Writer content blocks with the \acro{csv} filename
+%     extension (see Section \ref{sec:texrendererprototypes}).
 % \end{description}
 %
 % \iffalse
@@ -297,8 +309,13 @@ local md5 = require("md5")
 % \fi
 % \subsubsection{\Hologo{ConTeXt} prerequisites}
 % The \Hologo{ConTeXt} part of the package requires that either the Mark II or
-% the Mark IV format is loaded and all the plain \TeX{} prerequisites (see
-% Section \ref{sec:texprerequisites}).
+% the Mark IV format is loaded, all the plain \TeX{} prerequisites (see
+% Section \ref{sec:texprerequisites}), and the following modules:
+% \begin{description}
+%   \item[\pkg{m-database}] A module that provides the default token renderer
+%     prototype for iA\,Writer content blocks with the \acro{csv} filename
+%     extension (see Section \ref{sec:texrendererprototypes}).
+% \end{description}
 %
 % \section{User Guide}\label{sec:interfaces}
 % This part of the manual describes the interfaces exposed by the package
@@ -393,7 +410,7 @@ defaultOptions.blankBeforeHeading = false
 defaultOptions.breakableBlockquotes = false
 %    \end{macrocode}
 %
-%   \Valitem[.]{cacheDir}{directory}
+%   \Valitem[.]{cacheDir}{directory name}
 %     The path to the directory containing auxiliary cache files.
 % 
 %     When iteratively writing and typesetting a markdown document, the cache
@@ -440,6 +457,32 @@ defaultOptions.citationNbsps = true
 %     \end{valuelist}
 %  \begin{macrocode}
 defaultOptions.citations = false
+%    \end{macrocode}
+%
+%   \Optitem[false]{contentBlocks}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] Enable the iA\,Writer content blocks syntax
+%         extension~\cite{sotkov17}:
+%         \begin{Verbatim}
+% http://example.com/minard.jpg (Napoleon’s disastrous
+% Russian campaign of 1812)
+% /Flowchart.png "Engineering Flowchart"
+% /Savings Account.csv 'Recent Transactions'
+% /Example.swift
+% /Lorem Ipsum.txt
+%         \end{Verbatim}
+%       \item[false] Disable the iA\,Writer content blocks syntax extension.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.contentBlocks = false
+%    \end{macrocode}
+%
+%   \Valitem[markdown-languages.json]{contentBlocksLanguageMap}{filename}
+%     The filename of the \acro{json} file that maps filename extensions to
+%     programming language names in the iA\,Writer content blocks. See
+%     Section~\ref{sec:texcontentblockrenderers} for more information.
+%  \begin{macrocode}
+defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 %    \end{macrocode}
 %
 %   \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
@@ -775,6 +818,10 @@ defaultOptions.tightLists = true
 % interface (see Section \ref{sec:luaoptions}) and are not processed by the
 % plain \TeX{} implementation, only passed along to Lua. They are undefined, which
 % makes them fall back to the default values provided by the Lua interface.
+% 
+% For the macros that correspond to the non-boolean options recognized by the
+% Lua interface, the same limitations apply here in the case of the
+% \m{markdownOptionHelperScriptFileName} macro.
 %  \begin{macrocode}
 \let\markdownOptionBlankBeforeBlockquote\undefined
 \let\markdownOptionBlankBeforeCodeFence\undefined
@@ -782,6 +829,8 @@ defaultOptions.tightLists = true
 \let\markdownOptionBreakableBlockquotes\undefined
 \let\markdownOptionCitations\undefined
 \let\markdownOptionCitationNbsps\undefined
+\let\markdownOptionContentBlocks\undefined
+\let\markdownOptionContentBlocksLanguageMap\undefined
 \let\markdownOptionDefinitionLists\undefined
 \let\markdownOptionFootnotes\undefined
 \let\markdownOptionFencedCode\undefined
@@ -885,13 +934,57 @@ defaultOptions.tightLists = true
 %    \end{macrocode}
 %
 % \paragraph{Image Renderer}
-% The \mdef{markdownRendererImage} macro represents an image. It receives four
+% The \mdef{markdownRendererImage} macro represents an image. It receives
 % four arguments: the label, the fully escaped \acro{uri} that can be directly
 % typeset, the raw \acro{uri} that can be used outside typesetting, and the
 % title of the link.
 %  \begin{macrocode}
 \def\markdownRendererImage{%
   \markdownRendererImagePrototype}%
+%    \end{macrocode}
+%
+% \paragraph{Content Block Renderers}\label{sec:texcontentblockrenderers}
+% The \mdef{markdownRendererContentBlock} macro represents an iA\,Writer content
+% block. It receives four arguments: the local file or online image filename
+% extension cast to the lower case, the fully escaped \acro{uri} that can be
+% directly typeset, the raw \acro{uri} that can be used outside typesetting,
+% and the title of the content block.
+%  \begin{macrocode}
+\def\markdownRendererContentBlock{%
+  \markdownRendererContentBlockPrototype}%
+%    \end{macrocode}
+%
+% The \mdef{markdownRendererContentBlockOnlineImage} macro represents an
+% iA\,Writer online image content block. The macro receives the same arguments
+% as \m{markdownRendererContentBlock}.
+%  \begin{macrocode}
+\def\markdownRendererContentBlockOnlineImage{%
+  \markdownRendererContentBlockOnlineImagePrototype}%
+%    \end{macrocode}
+%
+% The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
+% content block that was recognized as a file in a known programming language
+% by its filename extension $s$. If any \t`markdown-languages.json` file found
+% by \pkg{kpathsea}\footnote{Local files take precedence. Filenames other
+% than \t`markdown-languages.json` may be specified using the
+% \t`contentBlocksLanguageMap` Lua option.} contains a record $(k, v)$, then a
+% non-online-image content block with the filename extension $s,
+% s$\t`:lower()`${}=k$ is considered to be in a known programming language $v$.
+% 
+% The macro receives four arguments: the local file name extension $s$ cast to
+% the lower case, the language $v$, the fully escaped \acro{uri} that can be
+% directly typeset, the raw \acro{uri} that can be used outside typesetting,
+% and the title of the content block.
+%
+% Note that you will need to place place a \t`markdown-languages.json` file
+% inside your working directory or inside your local TeX directory structure.
+% In this file, you will define a mapping between filename extensions and the
+% language names recognized by your favorite syntax highlighter; there may
+% exist other creative uses beside syntax highlighting. The \t`Languages.json`
+% file provided by \cite{sotkov17} is a good starting point.
+%  \begin{macrocode}
+\def\markdownRendererContentBlockCode{%
+  \markdownRendererContentBlockCodePrototype}%
 %    \end{macrocode}
 %
 % \paragraph{Bullet List Renderers}
@@ -1236,6 +1329,9 @@ defaultOptions.tightLists = true
 \def\markdownRendererCodeSpanPrototype#1{}%
 \def\markdownRendererLinkPrototype#1#2#3#4{}%
 \def\markdownRendererImagePrototype#1#2#3#4{}%
+\def\markdownRendererContentBlockPrototype#1#2#3#4{}%
+\def\markdownRendererContentBlockOnlineImagePrototype#1#2#3#4{}%
+\def\markdownRendererContentBlockCodePrototype#1#2#3#4{}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
 \def\markdownRendererUlItemPrototype{}%
@@ -1483,6 +1579,10 @@ defaultOptions.tightLists = true
   \def\markdownOptionCitationNbsps{#1}}%
 \define@key{markdownOptions}{cacheDir}{%
   \def\markdownOptionCacheDir{#1}}%
+\define@key{markdownOptions}{contentBlocks}[true]{%
+  \def\markdownOptionContentBlocks{#1}}%
+\define@key{markdownOptions}{contentBlocksLanguageMap}{%
+  \def\markdownOptionContentBlocksLanguageMap{#1}}%
 \define@key{markdownOptions}{definitionLists}[true]{%
   \def\markdownOptionDefinitionLists{#1}}%
 \define@key{markdownOptions}{footnotes}[true]{%
@@ -1558,6 +1658,12 @@ defaultOptions.tightLists = true
   \renewcommand\markdownRendererCodeSpan[1]{#1}}%
 \define@key{markdownRenderers}{link}{%
   \renewcommand\markdownRendererLink[4]{#1}}%
+\define@key{markdownRenderers}{contentBlock}{%
+  \renewcommand\markdownRendererContentBlock[4]{#1}}%
+\define@key{markdownRenderers}{contentBlockOnlineImage}{%
+  \renewcommand\markdownRendererContentBlockOnlineImage[4]{#1}}%
+\define@key{markdownRenderers}{contentBlockCode}{%
+  \renewcommand\markdownRendererContentBlockCode[5]{#1}}%
 \define@key{markdownRenderers}{image}{%
   \renewcommand\markdownRendererImage[4]{#1}}%
 \define@key{markdownRenderers}{ulBegin}{%
@@ -1689,6 +1795,12 @@ defaultOptions.tightLists = true
   \renewcommand\markdownRendererCodeSpanPrototype[1]{#1}}%
 \define@key{markdownRendererPrototypes}{link}{%
   \renewcommand\markdownRendererLinkPrototype[4]{#1}}%
+\define@key{markdownRendererPrototypes}{contentBlock}{%
+  \renewcommand\markdownRendererContentBlockPrototype[4]{#1}}%
+\define@key{markdownRendererPrototypes}{contentBlockOnlineImage}{%
+  \renewcommand\markdownRendererContentBlockOnlineImagePrototype[4]{#1}}%
+\define@key{markdownRendererPrototypes}{contentBlockCode}{%
+  \renewcommand\markdownRendererContentBlockCodePrototype[5]{#1}}%
 \define@key{markdownRendererPrototypes}{image}{%
   \renewcommand\markdownRendererImagePrototype[4]{#1}}%
 \define@key{markdownRendererPrototypes}{ulBegin}{%
@@ -2090,7 +2202,7 @@ function util.pathname(dir, file)
   end
 end
 %    \end{macrocode}
-% \subsubsection{\textsc{html} entities}
+% \subsubsection{\textsc{html} Entities}
 % This section documents the \textsc{html} entities recognized by the
 % markdown reader.  These functions are encapsulated in the \t`entities`
 % object. The functions were originally located in the
@@ -2565,6 +2677,66 @@ function M.writer.new(options)
   end
 %    \end{macrocode}
 %
+% The \luamdef{languages_json} table maps programming language filename
+% extensions to fence infostrings. All \luam{options.contentBlocksLanguageMap}
+% files located by \pkg{kpathsea} are loaded into a chain of tables.
+% \luam{languages_json} corresponds to the first table and is chained with
+% the rest via Lua metatables.
+%  \begin{macrocode}
+local languages_json = (function()
+  local kpse = require('kpse')
+  kpse.set_program_name('luatex')
+  local base, prev, curr
+  for _, file in ipairs{kpse.lookup(options.contentBlocksLanguageMap,
+                                    { all=true })} do
+    json = assert(io.open(file, "r")):read("*all")
+                                     :gsub('("[^\n]-"):','[%1]=')
+    curr = (function()
+      local _ENV={ json=json, load=load } -- run in sandbox
+      return load("return "..json)()
+    end)()
+    if type(curr) == "table" then
+      if base == nil then
+        base = curr
+      else
+        setmetatable(prev, { __index = curr })
+      end
+      prev = curr
+    end
+  end
+  return base or {}
+end)()
+%    \end{macrocode}
+%
+% Define \luamdef{writer->contentblock} as a function that will transform an
+% input iA\,Writer content block to the output format, where \t`src`
+% corresponds to the \acro{uri} prefix, \t`suf` to the \acro{uri} extension,
+% \t`type` to the type of the content block (\t`localfile` or \t`onlineimage`),
+% and \t`tit` to the title of the content block.
+%  \begin{macrocode}
+  function self.contentblock(src,suf,type,tit)
+    src = src.."."..suf
+    suf = suf:lower()
+    if type == "onlineimage" then
+      return {"\\markdownRendererContentBlockOnlineImage{",suf,"}",
+                             "{",self.string(src),"}",
+                             "{",self.uri(src),"}",
+                             "{",self.string(tit or ""),"}"}
+    elseif languages_json[suf] then
+      return {"\\markdownRendererContentBlockCode{",suf,"}",
+                             "{",self.string(languages_json[suf]),"}",
+                             "{",self.string(src),"}",
+                             "{",self.uri(src),"}",
+                             "{",self.string(tit or ""),"}"}
+    else
+      return {"\\markdownRendererContentBlock{",suf,"}",
+                             "{",self.string(src),"}",
+                             "{",self.uri(src),"}",
+                             "{",self.string(tit or ""),"}"}
+    end
+  end
+%    \end{macrocode}
+%
 % Define \luamdef{writer->bulletlist} as a function that will transform an input
 % bulleted list to the output format, where \t`items` is an array of the list
 % items and \t`tight` specifies, whether the list is tight or not.
@@ -2939,7 +3111,7 @@ end
 %  \begin{macrocode}
 parsers.leader      = parsers.space^-3
 
--- in balanced brackets, parentheses, quotes:
+-- content in balanced brackets, parentheses, or quotes:
 parsers.bracketed   = P{ parsers.lbracket
                        * ((parsers.anyescaped - (parsers.lbracket
                                                 + parsers.rbracket
@@ -2966,22 +3138,24 @@ parsers.dquoted     = P{ parsers.dquote * parsers.alphanumeric
                           ) + V(1))^0
                        * parsers.dquote }
 
--- bracketed 'tag' for markdown links, allowing nested brackets:
+-- bracketed tag for markdown links, allowing nested brackets:
 parsers.tag         = parsers.lbracket
                     * Cs((parsers.alphanumeric^1
                          + parsers.bracketed
                          + parsers.inticks
-                         + (parsers.anyescaped - (parsers.rbracket
-                                                 + parsers.blankline^2)))^0)
+                         + (parsers.anyescaped
+                           - (parsers.rbracket + parsers.blankline^2)))^0)
                     * parsers.rbracket
 
--- url for markdown links, allowing balanced parentheses:
-parsers.url         = parsers.less * Cs((parsers.anyescaped-parsers.more)^0)
+-- url for markdown links, allowing nested brackets:
+parsers.url         = parsers.less * Cs((parsers.anyescaped
+                                        - parsers.more)^0)
                                    * parsers.more
                     + Cs((parsers.inparens + (parsers.anyescaped
-                                             -parsers.spacing-parsers.rparent))^1)
+                                             - parsers.spacing
+                                             - parsers.rparent))^1)
 
--- quoted text possibly with nested quotes:
+-- quoted text, possibly with nested quotes:
 parsers.title_s     = parsers.squote * Cs(((parsers.anyescaped-parsers.squote)
                                            + parsers.squoted)^0)
                                      * parsers.squote
@@ -2999,6 +3173,73 @@ parsers.title       = parsers.title_d + parsers.title_s + parsers.title_p
 parsers.optionaltitle
                     = parsers.spnl * parsers.title * parsers.spacechar^0
                     + Cc("")
+%    \end{macrocode}
+% \paragraph{Parsers Used for iA\,Writer Content Blocks}
+%  \begin{macrocode}
+parsers.contentblock_tail
+                    = parsers.optionaltitle
+                    * (parsers.newline + parsers.eof)
+
+-- case insensitive online image suffix:
+parsers.onlineimagesuffix
+                    = (function(...)
+                        local parser = nil
+                        for _,suffix in ipairs({...}) do
+                          local pattern=nil
+                          for i=1,#suffix do
+                            local char=suffix:sub(i,i)
+                            char = S(char:lower()..char:upper())
+                            if pattern == nil then
+                              pattern = char
+                            else
+                              pattern = pattern * char
+                            end
+                          end
+                          if parser == nil then
+                            parser = pattern
+                          else
+                            parser = parser + pattern
+                          end
+                        end
+                        return parser
+                      end)("png", "jpg", "jpeg", "gif", "tif", "tiff")
+
+-- online image url for iA Writer content blocks with mandatory suffix,
+-- allowing nested brackets:
+parsers.onlineimageurl
+                    = (parsers.less
+                      * Cs((parsers.anyescaped
+                           - parsers.more
+                           - #(parsers.period
+                              * parsers.onlineimagesuffix
+                              * parsers.more
+                              * parsers.contentblock_tail))^0)
+                      * parsers.period
+                      * Cs(parsers.onlineimagesuffix)
+                      * parsers.more
+                      + (Cs((parsers.inparens
+                            + (parsers.anyescaped
+                              - parsers.spacing
+                              - parsers.rparent
+                              - #(parsers.period
+                                 * parsers.onlineimagesuffix
+                                 * parsers.contentblock_tail)))^0)
+                        * parsers.period
+                        * Cs(parsers.onlineimagesuffix))
+                      ) * Cc("onlineimage")
+
+-- filename for iA Writer content blocks with mandatory suffix:
+parsers.localfilepath
+                    = parsers.slash
+                    * Cs((parsers.anyescaped
+                         - parsers.tab
+                         - parsers.newline
+                         - #(parsers.period
+                            * parsers.alphanumeric^1
+                            * parsers.contentblock_tail))^1)
+                    * parsers.period
+                    * Cs(parsers.alphanumeric^1)
+                    * Cc("localfile")
 %    \end{macrocode}
 % \paragraph{Parsers Used for Citations}
 %  \begin{macrocode}
@@ -3175,7 +3416,7 @@ parsers.decentity = parsers.ampersand * parsers.hash
 parsers.tagentity = parsers.ampersand * C(parsers.alphanumeric^1)
                   * parsers.semicolon
 %    \end{macrocode}
-% \paragraph{Helpers for Links and References}
+% \paragraph{Helpers for References}
 %  \begin{macrocode}
 -- parse a reference definition:  [foo]: /bar "title"
 parsers.define_reference_parser = parsers.leader * parsers.tag * parsers.colon
@@ -3197,7 +3438,17 @@ parsers.urlchar      = parsers.anyescaped - parsers.newline - parsers.more
 % \paragraph{Block Elements}
 %  \begin{macrocode}
 parsers.Block        = V("Block")
-  
+
+parsers.OnlineImageURL
+                     = parsers.leader
+                     * parsers.onlineimageurl
+                     * parsers.optionaltitle
+
+parsers.LocalFilePath
+                     = parsers.leader
+                     * parsers.localfilepath
+                     * parsers.optionaltitle
+
 parsers.TildeFencedCode
                      = parsers.fencehead(parsers.tilde)
                      * Cs(parsers.fencedline(parsers.tilde)^0)
@@ -3669,6 +3920,11 @@ function M.reader.new(writer, options)
 %    \end{macrocode}
 % \paragraph{Block Elements (local)}
 %  \begin{macrocode}
+  larsers.ContentBlock = parsers.leader
+                       * (parsers.localfilepath + parsers.onlineimageurl)
+                       * parsers.contentblock_tail
+                       / writer.contentblock
+
   larsers.DisplayHtml  = C(parsers.displayhtml)
                        / expandtabs / writer.display_html
 
@@ -3833,7 +4089,8 @@ function M.reader.new(writer, options)
 
       Blank                 = larsers.Blank,
 
-      Block                 = V("Blockquote")
+      Block                 = V("ContentBlock")
+                            + V("Blockquote")
                             + V("Verbatim")
                             + V("FencedCode")
                             + V("HorizontalRule")
@@ -3845,6 +4102,7 @@ function M.reader.new(writer, options)
                             + V("Paragraph")
                             + V("Plain"),
 
+      ContentBlock          = larsers.ContentBlock,
       Blockquote            = larsers.Blockquote,
       Verbatim              = larsers.Verbatim,
       FencedCode            = larsers.FencedCode,
@@ -3908,6 +4166,10 @@ function M.reader.new(writer, options)
 
   if not options.citations then
     syntax.Citations = parsers.fail
+  end
+
+  if not options.contentBlocks then
+    syntax.ContentBlock = parsers.fail
   end
 
   if not options.footnotes then
@@ -4042,6 +4304,12 @@ return M
 \def\markdownRendererPipePrototype{|}%
 \def\markdownRendererCodeSpanPrototype#1{{\tt#1}}%
 \def\markdownRendererLinkPrototype#1#2#3#4{#2}%
+\def\markdownRendererContentBlockPrototype#1#2#3#4{%
+  \markdownInput{#3}}%
+\def\markdownRendererContentBlockOnlineImagePrototype{%
+  \markdownRendererImage}%
+\def\markdownRendererContentBlockCodePrototype#1#2#3#4#5{%
+  \markdownRendererInputFencedCode{#3}{#2}}%
 \def\markdownRendererImagePrototype#1#2#3#4{#2}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
@@ -4087,9 +4355,7 @@ return M
 % \subsubsection{Lua Snippets}
 % The \mdef{markdownLuaOptions} macro expands to a Lua table that
 % contains the plain \TeX{} options (see Section \ref{sec:texoptions}) in a
-% format recognized by Lua (see Section \ref{sec:luaoptions}). Note that the
-% boolean options are not sanitized and expect the plain \TeX{} option macros
-% to expand to either \t`true` or \t`false`.
+% format recognized by Lua (see Section \ref{sec:luaoptions}).
 %  \begin{macrocode}
 \def\markdownLuaOptions{{%
 \ifx\markdownOptionBlankBeforeBlockquote\undefined\else
@@ -4112,6 +4378,13 @@ return M
 \fi
 \ifx\markdownOptionCitationNbsps\undefined\else
   citationNbsps = \markdownOptionCitationNbsps,
+\fi
+\ifx\markdownOptionContentBlocks\undefined\else
+  contentBlocks = \markdownOptionContentBlocks,
+\fi
+\ifx\markdownOptionContentBlocksLanguageMap\undefined\else
+  contentBlocksLanguageMap =
+    "\markdownOptionContentBlocksLanguageMap",
 \fi
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
@@ -4329,7 +4602,7 @@ local convert = md.new(\markdownLuaOptions)
 %
 % The \mdef{markdownExecuteDirect} macro executes the code it has received as
 % its first argument by writing it to the output file stream 18, if Lua is
-% unavailable, or by using the Lua \luam{markdown.execute} method otherwise.
+% unavailable, or by using the Lua \luam{os.execute} method otherwise.
 %  \begin{macrocode}
 \ifnum\markdownMode=0\relax
   \def\markdownExecuteDirect#1{\immediate\write18{#1}}%
@@ -4557,6 +4830,7 @@ local convert = md.new(\markdownLuaOptions)
     dlBeginTight = {\markdownRendererDlBegin},
     dlEndTight = {\markdownRendererDlEnd}}}}
 \RequirePackage{fancyvrb}
+\RequirePackage{csvsimple}
 \markdownSetup{rendererPrototypes={
   lineBreak = {\\},
   leftBrace = {\textbraceleft},
@@ -4570,7 +4844,20 @@ local convert = md.new(\markdownLuaOptions)
   codeSpan = {\texttt{#1}},
   link = {#1\footnote{\ifx\empty#4\empty\else#4:
     \fi\texttt<\url{#3}\texttt>}},
-  image = {\begin{figure}
+  contentBlock = {%
+    \ifthenelse{\equal{#1}{csv}}{%
+      \begin{table}%
+        \begin{center}%
+          \csvautotabular{#3}%
+        \end{center}
+        \ifx\empty#4\empty\else
+          \caption{#4}%
+        \fi
+        \label{tab:#1}%
+      \end{table}}{%
+      \markdownInput{#3}}},
+  image = {%
+    \begin{figure}%
       \begin{center}%
         \includegraphics{#3}%
       \end{center}%
@@ -4803,6 +5090,22 @@ local convert = md.new(\markdownLuaOptions)
 \def\markdownRendererLinkPrototype#1#2#3#4{%
   \useURL[#1][#3][][#4]#1\footnote[#1]{\ifx\empty#4\empty\else#4:
   \fi\tt<\hyphenatedurl{#3}>}}%
+\usemodule[database]
+\defineseparatedlist
+  [MarkdownConTeXtCSV]
+  [separator={,},
+   before=\bTABLE,after=\eTABLE,
+   first=\bTR,last=\eTR,
+   left=\bTD,right=\eTD]
+\def\markdownConTeXtCSV{csv}
+\def\markdownRendererContentBlockPrototype#1#2#3#4{%
+  \def\markdownConTeXtCSV@arg{#1}%
+	\ifx\markdownConTeXtCSV@arg\markdownConTeXtCSV
+    \placetable[][tab:#1]{#4}{%
+      \processseparatedfile[MarkdownConTeXtCSV][#3]}%
+	\else
+		\markdownInput{#3}%
+	\fi}%
 \def\markdownRendererImagePrototype#1#2#3#4{%
   \placefigure[][fig:#1]{#4}{\externalfigure[#3]}}%
 \def\markdownRendererUlBeginPrototype{\startitemize}%
@@ -4851,6 +5154,7 @@ local convert = md.new(\markdownLuaOptions)
     \typefile{#1}%
   \else
 %    \end{macrocode}
+% 
 % The code fence infostring is used as a name from the \Hologo{ConTeXt}
 % \m{definetyping} macro. This allows the user to set up code highlighting
 % mapping as follows:
