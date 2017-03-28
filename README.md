@@ -24,7 +24,6 @@ To perform a local installation, place these files into your TeX directory
 structure. This is generally where the individual files should be placed:
 
  * `<TEXMF>/tex/luatex/markdown/markdown.lua`
- * `<TEXMF>/tex/luatex/markdown/Language.json`
  * `<TEXMF>/tex/generic/markdown/markdown.tex`
  * `<TEXMF>/tex/latex/markdown/markdown.sty`
  * `<TEXMF>/tex/context/third/markdown/t-markdown.tex`
