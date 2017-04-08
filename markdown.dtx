@@ -506,57 +506,6 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 %  \begin{macrocode}
 defaultOptions.definitionLists = false
 %    \end{macrocode}
-% 
-%   \Optitem[false]{hashEnumerators}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the use of hash symbols (\t`\#`) as ordered item
-%         list markers:
-%         \begin{Verbatim}
-% #.  Bird
-% #.  McHale
-% #.  Parish
-%         \end{Verbatim}
-%       \item[false] Disable the use of hash symbols (\t`\#`) as ordered item
-%         list markers.
-%     \end{valuelist}
-%  \begin{macrocode}
-defaultOptions.hashEnumerators = false
-%    \end{macrocode}
-% 
-%   \Optitem[false]{html}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true]  Enable the recognition of \textsc{html} tags, block
-%                    elements, comments, \textsc{html} instructions, and
-%                    entities in the input. Tags, block elements (along with
-%                    contents), \textsc{html} instructions, and comments will
-%                    be ignored and \textsc{html} entities will be replaced
-%                    with the corresponding Unicode codepoints.
-%
-%       \item[false] Disable the recognition of \textsc{html} markup. Any
-%                    \textsc{html} markup in the input will be rendered as
-%                    plain text.
-%     \end{valuelist}
-%  \begin{macrocode}
-defaultOptions.html = false
-%    \end{macrocode}
-%
-%   \Optitem[false]{hybrid}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Disable the escaping of special plain \TeX{} characters,
-%         which makes it possible to intersperse your markdown markup with
-%         \TeX{} code. The intended usage is in documents prepared manually by
-%         a human author.  In such documents, it can often be desirable to mix
-%         \TeX{} and markdown markup freely.
-%
-%       \item[false] Enable the escaping of special plain \TeX{} characters
-%         outside verbatim environments, so that they are not interpretted by
-%         \TeX{}. This is encouraged when typesetting automatically generated
-%         content or markdown documents that were not prepared with this
-%         package in mind.
-%     \end{valuelist}
-%  \begin{macrocode}
-defaultOptions.hybrid = false
-%    \end{macrocode}
 %
 %   \Optitem[false]{fencedCode}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
@@ -611,6 +560,57 @@ defaultOptions.fencedCode = false
 %     \end{valuelist}
 %  \begin{macrocode}
 defaultOptions.footnotes = false
+%    \end{macrocode}
+% 
+%   \Optitem[false]{hashEnumerators}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] Enable the use of hash symbols (\t`\#`) as ordered item
+%         list markers:
+%         \begin{Verbatim}
+% #.  Bird
+% #.  McHale
+% #.  Parish
+%         \end{Verbatim}
+%       \item[false] Disable the use of hash symbols (\t`\#`) as ordered item
+%         list markers.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.hashEnumerators = false
+%    \end{macrocode}
+% 
+%   \Optitem[false]{html}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true]  Enable the recognition of \textsc{html} tags, block
+%                    elements, comments, \textsc{html} instructions, and
+%                    entities in the input. Tags, block elements (along with
+%                    contents), \textsc{html} instructions, and comments will
+%                    be ignored and \textsc{html} entities will be replaced
+%                    with the corresponding Unicode codepoints.
+%
+%       \item[false] Disable the recognition of \textsc{html} markup. Any
+%                    \textsc{html} markup in the input will be rendered as
+%                    plain text.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.html = false
+%    \end{macrocode}
+%
+%   \Optitem[false]{hybrid}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] Disable the escaping of special plain \TeX{} characters,
+%         which makes it possible to intersperse your markdown markup with
+%         \TeX{} code. The intended usage is in documents prepared manually by
+%         a human author.  In such documents, it can often be desirable to mix
+%         \TeX{} and markdown markup freely.
+%
+%       \item[false] Enable the escaping of special plain \TeX{} characters
+%         outside verbatim environments, so that they are not interpretted by
+%         \TeX{}. This is encouraged when typesetting automatically generated
+%         content or markdown documents that were not prepared with this
+%         package in mind.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.hybrid = false
 %    \end{macrocode}
 %
 %   \Optitem[false]{inlineFootnotes}{\opt{true}, \opt{false}}
@@ -1573,12 +1573,12 @@ defaultOptions.tightLists = true
   \def\markdownOptionBlankBeforeHeading{#1}}%
 \define@key{markdownOptions}{breakableBlockquotes}[true]{%
   \def\markdownOptionBreakableBlockquotes{#1}}%
+\define@key{markdownOptions}{cacheDir}{%
+  \def\markdownOptionCacheDir{#1}}%
 \define@key{markdownOptions}{citations}[true]{%
   \def\markdownOptionCitations{#1}}%
 \define@key{markdownOptions}{citationNbsps}[true]{%
   \def\markdownOptionCitationNbsps{#1}}%
-\define@key{markdownOptions}{cacheDir}{%
-  \def\markdownOptionCacheDir{#1}}%
 \define@key{markdownOptions}{contentBlocks}[true]{%
   \def\markdownOptionContentBlocks{#1}}%
 \define@key{markdownOptions}{contentBlocksLanguageMap}{%
@@ -4156,14 +4156,6 @@ function M.reader.new(writer, options)
       Symbol                = larsers.Symbol,
     }
 
-  if not options.definitionLists then
-    syntax.DefinitionList = parsers.fail
-  end
-
-  if not options.fencedCode then
-    syntax.FencedCode = parsers.fail
-  end
-
   if not options.citations then
     syntax.Citations = parsers.fail
   end
@@ -4172,8 +4164,22 @@ function M.reader.new(writer, options)
     syntax.ContentBlock = parsers.fail
   end
 
+  if not options.definitionLists then
+    syntax.DefinitionList = parsers.fail
+  end
+
+  if not options.fencedCode then
+    syntax.FencedCode = parsers.fail
+  end
+
   if not options.footnotes then
     syntax.NoteRef = parsers.fail
+  end
+
+  if not options.html then
+    syntax.DisplayHtml = parsers.fail
+    syntax.InlineHtml = parsers.fail
+    syntax.HtmlEntity  = parsers.fail
   end
 
   if not options.inlineFootnotes then
@@ -4182,12 +4188,6 @@ function M.reader.new(writer, options)
 
   if not options.smartEllipses then
     syntax.Smart = parsers.fail
-  end
-
-  if not options.html then
-    syntax.DisplayHtml = parsers.fail
-    syntax.InlineHtml = parsers.fail
-    syntax.HtmlEntity  = parsers.fail
   end
 
   local blocks_toplevel_t = util.table_copy(syntax)
