@@ -459,6 +459,24 @@ defaultOptions.citationNbsps = true
 defaultOptions.citations = false
 %    \end{macrocode}
 %
+%   \Optitem[true]{codeSpans}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true] Enable the code span syntax:
+%         \begin{Verbatim}
+% Use the `printf()` function.
+% ``There is a literal backtick (`) here.``
+%         \end{Verbatim}
+%       \item[false] Disable the code span syntax. This allows you to easily
+%         use the quotation mark ligatures in texts that do not contain code
+%         spans:
+%         \begin{Verbatim}
+% ``This is a quote.''
+%         \end{Verbatim}
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.codeSpans = true
+%    \end{macrocode}
+%
 %   \Optitem[false]{contentBlocks}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] Enable the iA\,Writer content blocks syntax
@@ -671,6 +689,24 @@ defaultOptions.startNumber = true
 %     \end{valuelist}
 %  \begin{macrocode}
 defaultOptions.tightLists = true
+%    \end{macrocode}
+%
+%   \Optitem[true]{underscores}{\opt{true}, \opt{false}}
+%     \begin{valuelist}
+%       \item[true]  Both underscores and asterisks can be used to denote
+%         emphasis and strong emphasis:
+%         \begin{Verbatim}
+% *single asterisks*
+% _single underscores_
+% **double asterisks**
+% __double underscores__
+%         \end{Verbatim}
+%       \item[false] Only asterisks can be used to denote emphasis and strong
+%         emphasis. This makes it easy to write math with the \t`hybrid` option
+%         without the need to constantly escape subscripts.
+%     \end{valuelist}
+%  \begin{macrocode}
+defaultOptions.underscores = true
 %    \end{macrocode}
 % \end{optionlist}
 % 
@@ -1581,6 +1617,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionCitationNbsps{#1}}%
 \define@key{markdownOptions}{contentBlocks}[true]{%
   \def\markdownOptionContentBlocks{#1}}%
+\define@key{markdownOptions}{codeSpans}[true]{%
+  \def\markdownOptionCodeSpans{#1}}%
 \define@key{markdownOptions}{contentBlocksLanguageMap}{%
   \def\markdownOptionContentBlocksLanguageMap{#1}}%
 \define@key{markdownOptions}{definitionLists}[true]{%
@@ -1605,6 +1643,8 @@ defaultOptions.tightLists = true
   \def\markdownOptionStartNumber{#1}}%
 \define@key{markdownOptions}{tightLists}[true]{%
   \def\markdownOptionTightLists{#1}}%
+\define@key{markdownOptions}{underscores}[true]{%
+  \def\markdownOptionUnderscores{#1}}%
 %    \end{macrocode}
 %
 % The following example \LaTeX{} code showcases a possible configuration of
@@ -3830,17 +3870,27 @@ function M.reader.new(writer, options)
                   + parsers.spacechar^1 * larsers.Endline^-1
                                         * parsers.optionalspace / writer.nbsp
 
-  larsers.Strong = ( parsers.between(parsers.Inline, parsers.doubleasterisks,
-                                     parsers.doubleasterisks)
-                   + parsers.between(parsers.Inline, parsers.doubleunderscores,
-                                     parsers.doubleunderscores)
-                   ) / writer.strong
+  if options.underscores then
+    larsers.Strong = ( parsers.between(parsers.Inline, parsers.doubleasterisks,
+                                       parsers.doubleasterisks)
+                     + parsers.between(parsers.Inline, parsers.doubleunderscores,
+                                       parsers.doubleunderscores)
+                     ) / writer.strong
 
-  larsers.Emph   = ( parsers.between(parsers.Inline, parsers.asterisk,
-                                     parsers.asterisk)
-                   + parsers.between(parsers.Inline, parsers.underscore,
-                                     parsers.underscore)
-                   ) / writer.emphasis
+    larsers.Emph   = ( parsers.between(parsers.Inline, parsers.asterisk,
+                                       parsers.asterisk)
+                     + parsers.between(parsers.Inline, parsers.underscore,
+                                       parsers.underscore)
+                     ) / writer.emphasis
+  else
+    larsers.Strong = ( parsers.between(parsers.Inline, parsers.doubleasterisks,
+                                       parsers.doubleasterisks)
+                     ) / writer.strong
+
+    larsers.Emph   = ( parsers.between(parsers.Inline, parsers.asterisk,
+                                       parsers.asterisk)
+                     ) / writer.emphasis
+  end
 
   larsers.AutoLinkUrl    = parsers.less
                          * C(parsers.alphanumeric^1 * P("://") * parsers.urlchar^1)
@@ -4164,6 +4214,10 @@ function M.reader.new(writer, options)
     syntax.ContentBlock = parsers.fail
   end
 
+  if not options.codeSpans then
+    syntax.Code = parsers.fail
+  end
+
   if not options.definitionLists then
     syntax.DefinitionList = parsers.fail
   end
@@ -4379,6 +4433,9 @@ return M
 \ifx\markdownOptionCitationNbsps\undefined\else
   citationNbsps = \markdownOptionCitationNbsps,
 \fi
+\ifx\markdownOptionCodeSpans\undefined\else
+  codeSpans = \markdownOptionCodeSpans,
+\fi
 \ifx\markdownOptionContentBlocks\undefined\else
   contentBlocks = \markdownOptionContentBlocks,
 \fi
@@ -4418,6 +4475,9 @@ return M
 \fi
 \ifx\markdownOptionTightLists\undefined\else
   tightLists = \markdownOptionTightLists,
+\fi
+\ifx\markdownOptionUnderscores\undefined\else
+  underscores = \markdownOptionUnderscores,
 \fi}
 }%
 %    \end{macrocode}
