@@ -2651,14 +2651,24 @@ function M.writer.new(options)
      ["^"] = "\\markdownRendererCircumflex{}",
      ["\\"] = "\\markdownRendererBackslash{}",
      ["~"] = "\\markdownRendererTilde{}",
-     ["|"] = "\\markdownRendererPipe{}", }
-   local escaped_minimal_chars = {
+     ["|"] = "\\markdownRendererPipe{}",
+   }
+   local escaped_uri_chars = {
      ["{"] = "\\markdownRendererLeftBrace{}",
      ["}"] = "\\markdownRendererRightBrace{}",
      ["%"] = "\\markdownRendererPercentSign{}",
-     ["\\"] = "\\markdownRendererBackslash{}", }
+     ["\\"] = "\\markdownRendererBackslash{}",
+   }
+   local escaped_citation_chars = {
+     ["{"] = "\\markdownRendererLeftBrace{}",
+     ["}"] = "\\markdownRendererRightBrace{}",
+     ["%"] = "\\markdownRendererPercentSign{}",
+     ["#"] = "\\markdownRendererHash{}",
+     ["\\"] = "\\markdownRendererBackslash{}",
+   }
    local escaped_minimal_strings = {
-     ["^^"] = "\\markdownRendererCircumflex\\markdownRendererCircumflex ", }
+     ["^^"] = "\\markdownRendererCircumflex\\markdownRendererCircumflex ",
+   }
 %    \end{macrocode}
 % Use the \luam{escaped_chars} table to create an escaper function
 % \luamdef{escape} and the \luam{escaped_minimal_chars} and
@@ -2666,8 +2676,9 @@ function M.writer.new(options)
 % \luamdef{escape_minimal}.
 %  \begin{macrocode}
   local escape = util.escaper(escaped_chars)
-  local escape_minimal = util.escaper(escaped_minimal_chars,
+  local escape_citation = util.escaper(escaped_citation_chars,
     escaped_minimal_strings)
+  local escape_uri = util.escaper(escaped_uri_chars, escaped_minimal_strings)
 %    \end{macrocode}
 %
 % Define \luamdef{writer->string} as a function that will transform an input
@@ -2678,10 +2689,12 @@ function M.writer.new(options)
 %  \begin{macrocode}
   if options.hybrid then
     self.string = function(s) return s end
+    self.citation = function(c) return c end
     self.uri = function(u) return u end
   else
     self.string = escape
-    self.uri = escape_minimal
+    self.citation = escape_citation
+    self.uri = escape_uri
   end
 %    \end{macrocode}
 %
@@ -3720,7 +3733,7 @@ function M.reader.new(writer, options)
           cites[#cites+1] = {
               prenote = normalize(raw_cites[i]),
               suppress_author = raw_cites[i+1] == "-",
-              name = writer.string(raw_cites[i+2]),
+              name = writer.citation(raw_cites[i+2]),
               postnote = normalize(raw_cites[i+3]),
           }
       end
