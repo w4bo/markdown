@@ -3039,7 +3039,9 @@ parsers.letter                 = R("AZ","az")
 parsers.alphanumeric           = R("AZ","az","09")
 parsers.keyword                = parsers.letter
                                * parsers.alphanumeric^0
-parsers.internal_punctuation   = S(":;,.#$%&-+?<>~/_")
+parsers.citation_chars         = parsers.alphanumeric
+                               + S("#$%&-+<>~/_")
+parsers.internal_punctuation   = S(":;,.?")
 
 parsers.doubleasterisks        = P("**")
 parsers.doubleunderscores      = P("__")
@@ -3311,9 +3313,14 @@ parsers.localfilepath
 % \paragraph{Parsers Used for Citations}
 %  \begin{macrocode}
 parsers.citation_name = Cs(parsers.dash^-1) * parsers.at
-                      * Cs(parsers.alphanumeric
-                          * (parsers.alphanumeric + parsers.internal_punctuation
-                            - parsers.comma - parsers.semicolon)^0)
+                      * Cs(parsers.citation_chars
+                          * (((parsers.citation_chars + parsers.internal_punctuation
+                              - parsers.comma - parsers.semicolon)
+                             * -#((parsers.internal_punctuation - parsers.comma
+                                  - parsers.semicolon)^0
+                                 * -(parsers.citation_chars + parsers.internal_punctuation
+                                    - parsers.comma - parsers.semicolon)))^0
+                            * parsers.citation_chars)^-1)
 
 parsers.citation_body_prenote
                     = Cs((parsers.alphanumeric^1
@@ -3335,7 +3342,8 @@ parsers.citation_body_postnote
 parsers.citation_body_chunk
                     = parsers.citation_body_prenote
                     * parsers.spnl * parsers.citation_name
-                    * (parsers.comma * parsers.spnl)^-1
+                    * ((parsers.internal_punctuation - parsers.semicolon)
+                      * parsers.spnl)^-1
                     * parsers.citation_body_postnote
 
 parsers.citation_body

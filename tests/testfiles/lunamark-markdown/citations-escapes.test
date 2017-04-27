@@ -69,5 +69,5 @@ BEGIN textCite
 - suppressAuthor: false
 - prenote: 
 - postnote: 
-- name: doe99.
+- name: doe99
 END textCite
