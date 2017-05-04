@@ -54,15 +54,29 @@ dist: implode
 
 # This target produces the TeX directory structure archive.
 $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(MANUAL)
-	mkdir tex source doc
+	@# Installing the macro package.
 	mkdir -p tex/generic/markdown tex/luatex/markdown tex/latex/markdown \
-		tex/context/third/markdown source/generic/markdown doc/generic/markdown
+		tex/context/third/markdown
+	cp markdown.tex tex/generic/markdown/
+	cp markdown.lua tex/luatex/markdown/
+	cp markdown.sty tex/latex/markdown/
+	cp t-markdown.tex tex/context/third/markdown/
+	@# Installing the documentation.
+	mkdir -p doc/generic/markdown doc/latex/markdown/examples \
+		doc/context/third/markdown/examples
+	cp $(MANUAL) doc/generic/markdown/
+	cp examples/context.tex $(EXAMPLES_RESOURCES) doc/context/third/markdown/examples/
+	printf 'To typeset the example, process the file `context.tex` using ConTeXt.\n\n' > \
+		doc/context/third/markdown/examples/README.md
+	cp examples/latex.tex $(EXAMPLES_RESOURCES) doc/latex/markdown/examples/
+	printf 'To typeset the example, process the file `latex.tex` using LaTeX.\n\n' > \
+		doc/latex/markdown/examples/README.md
+	sed -n '/The file `tux.pdf` contains Tux/,$$p' <examples/README.md | tee -a \
+		doc/context/third/markdown/examples/README.md \
+		doc/latex/markdown/examples/README.md
+	@# Installing the sources.
+	mkdir -p source/generic/markdown
 	cp $(DTXARCHIVE) $(INSTALLER) source/generic/markdown
-	cp $(MANUAL) doc/generic/markdown
-	cp markdown.lua tex/luatex/markdown
-	cp markdown.tex tex/generic/markdown
-	cp markdown.sty tex/latex/markdown
-	cp t-markdown.tex tex/context/third/markdown
 	zip -r -v -nw $@ tex source doc 
 	rm -rf tex source doc
 
