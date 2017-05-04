@@ -7,8 +7,8 @@ TDSARCHIVE=markdown.tds.zip
 CTANARCHIVE=markdown.ctan.zip
 DISTARCHIVE=markdown.zip
 ARCHIVES=$(TDSARCHIVE) $(CTANARCHIVE) $(DISTARCHIVE)
-EXAMPLES_SOURCES=examples/context.tex examples/latex.tex examples/tux.pdf \
-	examples/example.md
+EXAMPLES_RESOURCES=examples/tux.pdf examples/example.md examples/scientists.csv
+EXAMPLES_SOURCES=examples/context.tex examples/latex.tex
 EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
 	examples/latex-luatex.pdf examples/latex-pdftex.pdf
 TESTS=tests/test.sh tests/support/*.tex tests/templates/*/*.tex.m4 \
@@ -22,8 +22,8 @@ INSTALLER=markdown.ins docstrip.cfg
 MANUAL=markdown.pdf
 INSTALLABLES=markdown.lua markdown.tex markdown.sty t-markdown.tex
 MAKEABLES=$(MANUAL) $(INSTALLABLES) $(EXAMPLES)
-RESOURCES=$(MANUAL) $(EXAMPLES_SOURCES) $(EXAMPLES) $(MAKES) $(READMES) \
-	$(INSTALLER) $(DTXARCHIVE) $(TESTS)
+RESOURCES=$(MANUAL) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
+	$(MAKES) $(READMES) $(INSTALLER) $(DTXARCHIVE) $(TESTS)
 EVERYTHING=$(RESOURCES) $(INSTALLABLES)
 
 # This is the default pseudo-target. It typesets the manual,
