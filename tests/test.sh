@@ -45,7 +45,7 @@ for TESTFILE; do
         # Compare the expected outcome against the actual outcome.
         diff -c $BUILDDIR/test-expected.log $BUILDDIR/test-actual.log # ||
 #          (sed -n '1,/^\s*>>>\s*$/p' <${TESTFILE##*/} && 
-#            cat test-actual.log) >../$TESTFILE
+#            cat test-actual.log) >"$OLDPWD"/$TESTFILE
 
         # Clean up the testing directory.
         cd "$OLDPWD"
