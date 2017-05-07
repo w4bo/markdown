@@ -15,7 +15,7 @@ This is a text paragraph containing an ellipsis ... and followed by a horizontal
 
 This is inline `code`. This is a [link](http://google.cz "Google").  _This is an *emphasized* span of text_. __This is a **strongly emphasized** span of text__.
 
-  ![tux](tux.pdf "Tux by Larry Ewing <lewing@isc.tamu.edu> (created in GIMP)")
+  ![example image](example-image.pdf "An example image from Martin Scharrer's mwe package")
 
   /scientists.csv (The great minds of the 19th century rendered via a content block)
 

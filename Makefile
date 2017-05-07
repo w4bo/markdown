@@ -7,7 +7,7 @@ TDSARCHIVE=markdown.tds.zip
 CTANARCHIVE=markdown.ctan.zip
 DISTARCHIVE=markdown.zip
 ARCHIVES=$(TDSARCHIVE) $(CTANARCHIVE) $(DISTARCHIVE)
-EXAMPLES_RESOURCES=examples/tux.pdf examples/example.md examples/scientists.csv
+EXAMPLES_RESOURCES=examples/example.md examples/scientists.csv
 EXAMPLES_SOURCES=examples/context.tex examples/latex.tex
 EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
 	examples/latex-luatex.pdf examples/latex-pdftex.pdf
@@ -66,14 +66,7 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(MANUAL)
 		doc/context/third/markdown/examples
 	cp $(MANUAL) doc/generic/markdown/
 	cp examples/context.tex $(EXAMPLES_RESOURCES) doc/context/third/markdown/examples/
-	printf 'To typeset the example, process the file `context.tex` using ConTeXt.\n\n' > \
-		doc/context/third/markdown/examples/README.md
 	cp examples/latex.tex $(EXAMPLES_RESOURCES) doc/latex/markdown/examples/
-	printf 'To typeset the example, process the file `latex.tex` using LaTeX.\n\n' > \
-		doc/latex/markdown/examples/README.md
-	sed -n '/The file `tux.pdf` contains Tux/,$$p' <examples/README.md | tee -a \
-		doc/context/third/markdown/examples/README.md \
-		doc/latex/markdown/examples/README.md
 	@# Installing the sources.
 	mkdir -p source/generic/markdown
 	cp $(DTXARCHIVE) $(INSTALLER) source/generic/markdown
