@@ -4365,9 +4365,9 @@ return M
 % \subsubsection{Logging Facilities}\label{sec:texinterfacelogging}
 %  \begin{macrocode}
 \def\markdownInfo#1{%
-  \message{(l.\the\inputlineno) markdown.tex info: #1.}}%
+  \immediate\write-1{(l.\the\inputlineno) markdown.tex info: #1.}}%
 \def\markdownWarning#1{%
-  \message{(l.\the\inputlineno) markdown.tex warning: #1}}%
+  \immediate\write16{(l.\the\inputlineno) markdown.tex warning: #1}}%
 \def\markdownError#1#2{%
   \errhelp{#2.}%
   \errmessage{(l.\the\inputlineno) markdown.tex error: #1}}%
