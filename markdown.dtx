@@ -4541,15 +4541,12 @@ local convert = md.new(\markdownLuaOptions)
 %    \end{macrocode}
 %
 % \subsubsection{Buffering Markdown Input}
-% The macro \mdef{markdownLuaExecuteFileStream} contains the number of the output
-% file stream that will be used to store the helper Lua script in the file named
-% \m{markdownOptionHelperScriptFileName} during the expansion of the macro
-% \m{markdownLuaExecute} when the Lua shell escape bridge is in use, and to
-% store the markdown input in the file named
-% \m{markdownOptionInputTempFileName} during the expansion of the macro
-% \m{markdownReadAndConvert}.
+% The macros \mdef{markdownInputFileStream} and \mdef{markdownOutputFileStream}
+% contain the number of the input and output file streams that will be used for
+% the IO operations of the package.
 %  \begin{macrocode}
-\csname newwrite\endcsname\markdownLuaExecuteFileStream
+\csname newread\endcsname\markdownInputFileStream
+\csname newwrite\endcsname\markdownOutputFileStream
 %    \end{macrocode}
 %
 % The \mdef{markdownReadAndConvertTab} macro contains the tab character literal.
@@ -4578,7 +4575,7 @@ local convert = md.new(\markdownLuaOptions)
 %    \end{macrocode}
 % Open the \m{markdownOptionInputTempFileName} file for writing.
 %  \begin{macrocode}
-    |immediate|openout|markdownLuaExecuteFileStream%
+    |immediate|openout|markdownOutputFileStream%
       |markdownOptionInputTempFileName%
     |markdownInfo{Buffering markdown input into the temporary %
       input file "|markdownOptionInputTempFileName" and scanning %
@@ -4603,7 +4600,7 @@ local convert = md.new(\markdownLuaOptions)
 % the \m{markdownOptionInputTempFileName} file.
 %  \begin{macrocode}
       |ifx|relax##3|relax%
-        |immediate|write|markdownLuaExecuteFileStream{##1}%
+        |immediate|write|markdownOutputFileStream{##1}%
       |else%
 %    \end{macrocode}
 % When the ending token sequence appears in the line, make the next newline
@@ -4615,7 +4612,7 @@ local convert = md.new(\markdownLuaOptions)
 %  \begin{macrocode}
         |def^^M{%
           |markdownInfo{The ending token sequence was found}%
-          |immediate|closeout|markdownLuaExecuteFileStream%
+          |immediate|closeout|markdownOutputFileStream%
           |endgroup%
           |markdownInput|markdownOptionInputTempFileName%
           #2}%
@@ -4733,14 +4730,14 @@ local convert = md.new(\markdownLuaOptions)
 % input Lua code prepended with \pkg{kpathsea} initialization, so that Lua
 % modules from the \TeX{} distribution are available.
 %  \begin{macrocode}
-  \immediate\openout\markdownLuaExecuteFileStream=%
+  \immediate\openout\markdownOutputFileStream=%
     \markdownOptionHelperScriptFileName
   \markdownInfo{Writing a helper Lua script to the file
     "\markdownOptionHelperScriptFileName"}%
-  \immediate\write\markdownLuaExecuteFileStream{%
+  \immediate\write\markdownOutputFileStream{%
     local kpse = require('kpse')
     kpse.set_program_name('luatex') #1}%
-  \immediate\closeout\markdownLuaExecuteFileStream
+  \immediate\closeout\markdownOutputFileStream
 %    \end{macrocode}
 % Execute the generated \m{markdownOptionHelperScriptFileName} Lua script using
 % the \TeX{}Lua binary and store the output in the
@@ -4790,6 +4787,14 @@ local convert = md.new(\markdownLuaOptions)
   \catcode`\\=12%
   |gdef|markdownInput#1{%
     |markdownInfo{Including markdown document "#1"}%
+%    \end{macrocode}
+% Attempt to open the markdown document to record it in the \t`.log` and
+% \t`.fls` files. This allows external programs such as \LaTeX Mk to track
+% changes to the markdown document. Apart from that, this is an (unreliable)
+% check that the document exists before we execute Lua code.
+%  \begin{macrocode}
+    |openin|markdownInputFileStream#1
+    |closein|markdownInputFileStream
     |markdownLuaExecute{%
       |markdownPrepare
       local input = assert(io.open("#1","r")):read("*a")
