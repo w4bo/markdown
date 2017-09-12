@@ -367,6 +367,34 @@ local M = {}
 %  \begin{macrocode}
 local defaultOptions = {}
 %    \end{macrocode}
+% \pagebreak
+% \paragraph{File and Directory Names}
+% \begin{optionlist}
+%   \Valitem[.]{cacheDir}{path}
+%     A path to the directory containing auxiliary cache files. It is
+%     considered sane to set the path to a subdirectory of \t`outputDir`.
+%     If the last segment of the path does not exist, it will be created by the
+%     plain \TeX, \LaTeX, and \Hologo{ConTeXt} implementations. The Lua
+%     implementation expects that the entire path already exists.
+% 
+%     When iteratively writing and typesetting a markdown document, the cache
+%     files are going to accumulate over time. You are advised to clean the
+%     cache directory every now and then, or to set it to a temporary filesystem
+%     (such as \t`/tmp` on \acro{un*x} systems), which gets periodically
+%     emptied.
+%  \begin{macrocode}
+defaultOptions.cacheDir = "."
+%    \end{macrocode}
+%
+%   \Valitem[.]{outputDir}{path}
+%     A path to the directory containing output files. The path must be set
+%     to the same value as the \t`-output-directory` option of your \TeX\
+%     engine for the package to function correctly.
+%  \begin{macrocode}
+defaultOptions.outputDir = "."
+%    \end{macrocode}
+% \end{optionlist}
+% \paragraph{Parser Options}
 % \begin{optionlist}
 %   \Optitem[false]{blankBeforeBlockquote}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
@@ -408,18 +436,6 @@ defaultOptions.blankBeforeHeading = false
 %     \end{valuelist}
 %  \begin{macrocode}
 defaultOptions.breakableBlockquotes = false
-%    \end{macrocode}
-%
-%   \Valitem[.]{cacheDir}{directory name}
-%     The path to the directory containing auxiliary cache files.
-% 
-%     When iteratively writing and typesetting a markdown document, the cache
-%     files are going to accumulate over time. You are advised to clean the
-%     cache directory every now and then, or to set it to a temporary filesystem
-%     (such as \t`/tmp` on \acro{un*x} systems), which gets periodically
-%     emptied.
-%  \begin{macrocode}
-defaultOptions.cacheDir = "."
 %    \end{macrocode}
 %
 %   \Optitem[false]{citationNbsps}{\opt{true}, \opt{false}}
@@ -807,7 +823,7 @@ defaultOptions.underscores = true
 % \ref{sec:luaoptions}), while some of them are specific to the plain \TeX{}
 % interface.
 %
-% \paragraph{File and directory names}
+% \paragraph{File and Directory names}
 % The \mdef{markdownOptionHelperScriptFileName} macro sets the filename of the
 % helper Lua script file that is created during the conversion from markdown to
 % plain \TeX{} in \TeX{} engines without the \m{directlua} primitive. It
@@ -846,7 +862,16 @@ defaultOptions.underscores = true
 % package. The same limitations apply here as in the case of the
 % \m{markdownOptionHelperScriptFileName} macro.
 %  \begin{macrocode}
-\def\markdownOptionCacheDir{./_markdown_\jobname}%
+\def\markdownOptionCacheDir{\markdownOptionOutputDir/_markdown_\jobname}%
+%    \end{macrocode}
+%
+% The \mdef{markdownOptionOutputDir} macro corresponds to the Lua interface
+% \Opt{outputDir} option that sets the name of the directory that will contain
+% the produced cache files. The option defaults to \t`.`. The same limitations
+% apply here as in the case of the \m{markdownOptionHelperScriptFileName}
+% macro.
+%  \begin{macrocode}
+\def\markdownOptionOutputDir{.}%
 %    \end{macrocode}
 %
 % \paragraph{Lua Interface Options}
@@ -1635,6 +1660,8 @@ defaultOptions.underscores = true
   \def\markdownOptionHybrid{#1}}%
 \define@key{markdownOptions}{inlineFootnotes}[true]{%
   \def\markdownOptionInlineFootnotes{#1}}%
+\define@key{markdownOptions}{outputDir}{%
+  \def\markdownOptionOutputDir{#1}}%
 \define@key{markdownOptions}{preserveTabs}[true]{%
   \def\markdownOptionPreserveTabs{#1}}%
 \define@key{markdownOptions}{smartEllipses}[true]{%
@@ -4459,9 +4486,7 @@ return M
 \ifx\markdownOptionBreakableBlockquotes\undefined\else
   breakableBlockquotes = \markdownOptionBreakableBlockquotes,
 \fi
-\ifx\markdownOptionCacheDir\undefined\else
   cacheDir = "\markdownOptionCacheDir",
-\fi
 \ifx\markdownOptionCitations\undefined\else
   citations = \markdownOptionCitations,
 \fi
@@ -4499,6 +4524,7 @@ return M
 \ifx\markdownOptionInlineFootnotes\undefined\else
   inlineFootnotes = \markdownOptionInlineFootnotes,
 \fi
+  outputDir = "\markdownOptionOutputDir",
 \ifx\markdownOptionPreserveTabs\undefined\else
   preserveTabs = \markdownOptionPreserveTabs,
 \fi
@@ -4746,8 +4772,10 @@ local convert = md.new(\markdownLuaOptions)
   \markdownInfo{Executing a helper Lua script from the file
     "\markdownOptionHelperScriptFileName" and storing the result in the
     file "\markdownOptionOutputTempFileName"}%
-  \markdownExecute{texlua "\markdownOptionHelperScriptFileName" >
-    "\markdownOptionOutputTempFileName"}%
+  \markdownExecute{texlua "\markdownOptionOutputDir
+    /\markdownOptionHelperScriptFileName" > %
+    "\markdownOptionOutputDir
+    /\markdownOptionOutputTempFileName"}%
 %    \end{macrocode}
 % \m{input} the generated \m{markdownOptionOutputTempFileName} file.
 %  \begin{macrocode}
