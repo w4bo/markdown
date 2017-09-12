@@ -4813,8 +4813,7 @@ local convert = md.new(\markdownLuaOptions)
 %    \end{macrocode}
 % Attempt to open the markdown document to record it in the \t`.log` and
 % \t`.fls` files. This allows external programs such as \LaTeX Mk to track
-% changes to the markdown document. Apart from that, this is an (unreliable)
-% check that the document exists before we execute Lua code.
+% changes to the markdown document.
 %  \begin{macrocode}
     |openin|markdownInputFileStream#1
     |closein|markdownInputFileStream
