@@ -256,10 +256,6 @@ local md5 = require("md5")
 %   \item Unless your \TeX{} engine is globally configured to enable shell
 %     access, you will need to provide the \t`-shell-escape` parameter to your
 %     engine when typesetting a document.
-%   \item You will need to avoid the use of the \t`-output-directory` \TeX{}
-%     parameter when typesetting a document. The parameter causes auxiliary
-%     files to be written to a specified output directory, but the shell will
-%     be executed in the current directory. Things will not work out.
 % \end{itemize}
 %
 % \iffalse
@@ -367,7 +363,6 @@ local M = {}
 %  \begin{macrocode}
 local defaultOptions = {}
 %    \end{macrocode}
-% \pagebreak
 % \paragraph{File and Directory Names}
 % \begin{optionlist}
 %   \Valitem[.]{cacheDir}{path}
