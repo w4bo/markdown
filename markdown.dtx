@@ -230,7 +230,7 @@ local md5 = require("md5")
 % \subsubsection{Plain \TeX{} Prerequisites}\label{sec:texprerequisites}
 % The plain \TeX{} part of the package requires that the plain \TeX{}
 % format (or its superset) is loaded, all the Lua prerequisites (see
-% Section \ref{sec:luaprerequisites}) and the following Lua module:
+% Section \ref{sec:luaprerequisites}), and the following Lua module:
 % \begin{description}
 %   \item[\pkg{Lua File System}] A library that provides access to the
 %     filesystem via \acro{os}-specific syscalls. It is used by the plain
@@ -250,13 +250,10 @@ local md5 = require("md5")
 % \m{directlua} primitive or the shell access file stream 18 is available in
 % your \TeX{} engine. If only the shell access file stream is available in your
 % \TeX{} engine (as is the case with \hologo{pdfTeX} and \Hologo{XeTeX}) or if
-% you enforce the use of shell using the \m{markdownMode} macro, then note the
-% following:
-% \begin{itemize}
-%   \item Unless your \TeX{} engine is globally configured to enable shell
-%     access, you will need to provide the \t`-shell-escape` parameter to your
-%     engine when typesetting a document.
-% \end{itemize}
+% you enforce the use of shell using the \m{markdownMode} macro, then note that
+% unless your \TeX{} engine is globally configured to enable shell access, you
+% will need to provide the \t`-shell-escape` parameter to your engine when
+% typesetting a document.
 %
 % \iffalse
 %</tex>
@@ -275,13 +272,22 @@ local md5 = require("md5")
 %     This package is used to provide the \m{markdownSetup} macro, the package
 %     options processing, as well as the parameters of the \envm{markdown*}
 %     \LaTeX{} environment.
+%  \begin{macrocode}
+\RequirePackage{keyval}
+%    \end{macrocode}
 %   \item[\pkg{url}] A package that provides the \m{url} macro for the
 %     typesetting of \acro{url}s. It is used to provide the default token renderer
 %     prototype (see Section \ref{sec:texrendererprototypes}) for links.
+%  \begin{macrocode}
+\RequirePackage{url}
+%    \end{macrocode}
 %   \item[\pkg{graphicx}] A package that provides the \m{includegraphics} macro for
 %     the typesetting of images. It is used to provide the corresponding
 %     default token renderer prototype (see Section
 %     \ref{sec:texrendererprototypes}).
+%  \begin{macrocode}
+\RequirePackage{graphicx}
+%    \end{macrocode}
 %   \item[\pkg{paralist}] A package that provides the \envm{compactitem},
 %     \envm{compactenum}, and \envm{compactdesc} macros for the
 %     typesetting of tight bulleted lists, ordered lists, and definition lists.
@@ -290,13 +296,22 @@ local md5 = require("md5")
 %   \item[\pkg{ifthen}] A package that provides a concise syntax for the
 %     inspection of macro values. It is used to determine whether or not the
 %     \pkg{paralist} package should be loaded based on the user options.
+%  \begin{macrocode}
+\RequirePackage{ifthen}
+%    \end{macrocode}
 %   \item[\pkg{fancyvrb}] A package that provides the \m{VerbatimInput} macros
 %     for the verbatim inclusion of files containing code.  It is used to
 %     provide the corresponding default token renderer prototype (see Section
 %     \ref{sec:texrendererprototypes}).
+%  \begin{macrocode}
+\RequirePackage{fancyvrb}
+%    \end{macrocode}
 %   \item[\pkg{csvsimple}] A package that provides the default token renderer
 %     prototype for iA\,Writer content blocks with the \acro{csv} filename
 %     extension (see Section \ref{sec:texrendererprototypes}).
+%  \begin{macrocode}
+\RequirePackage{csvsimple}
+%    \end{macrocode}
 % \end{description}
 %
 % \iffalse
@@ -306,7 +321,8 @@ local md5 = require("md5")
 % \subsubsection{\Hologo{ConTeXt} prerequisites}
 % The \Hologo{ConTeXt} part of the package requires that either the Mark II or
 % the Mark IV format is loaded, all the plain \TeX{} prerequisites (see
-% Section \ref{sec:texprerequisites}), and the following modules:
+% Section \ref{sec:texprerequisites}), and the following \Hologo{ConTeXt}
+% modules:
 % \begin{description}
 %   \item[\pkg{m-database}] A module that provides the default token renderer
 %     prototype for iA\,Writer content blocks with the \acro{csv} filename
@@ -363,6 +379,7 @@ local M = {}
 %  \begin{macrocode}
 local defaultOptions = {}
 %    \end{macrocode}
+% \pagebreak
 % \paragraph{File and Directory Names}
 % \begin{optionlist}
 %   \Valitem[.]{cacheDir}{path}
@@ -834,20 +851,30 @@ defaultOptions.underscores = true
 %
 % The \mdef{markdownOptionInputTempFileName} macro sets the filename of the
 % temporary input file that is created during the conversion from markdown to
-% plain \TeX{} in \TeX{} engines without the \m{directlua} primitive. It
-% defaults to \m{jobname}\t`.markdown.out`. The same limitations as in
-% the case of the \m{markdownOptionHelperScriptFileName} macro apply here.
+% plain \TeX{} in \m{markdownMode} other than \t`2`. It defaults to
+% \m{jobname}\t`.markdown.out`. The same limitations as in the case of the
+% \m{markdownOptionHelperScriptFileName} macro apply here.
 %  \begin{macrocode}
 \def\markdownOptionInputTempFileName{\jobname.markdown.in}%
 %    \end{macrocode}
 %
 % The \mdef{markdownOptionOutputTempFileName} macro sets the filename of the
 % temporary output file that is created during the conversion from markdown to
-% plain \TeX{} in \TeX{} engines without the \m{directlua} primitive. It
-% defaults to \m{jobname}\t`.markdown.out`. The same limitations apply here as
-% in the case of the \m{markdownOptionHelperScriptFileName} macro.
+% plain \TeX{} in \m{markdownMode} other than \t`2`. It defaults to
+% \m{jobname}\t`.markdown.out`. The same limitations apply here as in the case
+% of the \m{markdownOptionHelperScriptFileName} macro.
 %  \begin{macrocode}
 \def\markdownOptionOutputTempFileName{\jobname.markdown.out}%
+%    \end{macrocode}
+%
+% The \mdef{markdownOptionErrorTempFileName} macro sets the filename of the
+% temporary output file that is created when a Lua error is encountered during
+% the conversion from markdown to plain \TeX{} in \m{markdownMode} other than
+% \t`2`. It defaults to \m{jobname}\t`.markdown.err`. The same limitations
+% apply here as in the case of the \m{markdownOptionHelperScriptFileName}
+% macro.
+%  \begin{macrocode}
+\def\markdownOptionErrorTempFileName{\jobname.markdown.err}%
 %    \end{macrocode}
 %
 % The \mdef{markdownOptionCacheDir} macro corresponds to the Lua interface
@@ -1614,13 +1641,18 @@ defaultOptions.underscores = true
 % The following options map directly to the option macros exposed by the plain
 % \TeX{} interface (see Section \ref{sec:texoptions}).
 %  \begin{macrocode}
-\RequirePackage{keyval}
 \define@key{markdownOptions}{helperScriptFileName}{%
   \def\markdownOptionHelperScriptFileName{#1}}%
 \define@key{markdownOptions}{inputTempFileName}{%
   \def\markdownOptionInputTempFileName{#1}}%
 \define@key{markdownOptions}{outputTempFileName}{%
   \def\markdownOptionOutputTempFileName{#1}}%
+\define@key{markdownOptions}{errorTempFileName}{%
+  \def\markdownOptionErrorTempFileName{#1}}%
+\define@key{markdownOptions}{cacheDir}{%
+  \def\markdownOptionCacheDir{#1}}%
+\define@key{markdownOptions}{outputDir}{%
+  \def\markdownOptionOutputDir{#1}}%
 \define@key{markdownOptions}{blankBeforeBlockquote}[true]{%
   \def\markdownOptionBlankBeforeBlockquote{#1}}%
 \define@key{markdownOptions}{blankBeforeCodeFence}[true]{%
@@ -1629,8 +1661,6 @@ defaultOptions.underscores = true
   \def\markdownOptionBlankBeforeHeading{#1}}%
 \define@key{markdownOptions}{breakableBlockquotes}[true]{%
   \def\markdownOptionBreakableBlockquotes{#1}}%
-\define@key{markdownOptions}{cacheDir}{%
-  \def\markdownOptionCacheDir{#1}}%
 \define@key{markdownOptions}{citations}[true]{%
   \def\markdownOptionCitations{#1}}%
 \define@key{markdownOptions}{citationNbsps}[true]{%
@@ -1655,8 +1685,6 @@ defaultOptions.underscores = true
   \def\markdownOptionHybrid{#1}}%
 \define@key{markdownOptions}{inlineFootnotes}[true]{%
   \def\markdownOptionInlineFootnotes{#1}}%
-\define@key{markdownOptions}{outputDir}{%
-  \def\markdownOptionOutputDir{#1}}%
 \define@key{markdownOptions}{preserveTabs}[true]{%
   \def\markdownOptionPreserveTabs{#1}}%
 \define@key{markdownOptions}{smartEllipses}[true]{%
@@ -4745,36 +4773,64 @@ local convert = md.new(\markdownLuaOptions)
 % engine, but it can use the \luam{print} function in the same manner it
 % would use the \luam{tex.print} method.
 %  \begin{macrocode}
-\def\markdownLuaExecute#1{%
+\begingroup
+%    \end{macrocode}
+% Swap the category code of the backslash symbol and the pipe symbol, so that
+% we may use the backslash symbol freely inside the Lua code.
+%  \begin{macrocode}
+  \catcode`|=0%
+  \catcode`\\=12%
+  |gdef|markdownLuaExecute#1{%
 %    \end{macrocode}
 % Create the file \m{markdownOptionHelperScriptFileName} and fill it with the
 % input Lua code prepended with \pkg{kpathsea} initialization, so that Lua
 % modules from the \TeX{} distribution are available.
 %  \begin{macrocode}
-  \immediate\openout\markdownOutputFileStream=%
-    \markdownOptionHelperScriptFileName
-  \markdownInfo{Writing a helper Lua script to the file
-    "\markdownOptionHelperScriptFileName"}%
-  \immediate\write\markdownOutputFileStream{%
-    local kpse = require('kpse')
-    kpse.set_program_name('luatex') #1}%
-  \immediate\closeout\markdownOutputFileStream
+    |immediate|openout|markdownOutputFileStream=%
+      |markdownOptionHelperScriptFileName
+    |markdownInfo{Writing a helper Lua script to the file
+      "|markdownOptionHelperScriptFileName"}%
+    |immediate|write|markdownOutputFileStream{%
+      local ran_ok, error = pcall(function()
+        local kpse = require('kpse')
+        kpse.set_program_name('luatex')
+        #1
+      end)
+%    \end{macrocode}
+% If there was an error, use the file \m{markdownOptionErrorTempFileName} to
+% store the error message.
+%  \begin{macrocode}
+      if not ran_ok then
+        local file = io.open("%
+          |markdownOptionOutputDir
+          /|markdownOptionErrorTempFileName", "w")
+        if file then
+          file:write(error .. "\n")
+          file:close()
+        end
+        print('\\markdownError{An error was encountered while executing
+               Lua code}{For further clues, examine the file
+               "|markdownOptionOutputDir
+               /|markdownOptionErrorTempFileName"}')
+      end}%
+    |immediate|closeout|markdownOutputFileStream
 %    \end{macrocode}
 % Execute the generated \m{markdownOptionHelperScriptFileName} Lua script using
 % the \TeX{}Lua binary and store the output in the
 % \m{markdownOptionOutputTempFileName} file.
 %  \begin{macrocode}
-  \markdownInfo{Executing a helper Lua script from the file
-    "\markdownOptionHelperScriptFileName" and storing the result in the
-    file "\markdownOptionOutputTempFileName"}%
-  \markdownExecute{texlua "\markdownOptionOutputDir
-    /\markdownOptionHelperScriptFileName" > %
-    "\markdownOptionOutputDir
-    /\markdownOptionOutputTempFileName"}%
+    |markdownInfo{Executing a helper Lua script from the file
+      "|markdownOptionHelperScriptFileName" and storing the result in the
+      file "|markdownOptionOutputTempFileName"}%
+    |markdownExecute{texlua "|markdownOptionOutputDir
+      /|markdownOptionHelperScriptFileName" > %
+      "|markdownOptionOutputDir
+      /|markdownOptionOutputTempFileName"}%
 %    \end{macrocode}
 % \m{input} the generated \m{markdownOptionOutputTempFileName} file.
 %  \begin{macrocode}
-  \input\markdownOptionOutputTempFileName\relax}%
+    |input|markdownOptionOutputTempFileName|relax}%
+|endgroup
 %    \end{macrocode}
 %
 % \subsubsection{Direct Lua Access}\label{sec:directlua}
@@ -4911,17 +4967,13 @@ local convert = md.new(\markdownLuaOptions)
 %
 % \subsubsection{Token Renderer Prototypes}
 % The following configuration should be considered placeholder.
-%  \begin{macrocode}
-\RequirePackage{url}
-\RequirePackage{graphicx}
-%    \end{macrocode}
+%
 % If the \m{markdownOptionTightLists} macro expands to \t`false`, do not load
 % the \pkg{paralist} package. This is necessary for \Hologo{LaTeX2e} document
 % classes that do not play nice with \pkg{paralist}, such as \pkg{beamer}.
 % If the \m{markdownOptionTightLists} is undefined and the \pkg{beamer}
 % document class is in use, then do not load the \pkg{paralist} package either.
 %  \begin{macrocode}
-\RequirePackage{ifthen}
 \ifx\markdownOptionTightLists\undefined
   \@ifclassloaded{beamer}{}{
     \RequirePackage{paralist}}
@@ -4951,8 +5003,6 @@ local convert = md.new(\markdownLuaOptions)
     olEndTight = {\markdownRendererOlEnd},
     dlBeginTight = {\markdownRendererDlBegin},
     dlEndTight = {\markdownRendererDlEnd}}}}
-\RequirePackage{fancyvrb}
-\RequirePackage{csvsimple}
 \markdownSetup{rendererPrototypes={
   lineBreak = {\\},
   leftBrace = {\textbraceleft},
