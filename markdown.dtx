@@ -747,8 +747,8 @@ defaultOptions.underscores = true
 % \ref{sec:luaoptions}) used during the conversion from markdown to plain
 % \TeX{}, and for changing the way markdown the tokens are rendered.
 %  \begin{macrocode}
-\def\markdownLastModified{2017/09/12}%
-\def\markdownVersion{2.5.4}%
+\def\markdownLastModified{2017/12/14}%
+\def\markdownVersion{2.5.5-dev}%
 %    \end{macrocode}
 %
 % The plain \TeX{} interface is implemented by the \t`markdown.tex` file that
@@ -1053,8 +1053,7 @@ defaultOptions.underscores = true
 % \t`contentBlocksLanguageMap` Lua option.} contains a record $(k, v)$, then a
 % non-online-image content block with the filename extension $s,
 % s$\t`:lower()`${}=k$ is considered to be in a known programming language $v$.
-% 
-% The macro receives four arguments: the local file name extension $s$ cast to
+% The macro receives five arguments: the local file name extension $s$ cast to
 % the lower case, the language $v$, the fully escaped \acro{uri} that can be
 % directly typeset, the raw \acro{uri} that can be used outside typesetting,
 % and the title of the content block.
@@ -1414,7 +1413,7 @@ defaultOptions.underscores = true
 \def\markdownRendererImagePrototype#1#2#3#4{}%
 \def\markdownRendererContentBlockPrototype#1#2#3#4{}%
 \def\markdownRendererContentBlockOnlineImagePrototype#1#2#3#4{}%
-\def\markdownRendererContentBlockCodePrototype#1#2#3#4{}%
+\def\markdownRendererContentBlockCodePrototype#1#2#3#4#5{}%
 \def\markdownRendererUlBeginPrototype{}%
 \def\markdownRendererUlBeginTightPrototype{}%
 \def\markdownRendererUlItemPrototype{}%
