@@ -80,21 +80,22 @@
     title     = {File transclusion syntax for Markdown},
     date      = {2017-01-19},
     url       = {https://github.com/iainc/Markdown-Content-Blocks},
-    urldate   = {2017-03-18}}
-  @book{luatex16,
+    urldate   = {2018-01-08}}
+  @book{luatex17,
     author    = {{Lua\TeX{} development team}},
     title     = {Lua\TeX{} reference manual},
-    date      = {2016-09-27},
+    year      = {2017},
+    month     = {2},
     url       = {http://www.luatex.org/svn/trunk/manual/luatex.pdf},
-    urldate   = {2016-11-27}}
-  @book{latex16,
+    urldate   = {2018-01-08}}
+  @book{latex17,
     author    = {Braams, Johannes and Carlisle, David and Jeffrey, Alan and
                  Lamport, Leslie and Mittelbach, Frank and Rowley, Chris and
                  Schöpf, Rainer},
     title     = {The \Hologo{LaTeX2e} Sources},
-    date      = {2016-03-31},
+    date      = {2017-04-15},
     url       = {http://mirrors.ctan.org/macros/latex/base/source2e.pdf},
-    urldate   = {2016-09-27}}
+    urldate   = {2018-01-08}}
   @book{ierusalimschy13,
     author    = {Ierusalimschy, Roberto},
     year      = {2013},
@@ -156,11 +157,11 @@
 % \fi
 %  \begin{macrocode}
 local metadata = {
-    version   = "2.5.4",
+    version   = "2.5.5",
     comment   = "A module for the conversion from markdown to plain TeX",
     author    = "John MacFarlane, Hans Hagen, Vít Novotný",
-    copyright = "2009-2017 John MacFarlane, Hans Hagen; " ..
-                "2016-2017 Vít Novotný",
+    copyright = "2009-2016 John MacFarlane, Hans Hagen; " ..
+                "2016-2018 Vít Novotný",
     license   = "LPPL 1.3"
 }
 if not modules then modules = { } end
@@ -221,7 +222,7 @@ local md5 = require("md5")
 %    \end{macrocode}
 % \end{description}
 % All the abovelisted modules are statically linked into the current version of
-% the Lua\TeX{} engine (see \cite[Section~3.3]{luatex16}).
+% the Lua\TeX{} engine (see \cite[Section~3.3]{luatex17}).
 %
 % \iffalse
 %</lua>
@@ -241,10 +242,10 @@ local md5 = require("md5")
 %
 %     The plain \TeX{} code makes use of the \luam{isdir} method that was added
 %     to the \pkg{Lua File System} library by the Lua\TeX{} engine developers
-%     (see \cite[Section~3.2]{luatex16}).
+%     (see \cite[Section~3.2]{luatex17}).
 % \end{description}
 % The \pkg{Lua File System} module is statically linked into the Lua\TeX{}
-% engine (see \cite[Section~3.3]{luatex16}).
+% engine (see \cite[Section~3.3]{luatex17}).
 %
 % The plain \TeX{} part of the package also requires that either the Lua\TeX{}
 % \m{directlua} primitive or the shell access file stream 18 is available in
@@ -747,8 +748,8 @@ defaultOptions.underscores = true
 % \ref{sec:luaoptions}) used during the conversion from markdown to plain
 % \TeX{}, and for changing the way markdown the tokens are rendered.
 %  \begin{macrocode}
-\def\markdownLastModified{2017/12/14}%
-\def\markdownVersion{2.5.5-dev}%
+\def\markdownLastModified{2018/01/08}%
+\def\markdownVersion{2.5.5}%
 %    \end{macrocode}
 %
 % The plain \TeX{} interface is implemented by the \t`markdown.tex` file that
@@ -4703,7 +4704,7 @@ local convert = md.new(\markdownLuaOptions)
 % The package assumes that although the user is not using the Lua\TeX{} engine,
 % their TeX distribution contains it, and uses shell access to produce and
 % execute Lua scripts using the \TeX{}Lua interpreter (see
-% \cite[Section~3.1.1]{luatex16}).
+% \cite[Section~3.1.1]{luatex17}).
 %  \begin{macrocode}
 \ifnum\markdownMode<2\relax
 \ifnum\markdownMode=0\relax
@@ -4889,7 +4890,7 @@ local convert = md.new(\markdownLuaOptions)
 % \fi\subsection{\LaTeX{} Implementation}\label{sec:lateximplementation}
 % The \LaTeX{} implemenation makes use of the fact that, apart from some subtle
 % differences, \LaTeX{} implements the majority of the plain \TeX{} format
-% (see \cite[Section~9]{latex16}). As a consequence, we can directly reuse the
+% (see \cite[Section~9]{latex17}). As a consequence, we can directly reuse the
 % existing plain \TeX{} implementation.
 %  \begin{macrocode}
 \input markdown
