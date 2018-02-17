@@ -42,10 +42,16 @@ legacy TeX distributions.
 
 # Further information #
 
-For further information, consult the package documentation, which can be
-typeset by running the [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
-(`latexmk -pdf markdown.dtx`). [LaTeXMK][LaTeXMK] should be included in your
-TeX distribution. The typeset documentation will reside in the file
-`markdown.pdf`.
+For further information, consult:
+
+1. the technical documentation, which can be typeset by running the
+   [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
+   (`latexmk -pdf markdown.dtx`). [LaTeXMK][LaTeXMK] should be included in your
+   TeX distribution. The typeset documentation will reside in the file
+   `markdown.pdf`, and
+2. the user manual, which can be produced by interpreting the `markdown.ins`
+   file using a Unicode-aware TeX engine, such as XeTeX (`xetex markdown.ins`)
+   or LuaTeX (`luatex markdown.ins`). The manual will reside in the file
+   `markdown.md`.
 
  [LaTeXMK]: https://www.ctan.org/pkg/latexmk/

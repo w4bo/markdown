@@ -1,4 +1,4 @@
-.PHONY: all clean implode dist test
+.PHONY: all clean implode dist docs test
 SUBDIRECTORIES=examples
 AUXFILES=markdown.bbl markdown.cb markdown.cb2 markdown.glo markdown.bbl \
 	markdown.run.xml markdown.bib
@@ -19,10 +19,12 @@ READMES=README.md LICENSE VERSION examples/README.md tests/README.md \
 	tests/templates/*/README.md tests/testfiles/*/README.md
 DTXARCHIVE=markdown.dtx
 INSTALLER=markdown.ins docstrip.cfg
-MANUAL=markdown.pdf
+TECHNICAL_DOCUMENTATION=markdown.pdf
+USER_MANUAL=markdown.md
+DOCUMENTATION=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL)
 INSTALLABLES=markdown.lua markdown.tex markdown.sty t-markdown.tex
-MAKEABLES=$(MANUAL) $(INSTALLABLES) $(EXAMPLES)
-RESOURCES=$(MANUAL) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
+MAKEABLES=$(TECHNICAL_DOCUMENTATION) $(INSTALLABLES) $(EXAMPLES)
+RESOURCES=$(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
 	$(MAKES) $(READMES) $(INSTALLER) $(DTXARCHIVE) $(TESTS)
 EVERYTHING=$(RESOURCES) $(INSTALLABLES)
 
@@ -33,16 +35,23 @@ all: $(MAKEABLES) clean
 		make -C $$DIR all; done
 
 # This target extracts the source files out of the DTX archive.
-$(INSTALLABLES): $(INSTALLER) $(DTXARCHIVE)
+$(INSTALLABLES) $(USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
 	xetex $<
 
 # This target typesets the manual.
-$(MANUAL): $(DTXARCHIVE)
+$(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE)
 	latexmk -pdf $<
 
 # This target typesets the examples.
 $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
 	make -C examples
+
+# This pseudo-target converts the user manual to an HTML page.
+docs: markdown.html
+
+# This target converts the user manual to an HTML page.
+%.html: %.md
+	pandoc -f markdown -t html -s --toc <$< >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:
@@ -53,7 +62,7 @@ dist: implode
 	make $(ARCHIVES) clean
 
 # This target produces the TeX directory structure archive.
-$(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(MANUAL)
+$(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
 	@# Installing the macro package.
 	mkdir -p tex/generic/markdown tex/luatex/markdown tex/latex/markdown \
 		tex/context/third/markdown
@@ -64,7 +73,7 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(MANUAL)
 	@# Installing the documentation.
 	mkdir -p doc/generic/markdown doc/latex/markdown/examples \
 		doc/context/third/markdown/examples
-	cp $(MANUAL) doc/generic/markdown/
+	cp $(DOCUMENTATION) doc/generic/markdown/
 	cp examples/context.tex $(EXAMPLES_RESOURCES) doc/context/third/markdown/examples/
 	cp examples/latex.tex $(EXAMPLES_RESOURCES) doc/latex/markdown/examples/
 	@# Installing the sources.
