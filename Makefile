@@ -20,7 +20,7 @@ READMES=README.md LICENSE VERSION examples/README.md tests/README.md \
 DTXARCHIVE=markdown.dtx
 INSTALLER=markdown.ins docstrip.cfg
 MANUAL=markdown.pdf
-INSTALLABLES=markdown.lua markdown.tex markdown.sty t-markdown.tex
+INSTALLABLES=markdown.lua markdown-cli.lua markdown.tex markdown.sty t-markdown.tex
 MAKEABLES=$(MANUAL) $(INSTALLABLES) $(EXAMPLES)
 RESOURCES=$(MANUAL) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
 	$(MAKES) $(READMES) $(INSTALLER) $(DTXARCHIVE) $(TESTS)
@@ -56,10 +56,11 @@ dist: implode
 $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(MANUAL)
 	@# Installing the macro package.
 	mkdir -p tex/generic/markdown tex/luatex/markdown tex/latex/markdown \
-		tex/context/third/markdown
-	cp markdown.tex tex/generic/markdown/
+		tex/context/third/markdown scripts/markdown
 	cp markdown.lua tex/luatex/markdown/
+	cp markdown-cli.lua scripts/markdown/
 	cp markdown.sty tex/latex/markdown/
+	cp markdown.tex tex/generic/markdown/
 	cp t-markdown.tex tex/context/third/markdown/
 	@# Installing the documentation.
 	mkdir -p doc/generic/markdown doc/latex/markdown/examples \
@@ -70,8 +71,8 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(MANUAL)
 	@# Installing the sources.
 	mkdir -p source/generic/markdown
 	cp $(DTXARCHIVE) $(INSTALLER) source/generic/markdown
-	zip -r -v -nw $@ tex source doc 
-	rm -rf tex source doc
+	zip -r -v -nw $@ doc scripts source tex
+	rm -rf doc scripts source tex
 
 # This target produces the distribution archive.
 $(DISTARCHIVE): $(EVERYTHING) $(TDSARCHIVE)

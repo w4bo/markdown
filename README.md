@@ -14,6 +14,7 @@ TeX engine, such as XeTeX (`xetex markdown.ins`) or LuaTeX
 (`luatex markdown.ins`). This should produce the following files:
 
  * `markdown.lua` -- The Lua module
+ * `markdown-cli.lua` -- The Lua command-line interface
  * `markdown.tex` -- The plain TeX macro package
  * `markdown.sty` -- The LaTeX package
  * `t-markdown.tex` -- The ConTeXt module
@@ -24,6 +25,7 @@ To perform a local installation, place these files into your TeX directory
 structure. This is generally where the individual files should be placed:
 
  * `<TEXMF>/tex/luatex/markdown/markdown.lua`
+ * `<TEXMF>/scripts/markdown/markdown-cli.lua`
  * `<TEXMF>/tex/generic/markdown/markdown.tex`
  * `<TEXMF>/tex/latex/markdown/markdown.sty`
  * `<TEXMF>/tex/context/third/markdown/t-markdown.tex`
