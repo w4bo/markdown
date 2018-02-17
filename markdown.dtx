@@ -2806,13 +2806,13 @@ function M.writer.new(options)
 % the rest via Lua metatables.
 %  \begin{macrocode}
 local languages_json = (function()
-  local kpse = require('kpse')
-  kpse.set_program_name('luatex')
+  local kpse = require("kpse")
+  kpse.set_program_name("luatex")
   local base, prev, curr
   for _, file in ipairs{kpse.lookup(options.contentBlocksLanguageMap,
                                     { all=true })} do
-    json = assert(io.open(file, "r")):read("*all")
-                                     :gsub('("[^\n]-"):','[%1]=')
+    json = io.open(file, "r"):read("*all")
+                             :gsub('("[^\n]-"):','[%1]=')
     curr = (function()
       local _ENV={ json=json, load=load } -- run in sandbox
       return load("return "..json)()
@@ -4595,7 +4595,7 @@ return M
 %  \begin{macrocode}
 local lfs = require("lfs")
 local cacheDir = "\markdownOptionCacheDir"
-if lfs.isdir(cacheDir) == true then else
+if not lfs.isdir(cacheDir) then
   assert(lfs.mkdir(cacheDir))
 end
 %    \end{macrocode}
@@ -4811,8 +4811,8 @@ local convert = md.new(\markdownLuaOptions)
       "|markdownOptionHelperScriptFileName"}%
     |immediate|write|markdownOutputFileStream{%
       local ran_ok, error = pcall(function()
-        local kpse = require('kpse')
-        kpse.set_program_name('luatex')
+        local kpse = require("kpse")
+        kpse.set_program_name("luatex")
         #1
       end)
 %    \end{macrocode}
@@ -4894,7 +4894,7 @@ local convert = md.new(\markdownLuaOptions)
     |closein|markdownInputFileStream
     |markdownLuaExecute{%
       |markdownPrepare
-      local input = assert(io.open("#1","r")):read("*a")
+      local input = assert(io.open("#1", "r"):read("*a"))
 %    \end{macrocode}
 % Since the Lua converter expects \acro{unix} line endings, normalize the
 % input.
