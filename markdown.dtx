@@ -755,12 +755,9 @@ defaultOptions.underscores = true
 %<*lua-cli>
 % \fi
 % \subsubsection{Command-Line Interface}\label{sec:lua-cli-interface}
-% In the typical scenario, the conversion from Lua to \TeX{} will be performed
-% transparently by the upper-level \TeX{} interfaces. To provide finer control
-% over the conversion and to simplify debugging, a command-line Lua interface
-% is also provided. The use of the command-line Lua interface also makes it
-% unnecessary to provide shell access to \TeX{} engines when typesetting the
-% converted documents.
+% To provide finer control over the conversion and to simplify debugging, a
+% command-line Lua interface for converting a Markdown document to \TeX{} is
+% also provided.
 %  \begin{macrocode}
 
 HELP_STRING = [[
@@ -879,12 +876,14 @@ end
 % texlua /path/to/markdown-cli.lua outputDir=. -- hello.md hello.tex
 % \end{Verbatim}
 % to convert the Markdown document \t`hello.md` to a \TeX{} document
-% \t`hello.tex`. After the plain \TeX{}, \LaTeX{}, or \Hologo{ConTeXt}
-% interface for the package has been loaded, the converted document can be
-% typeset as follows:
+% \t`hello.tex`. After the Markdown package for our \TeX{} format has been
+% loaded, the converted document can be typeset as follows:
 % \begin{Verbatim}
 % \input hello
 % \end{Verbatim}
+% This shows another advantage of using the command-line interface compared
+% to using a higher-level \TeX{} interface -- it is unnecessary to provide
+% shell access for the \TeX{} engine.
 %
 % \iffalse
 %</lua-cli>
