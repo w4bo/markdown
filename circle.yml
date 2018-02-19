@@ -8,12 +8,10 @@ dependencies:
 
 test:
   override:
-    - make all
     - mkdir -p                ~/{texmf/tex/{luatex,generic,latex,context/third},scripts}/markdown
     - cp -f markdown.lua      ~/texmf/tex/luatex/markdown/
     - cp -f markdown-cli.lua  ~/scripts/markdown/
     - cp -f markdown.tex      ~/texmf/tex/generic/markdown/
     - cp -f markdown.sty      ~/texmf/tex/latex/markdown/
     - cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
-    - mktexlsr
-    - PARALLEL=-uj1 make test
+    - PARALLEL=-uj1 make all test
