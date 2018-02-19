@@ -1,8 +1,9 @@
 .PHONY: all clean implode dist docs test
 SUBDIRECTORIES=examples
 AUXFILES=markdown.bbl markdown.cb markdown.cb2 markdown.glo markdown.bbl \
-	markdown.run.xml markdown.bib
-AUXDIRS=_minted-markdown
+	markdown.run.xml markdown.bib markdown.markdown.in markdown.markdown.lua \
+	markdown.markdown.out
+AUXDIRS=_minted-markdown _markdown_markdown
 TDSARCHIVE=markdown.tds.zip
 CTANARCHIVE=markdown.ctan.zip
 DISTARCHIVE=markdown.zip
@@ -13,7 +14,7 @@ EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
 	examples/latex-luatex.pdf examples/latex-pdftex.pdf
 TESTS=tests/test.sh tests/support/*.tex tests/templates/*/*.tex.m4 \
 	tests/templates/*/COMMANDS.m4 tests/testfiles/*/*.test
-MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES))
+MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES)) latexmkrc
 READMES=README.md LICENSE VERSION examples/README.md tests/README.md \
 	tests/support/README.md tests/templates/README.md tests/testfiles/README.md \
 	tests/templates/*/README.md tests/testfiles/*/README.md
@@ -22,7 +23,7 @@ INSTALLER=markdown.ins docstrip.cfg
 TECHNICAL_DOCUMENTATION=markdown.pdf
 USER_MANUAL=markdown.md
 DOCUMENTATION=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL)
-INSTALLABLES=markdown.lua markdown.tex markdown.sty t-markdown.tex
+INSTALLABLES=markdown.lua markdown-cli.lua markdown.tex markdown.sty t-markdown.tex
 MAKEABLES=$(TECHNICAL_DOCUMENTATION) $(INSTALLABLES) $(EXAMPLES)
 RESOURCES=$(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
 	$(MAKES) $(READMES) $(INSTALLER) $(DTXARCHIVE) $(TESTS)
@@ -39,8 +40,8 @@ $(INSTALLABLES) $(USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
 	xetex $<
 
 # This target typesets the manual.
-$(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE)
-	latexmk -pdf $<
+$(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE) $(INSTALLABLES)
+	latexmk $<
 
 # This target typesets the examples.
 $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
@@ -65,10 +66,11 @@ dist: implode
 $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
 	@# Installing the macro package.
 	mkdir -p tex/generic/markdown tex/luatex/markdown tex/latex/markdown \
-		tex/context/third/markdown
-	cp markdown.tex tex/generic/markdown/
+		tex/context/third/markdown scripts/markdown
 	cp markdown.lua tex/luatex/markdown/
+	cp markdown-cli.lua scripts/markdown/
 	cp markdown.sty tex/latex/markdown/
+	cp markdown.tex tex/generic/markdown/
 	cp t-markdown.tex tex/context/third/markdown/
 	@# Installing the documentation.
 	mkdir -p doc/generic/markdown doc/latex/markdown/examples \
@@ -79,8 +81,8 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
 	@# Installing the sources.
 	mkdir -p source/generic/markdown
 	cp $(DTXARCHIVE) $(INSTALLER) source/generic/markdown
-	zip -r -v -nw $@ tex source doc 
-	rm -rf tex source doc
+	zip -r -v -nw $@ doc scripts source tex
+	rm -rf doc scripts source tex
 
 # This target produces the distribution archive.
 $(DISTARCHIVE): $(EVERYTHING) $(TDSARCHIVE)

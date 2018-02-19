@@ -6,6 +6,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[american]{babel}
 \usepackage{microtype}
+\usepackage[stripPercentSigns]{markdown}
 \usepackage{amsmath}
 \usepackage{fancyvrb}
 \usepackage{hologo}
@@ -96,6 +97,20 @@
     date      = {2017-04-15},
     url       = {http://mirrors.ctan.org/macros/latex/base/source2e.pdf},
     urldate   = {2018-01-08}}
+  @book{mittelbach17,
+    author    = {Mittelbach, Frank},
+    title     = {The \texttt{doc} and \texttt{shortvrb} Packages},
+    date      = {2017-04-15},
+    url       = {http://mirrors.ctan.org/macros/latex/base/doc.pdf},
+    urldate   = {2018-02-19}}
+  @online{novotny15,
+    author    = {Novotný, Vít},
+    year      = {2015},
+    title     = {TeXový interpret jazyka Markdown (markdown.sty)},
+    location  = {Brno, Czech Republic},
+    publisher = {Masaryk University},
+    url       = {https://www.muni.cz/en/research/projects/32984},
+    urldate   = {2018-02-19}}
   @book{ierusalimschy13,
     author    = {Ierusalimschy, Roberto},
     year      = {2013},
@@ -116,7 +131,7 @@
 \end{filecontents}
 \usepackage[
   backend=biber,
-  style=iso-numeric,
+  style=numeric,
   sorting=none,
   autolang=other,
   sortlocale=auto]{biblatex}
@@ -140,9 +155,11 @@
 % Section \ref{sec:implementation} describes the implementation of the package.
 % It is aimed at the developer of the package and the curious user.
 %
+% \begin{markdown}
 % The technical documentation contains only a limited amount of tutorials and
 % code examples. Please refer to the user guide distributed along with the
 % package for more of these.
+% \end{markdown}
 %
 % \iffalse
 %<*manual>
@@ -172,17 +189,24 @@ distributed along with the package.
 % and \Hologo{ConTeXt} formats by Vít Novotný.
 %
 % \iffalse
-%<*lua>
+%<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
 local metadata = {
     version   = "2.5.5",
     comment   = "A module for the conversion from markdown to plain TeX",
     author    = "John MacFarlane, Hans Hagen, Vít Novotný",
-    copyright = "2009-2016 John MacFarlane, Hans Hagen; " ..
-                "2016-2018 Vít Novotný",
+    copyright = {"2009-2016 John MacFarlane, Hans Hagen",
+                 "2016-2018 Vít Novotný"},
     license   = "LPPL 1.3"
 }
+
+%    \end{macrocode}
+% \iffalse
+%</lua,lua-cli>
+%<*lua>
+% \fi
+%  \begin{macrocode}
 if not modules then modules = { } end
 modules['markdown'] = metadata
 %    \end{macrocode}
@@ -197,11 +221,10 @@ modules['markdown'] = metadata
 % Exchange\footnote{\url{https://tex.stackexchange.com}}.
 %
 % \subsection{Acknowledgements}
-% I would like to thank the Faculty of Informatics at the Masaryk University in
-% Brno for providing me with the opportunity to work on this package alongside
-% my studies. I would also like to thank the creator of the Lunamark Lua
-% module, John Macfarlane, for releasing Lunamark under a permissive license
-% that enabled its inclusion into the package.
+% I would like to thank the creator of the Lunamark Lua module, John
+% Macfarlane, for releasing Lunamark under a permissive license that enabled
+% its inclusion into the package. Funding by the the Faculty of Informatics at
+% the Masaryk~University in~Brno~\cite{novotny15} is gratefully acknowledged.
 %
 % The \TeX{} part of the package draws inspiration from several sources
 % including the source code of \Hologo{LaTeX2e}, the \pkg{minted} package by
@@ -372,7 +395,7 @@ local md5 = require("md5")
 % The Lua interface is implemented by the \t`markdown` Lua module.
 %
 %  \begin{macrocode}
-local M = {}
+local M = {metadata = metadata}
 %    \end{macrocode}
 %
 % \subsubsection{Conversion from Markdown to Plain \TeX{}}
@@ -396,6 +419,10 @@ local M = {}
 % \subsubsection{Options}\label{sec:luaoptions}
 % The Lua interface recognizes the following options. When unspecified, the
 % value of a key is taken from the \luamdef{defaultOptions} table.
+% \iffalse
+%</lua>
+%<*lua,lua-cli>
+% \fi
 %  \begin{macrocode}
 local defaultOptions = {}
 %    \end{macrocode}
@@ -759,9 +786,145 @@ defaultOptions.underscores = true
 % \end{optionlist}
 % 
 % \iffalse
-%</lua>
+%</lua,lua-cli>
+%<*lua-cli>
+% \fi
+% \subsubsection{Command-Line Interface}\label{sec:lua-cli-interface}
+% To provide finer control over the conversion and to simplify debugging, a
+% command-line Lua interface for converting a Markdown document to \TeX{} is
+% also provided.
+%  \begin{macrocode}
+
+HELP_STRING = [[
+Usage: texlua ]] .. arg[0] .. [[ [OPTIONS] -- [INPUT_FILE] [OUTPUT_FILE]
+where OPTIONS are documented in the Lua interface section of the
+technical Markdown package documentation.
+
+When OUTPUT_FILE is unspecified, the result of the conversion will be
+written to the standard output. When INPUT_FILE is also unspecified, the
+result of the conversion will be read from the standard input.
+
+Report bugs to: witiko@mail.muni.cz
+Markdown package home page: <https://github.com/Witiko/markdown>]]
+
+VERSION_STRING = [[
+markdown-cli.lua (Markdown) ]] .. metadata.version .. [[
+
+Copyright (C) ]] .. table.concat(metadata.copyright,
+                                 "\nCopyright (C) ") .. [[
+
+License: ]] .. metadata.license
+
+local function warn(s)
+  io.stderr:write("Warning: " .. s .. "\n") end
+
+local function error(s)
+  io.stderr:write("Error: " .. s .. "\n")
+  os.exit(1) end
+
+local process_options = true
+local options = {}
+local input_filename
+local output_filename
+for i = 1, #arg do
+  if process_options then
+%    \end{macrocode}
+% After the optional \t`-`{}\t`-` argument has been specified, the remaining
+% arguments are assumed to be input and output filenames. This argument is
+% optional, but encouraged, because it helps resolve ambiguities when
+% deciding whether an option of a filename has been specified.
+%  \begin{macrocode}
+    if arg[i] == "--" then
+      process_options = false
+      goto continue
+%    \end{macrocode}
+% Unless the \t`-`{}\t`-` argument has been specified before, an argument
+% containing the equals sign (\t`=`) is assumed to be an option specification
+% in a \meta{key}\t`=`\meta{value} format. The available options are listed in
+% Section~\ref{sec:luaoptions}.
+%  \begin{macrocode}
+    elseif arg[i]:match("=") then
+      key, value = arg[i]:match("(.-)=(.*)")
+%    \end{macrocode}
+% The \luam{defaultOptions} table is consulted to identify whether \meta{value}
+% should be parsed as a string or as a boolean.
+%  \begin{macrocode}
+      default_type = type(defaultOptions[key])
+      if default_type == "boolean" then
+        options[key] = (value == "true")
+      else
+        if default_type ~= "string" then
+          if default_type == "nil" then
+            warn('Option "' .. key .. '" not recognized.')
+          else
+            warn('Option "' .. key .. '" type not recognized, please file ' ..
+                 'a report to the package maintainer.')
+          end
+          warn('Parsing the ' .. 'value "' .. value ..'" of option "' ..
+               key .. '" as a string.')
+        end
+        options[key] = value
+      end
+      goto continue
+%    \end{macrocode}
+% Unless the \t`-`{}\t`-` argument has been specified before, an argument
+% \t`-`{}\t`-help`, or \t`-h` causes a brief documentation for how to invoke
+% the program to be printed to the standard output.
+%  \begin{macrocode}
+    elseif arg[i] == "--help" or arg[i] == "-h" then
+      print(HELP_STRING)
+      os.exit()
+%    \end{macrocode}
+% Unless the \t`-`{}\t`-` argument has been specified before, an argument
+% \t`-`{}\t`-version`, or \t`-v` causes the program to print information about
+% its name, version, origin and legal status, all on standard output.
+%  \begin{macrocode}
+    elseif arg[i] == "--version" or arg[i] == "-v" then
+      print(VERSION_STRING)
+      os.exit()
+    end
+  end
+%    \end{macrocode}
+% The first argument that matches none of the above patters is assumed to be
+% the input filename. The input filename should correspond to the Markdown
+% document that is going to be converted to a \TeX{} document.
+%  \begin{macrocode}
+  if input_filename == nil then
+    input_filename = arg[i]
+%    \end{macrocode}
+% The first argument that matches none of the above patters is assumed to be
+% the output filename. The output filename should correspond to the \TeX{}
+% document that will result from the conversion.
+%  \begin{macrocode}
+  elseif output_filename == nil then
+    output_filename = arg[i]
+  else
+    error('Unexpected argument: "' .. arg[i] .. '".')
+  end
+  ::continue::
+end
+%    \end{macrocode}
+%
+% The command-line Lua interface is implemented by the \t`markdown-cli.lua`
+% file that can be invoked from the command line as follows:
+% \begin{Verbatim}
+% texlua /path/to/markdown-cli.lua outputDir=. -- hello.md hello.tex
+% \end{Verbatim}
+% to convert the Markdown document \t`hello.md` to a \TeX{} document
+% \t`hello.tex`. After the Markdown package for our \TeX{} format has been
+% loaded, the converted document can be typeset as follows:
+% \begin{Verbatim}
+% \input hello
+% \end{Verbatim}
+% This shows another advantage of using the command-line interface compared
+% to using a higher-level \TeX{} interface -- it is unnecessary to provide
+% shell access for the \TeX{} engine.
+%
+% \iffalse
+%</lua-cli>
 %<*tex>
-% \fi\subsection{Plain \TeX{} Interface}\label{sec:texinterface}
+% \fi
+% \subsection{Plain \TeX{} Interface}\label{sec:texinterface}
 % The plain \TeX{} interface provides macros for the typesetting of markdown input
 % from within plain \TeX{}, for setting the Lua interface options (see Section
 % \ref{sec:luaoptions}) used during the conversion from markdown to plain
@@ -945,6 +1108,34 @@ defaultOptions.underscores = true
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
 \let\markdownOptionTightLists\undefined
+%    \end{macrocode}
+%
+% \paragraph{Miscellaneous options}
+% The \mdef{markdownOptionStripPercentSigns} macro controls whether a percent
+% sign (\t`\%`) at the beginning of a line will be discarded when buffering
+% Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
+% enables the use of markdown when writing \TeX{} package documentation using
+% the Doc \LaTeX{}~package~\cite{mittelbach17} or similar. The recognized
+% values of the macro are \t`true` (discard), and \t`false` (retain).
+%  \begin{macrocode}
+\def\markdownOptionStripPercentSigns{false}%
+%    \end{macrocode}
+%
+% The \mdef{markdownIfOption}\t`\{`\meta{name}\t`\}` macro is provided for
+% testing, whether the value of \t`\textbackslash markdownOption`\meta{name} is
+% \t`true` or \t`false`.
+%  \begin{macrocode}
+\def\markdownIfOption#1{%
+  \def\next##1##2##3##4##5{%
+    \expandafter\def\expandafter\next\expandafter{%
+      \csname iffalse\endcsname}%
+    \if##1t\if##2r\if##3u\if##4e
+      \expandafter\def\expandafter\next\expandafter{%
+        \csname iftrue\endcsname}%
+    \fi\fi\fi\fi
+    \next}%
+  \expandafter\expandafter\expandafter\next
+    \csname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
 %    \end{macrocode}
 %
 % \subsubsection{Token Renderers}\label{sec:texrenderersuser}
@@ -1638,9 +1829,8 @@ defaultOptions.underscores = true
 %
 % \subsubsection{Options}\label{sec:latexoptions}
 % The \LaTeX{} options are represented by a comma-delimited list of
-% \meta{\meta{key}=\meta{value}} pairs. For boolean options, the
-% \meta{=\meta{value}} part is optional, and \meta{\meta{key}} will be
-% interpreted as \meta{\meta{key}=true}.
+% \meta{key}\t`=`\meta{value} pairs. For boolean options, the \t`=`\meta{value}
+% part is optional, and \meta{key} will be interpreted as \meta{key}\t`=true`.
 %
 % The \LaTeX{} options map directly to the options recognized by the plain
 % \TeX{} interface (see Section \ref{sec:texoptions}) and to the markdown token
@@ -1714,6 +1904,8 @@ defaultOptions.underscores = true
   \def\markdownOptionTightLists{#1}}%
 \define@key{markdownOptions}{underscores}[true]{%
   \def\markdownOptionUnderscores{#1}}%
+\define@key{markdownOptions}{stripPercentSigns}[true]{%
+  \def\markdownOptionStripPercentSigns{#1}}%
 %    \end{macrocode}
 %
 % The following example \LaTeX{} code showcases a possible configuration of
@@ -2806,13 +2998,13 @@ function M.writer.new(options)
 % the rest via Lua metatables.
 %  \begin{macrocode}
 local languages_json = (function()
-  local kpse = require('kpse')
-  kpse.set_program_name('luatex')
+  local kpse = require("kpse")
+  kpse.set_program_name("luatex")
   local base, prev, curr
   for _, file in ipairs{kpse.lookup(options.contentBlocksLanguageMap,
                                     { all=true })} do
-    json = assert(io.open(file, "r")):read("*all")
-                                     :gsub('("[^\n]-"):','[%1]=')
+    json = io.open(file, "r"):read("*all")
+                             :gsub('("[^\n]-"):','[%1]=')
     curr = (function()
       local _ENV={ json=json, load=load } -- run in sandbox
       return load("return "..json)()
@@ -4424,8 +4616,59 @@ return M
 %
 % \iffalse
 %</lua>
+%<*lua-cli>
+% \fi
+% \subsubsection{Command-Line Implementation}\label{sec:lua-cli-implementation}
+% The command-line implementation provides the actual conversion routine for
+% the command-line interface described in Section~\ref{sec:lua-cli-interface}.
+%  \begin{macrocode}
+
+local input
+if input_filename then
+  local input_file = io.open(input_filename, "r")
+  input = assert(input_file:read("*a"))
+  input_file:close()
+else
+  input = assert(io.read("*a"))
+end
+
+%    \end{macrocode}
+% First, ensure that the `options.cacheDir` directory exists.
+%  \begin{macrocode}
+local lfs = require("lfs")
+if options.cacheDir and not lfs.isdir(options.cacheDir) then
+  assert(lfs.mkdir(options["cacheDir"]))
+end
+
+local kpse = require("kpse")
+kpse.set_program_name("luatex")
+local md = require("markdown")
+%    \end{macrocode}
+% Since we are loading the rest of the Lua implementation dynamically,
+% check that both the \t`markdown` module and the command line implementation
+% are the same version.
+%  \begin{macrocode}
+if metadata.version ~= md.metadata.version then
+  warn("markdown-cli.lua " .. metadata.version .. " used with " ..
+       "markdown.lua " .. md.metadata.version .. ".")
+end
+local convert = md.new(options)
+local output = convert(input:gsub("\r\n?", "\n"))
+
+if output_filename then
+  local output_file = io.open(output_filename, "w")
+  assert(output_file:write(output))
+  assert(output_file:close())
+else
+  assert(io.write(output))
+end
+%    \end{macrocode}
+%
+% \iffalse
+%</lua-cli>
 %<*tex>
-% \fi\subsection{Plain \TeX{} Implementation}\label{sec:teximplementation}
+% \fi
+% \subsection{Plain \TeX{} Implementation}\label{sec:teximplementation}
 % The plain \TeX{} implementation provides macros for the interfacing between
 % \TeX{} and Lua and for the buffering of input text. These macros are then
 % used to implement the macros for the conversion from markdown to plain \TeX{}
@@ -4595,7 +4838,7 @@ return M
 %  \begin{macrocode}
 local lfs = require("lfs")
 local cacheDir = "\markdownOptionCacheDir"
-if lfs.isdir(cacheDir) == true then else
+if not lfs.isdir(cacheDir) then
   assert(lfs.mkdir(cacheDir))
 end
 %    \end{macrocode}
@@ -4608,7 +4851,7 @@ local convert = md.new(\markdownLuaOptions)
 }%
 %    \end{macrocode}
 %
-% \subsubsection{Buffering Markdown Input}
+% \subsubsection{Buffering Markdown Input}\label{sec:buffering}
 % The macros \mdef{markdownInputFileStream} and \mdef{markdownOutputFileStream}
 % contain the number of the input and output file streams that will be used for
 % the IO operations of the package.
@@ -4633,43 +4876,73 @@ local convert = md.new(\markdownLuaOptions)
 % Make the newline and tab characters active and swap the character codes of the
 % backslash symbol (\t`\textbackslash`) and the pipe symbol (\t`|`), so that
 % we can use the backslash as an ordinary character inside the macro definition.
+% Likewise, swap the character codes of the percent sign (\t`\%`) and the
+% ampersand (\t`@`), so that we can remove percent signs from the beginning of
+% lines when \cs{markdownOptionStripPercentSigns} is \t`true`.
 %  \begin{macrocode}
   \catcode`\^^M=13%
   \catcode`\^^I=13%
   \catcode`|=0%
   \catcode`\\=12%
-  |gdef|markdownReadAndConvert#1#2{%
-    |begingroup%
+  |catcode`@=14%
+  |catcode`|%=12@
+  |gdef|markdownReadAndConvert#1#2{@
+    |begingroup@
 %    \end{macrocode}
 % Open the \m{markdownOptionInputTempFileName} file for writing.
 %  \begin{macrocode}
-    |immediate|openout|markdownOutputFileStream%
-      |markdownOptionInputTempFileName%
-    |markdownInfo{Buffering markdown input into the temporary %
-      input file "|markdownOptionInputTempFileName" and scanning %
-      for the closing token sequence "#1"}%
+    |immediate|openout|markdownOutputFileStream@
+      |markdownOptionInputTempFileName@
+    |markdownInfo{Buffering markdown input into the temporary @
+      input file "|markdownOptionInputTempFileName" and scanning @
+      for the closing token sequence "#1"}@
 %    \end{macrocode}
 % Locally change the category of the special plain \TeX{} characters to
 % \emph{other} in order to prevent unwanted interpretation of the input.
 % Change also the category of the space character, so that we can retrieve it
 % unaltered.
 %  \begin{macrocode}
-    |def|do##1{|catcode`##1=12}|dospecials%
-    |catcode`| =12%
-    |markdownMakeOther%
+    |def|do##1{|catcode`##1=12}|dospecials@
+    |catcode`| =12@
+    |markdownMakeOther@
+%    \end{macrocode}
+% The \mdef{markdownReadAndConvertStripPercentSigns} macro will process the
+% individual lines of output, stipping away leading percent signs (\t`\%`) when
+% \cs{markdownOptionStripPercentSigns} is \t`true`.
+% Notice the use of the comments (\t`@`) to ensure that the entire macro is at
+% a single line and therefore no (active) newline symbols
+% (\t`\textasciicircum\textasciicircum M`) are produced.
+%  \begin{macrocode}
+    |def|markdownReadAndConvertStripPercentSign##1{@
+      |markdownIfOption{StripPercentSigns}@
+        |if##1%@
+          |expandafter|expandafter|expandafter@
+            |markdownReadAndConvertProcessLine@
+        |else@
+          |expandafter|expandafter|expandafter@
+            |markdownReadAndConvertProcessLine@
+            |expandafter|expandafter|expandafter##1@
+        |fi@
+      |else@
+        |expandafter@
+          |markdownReadAndConvertProcessLine@
+          |expandafter##1@
+      |fi}
 %    \end{macrocode}
 % The \mdef{markdownReadAndConvertProcessLine} macro will process the individual
-% lines of output. Note the use of the comments to ensure that the entire macro
-% is at a single line and therefore no (active) newline symbols are produced.
+% lines of output.
+% Notice the use of the comments (\t`@`) to ensure that the entire macro is at
+% a single line and therefore no (active) newline symbols
+% (\t`\textasciicircum\textasciicircum M`) are produced.
 %  \begin{macrocode}
-    |def|markdownReadAndConvertProcessLine##1#1##2#1##3|relax{%
+    |def|markdownReadAndConvertProcessLine##1#1##2#1##3|relax{@
 %    \end{macrocode}
 % When the ending token sequence does not appear in the line, store the line in
 % the \m{markdownOptionInputTempFileName} file.
 %  \begin{macrocode}
-      |ifx|relax##3|relax%
-        |immediate|write|markdownOutputFileStream{##1}%
-      |else%
+      |ifx|relax##3|relax@
+        |immediate|write|markdownOutputFileStream{##1}@
+      |else@
 %    \end{macrocode}
 % When the ending token sequence appears in the line, make the next newline
 % character close the \m{markdownOptionInputTempFileName} file, return the
@@ -4678,34 +4951,34 @@ local convert = md.new(\markdownLuaOptions)
 % \m{input} the result of the conversion, and expand the ending control
 % sequence.
 %  \begin{macrocode}
-        |def^^M{%
-          |markdownInfo{The ending token sequence was found}%
-          |immediate|closeout|markdownOutputFileStream%
-          |endgroup%
-          |markdownInput|markdownOptionInputTempFileName%
-          #2}%
-      |fi%
+        |def^^M{@
+          |markdownInfo{The ending token sequence was found}@
+          |immediate|closeout|markdownOutputFileStream@
+          |endgroup@
+          |markdownInput|markdownOptionInputTempFileName@
+          #2}@
+      |fi@
 %    \end{macrocode}
 % Repeat with the next line.
 %  \begin{macrocode}
-      ^^M}%
+      ^^M}@
 %    \end{macrocode}
 % Make the tab character active at expansion time and make it expand to a
 % literal tab character.
 %  \begin{macrocode}
-    |catcode`|^^I=13%
-    |def^^I{|markdownReadAndConvertTab}%
+    |catcode`|^^I=13@
+    |def^^I{|markdownReadAndConvertTab}@
 %    \end{macrocode}
 % Make the newline character active at expansion time and make it consume the
 % rest of the line on expansion. Throw away the rest of the first line and
 % pass the second line to the \m{markdownReadAndConvertProcessLine} macro.
 %  \begin{macrocode}
-    |catcode`|^^M=13%
-    |def^^M##1^^M{%
-      |def^^M####1^^M{%
-        |markdownReadAndConvertProcessLine####1#1#1|relax}%
-      ^^M}%
-    ^^M}%
+    |catcode`|^^M=13@
+    |def^^M##1^^M{@
+      |def^^M####1^^M{@
+        |markdownReadAndConvertStripPercentSign####1#1#1|relax}@
+      ^^M}@
+    ^^M}@
 %    \end{macrocode}
 % Reset the character categories back to the former state.
 %  \begin{macrocode}
@@ -4811,8 +5084,8 @@ local convert = md.new(\markdownLuaOptions)
       "|markdownOptionHelperScriptFileName"}%
     |immediate|write|markdownOutputFileStream{%
       local ran_ok, error = pcall(function()
-        local kpse = require('kpse')
-        kpse.set_program_name('luatex')
+        local kpse = require("kpse")
+        kpse.set_program_name("luatex")
         #1
       end)
 %    \end{macrocode}
@@ -4894,7 +5167,7 @@ local convert = md.new(\markdownLuaOptions)
     |closein|markdownInputFileStream
     |markdownLuaExecute{%
       |markdownPrepare
-      local input = assert(io.open("#1","r")):read("*a")
+      local input = assert(io.open("#1", "r"):read("*a"))
 %    \end{macrocode}
 % Since the Lua converter expects \acro{unix} line endings, normalize the
 % input.

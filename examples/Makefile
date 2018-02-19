@@ -1,8 +1,10 @@
 .PHONY: all clean
 AUXFILES=*.tmp *.tui *.tuo *.mp *.tuc *.markdown.in *.markdown.out \
 	*.markdown.lua *.log *.aux context-mkii.tex context-mkiv.tex \
-	latex-pdftex.tex latex-xetex.tex latex-luatex.tex
+	latex-pdftex.tex latex-xetex.tex latex-luatex.tex example.tex
 AUXDIRS=_markdown_*/
+LUACLI_OPTIONS=hashEnumerators=true definitionLists=true footnotes=true \
+	inlineFootnotes=true smartEllipses=true fencedCode=true contentBlocks=true
 OUTPUT=context-mkii.pdf context-mkiv.pdf latex-pdftex.pdf \
 	latex-luatex.pdf latex-xetex.pdf
 
@@ -10,12 +12,12 @@ OUTPUT=context-mkii.pdf context-mkiv.pdf latex-pdftex.pdf \
 all: $(OUTPUT) clean
 
 # This target typesets the ConTeXt example using the Mark II format.
-context-mkii.pdf: context.tex
+context-mkii.pdf: context.tex example.tex
 	cp context.tex context-mkii.tex
 	texexec --passon="--shell-escape --8bit" context-mkii.tex
 
 # This target typesets the ConTeXt example using the Mark IV format.
-context-mkiv.pdf: context.tex
+context-mkiv.pdf: context.tex example.tex
 	cp context.tex context-mkiv.tex
 	context context-mkiv.tex
 
@@ -36,6 +38,12 @@ latex-luatex.pdf: latex.tex
 	cp latex.tex latex-luatex.tex
 	lualatex latex-luatex
 	lualatex latex-luatex
+
+# This target converts the markdown example to a plain TeX representation
+# using the Lua command-line interface for the Markdown package.
+example.tex: example.md
+	texlua "`kpsewhich markdown-cli.lua`" cacheDir=_markdown_example \
+		$(LUACLI_OPTIONS) -- $< $@
 
 # This pseudo-target removes any existing auxiliary files and directories.
 clean:
