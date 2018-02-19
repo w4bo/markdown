@@ -40,6 +40,30 @@ Alternatively, you can also store the `markdown.lua`, `markdown.tex`,
 and distribute them together. This way your document can be portably typeset on
 legacy TeX distributions.
 
+# Contributing #
+
+Apart from the example markdown documents and tests, which are placed in the
+`examples/` and `tests/` directories, the complete source code and
+documentation of the package are placed in the `markdown.dtx` document,
+following the literate programming paradigm.
+
+When the file `markdown.ins` is interpreted using a Unicode-aware TeX engine,
+such as XeTeX (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`), several
+files are produced from the `markdown.dtx` document. In `markdown.dtx`, the
+boundaries between the produced files are marked up using a XML-like syntax
+provided by the [DocStrip][] plain TeX package.
+
+Running the [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
+(`latexmk -pdf markdown.dtx`) typesets the documentation. In `markdown.dtx`,
+the documentation is placed inside TeX comments and marked up using the
+[ltxdockit][] LaTeX document class. Support for typesetting the documentation
+is provided by the [doc][] LaTeX package.
+
+ [DocStrip]:  https://ctan.org/pkg/docstrip   (docstrip – Remove comments from file)
+ [LaTeXMK]:   https://ctan.org/pkg/latexmk    (latexmk – Fully automated LaTeX document generation)
+ [ltxdockit]: https://ctan.org/pkg/ltxdockit  (ltxdockit – Documentation support)
+ [doc]:       https://ctan.org/pkg/doc        (doc – Format LaTeX documentation)
+
 # Further information #
 
 For further information, consult:
@@ -53,5 +77,3 @@ For further information, consult:
    file using a Unicode-aware TeX engine, such as XeTeX (`xetex markdown.ins`)
    or LuaTeX (`luatex markdown.ins`). The manual will reside in the file
    `markdown.md`.
-
- [LaTeXMK]: https://www.ctan.org/pkg/latexmk/
