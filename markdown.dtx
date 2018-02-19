@@ -6,6 +6,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[american]{babel}
 \usepackage{microtype}
+\usepackage[stripPercentSigns]{markdown}
 \usepackage{amsmath}
 \usepackage{fancyvrb}
 \usepackage{hologo}
@@ -154,9 +155,11 @@
 % Section \ref{sec:implementation} describes the implementation of the package.
 % It is aimed at the developer of the package and the curious user.
 %
+% \begin{markdown}
 % The technical documentation contains only a limited amount of tutorials and
 % code examples. Please refer to the user guide distributed along with the
 % package for more of these.
+% \end{markdown}
 %
 % \iffalse
 %<*manual>
@@ -961,14 +964,14 @@ defaultOptions.underscores = true
 %    \end{macrocode}
 %
 % \paragraph{Miscellaneous options}
-% The \mdef{markdownOptionStripPercentSign} macro controls whether a percent
+% The \mdef{markdownOptionStripPercentSigns} macro controls whether a percent
 % sign (\t`\%`) at the beginning of a line will be discarded when buffering
 % Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
 % enables the use of markdown when writing \TeX{} package documentation using
 % the Doc \LaTeX{}~package~\cite{mittelbach17} or similar. The recognized
 % values of the macro are \t`true` (discard), and \t`false` (retain).
 %  \begin{macrocode}
-\def\markdownOptionStripPercentSign{false}%
+\def\markdownOptionStripPercentSigns{false}%
 %    \end{macrocode}
 %
 % The \mdef{markdownIfOption}\t`\{`\meta{name}\t`\}` macro is provided for
@@ -1755,8 +1758,8 @@ defaultOptions.underscores = true
   \def\markdownOptionTightLists{#1}}%
 \define@key{markdownOptions}{underscores}[true]{%
   \def\markdownOptionUnderscores{#1}}%
-\define@key{markdownOptions}{stripPercentSign}[true]{%
-  \def\markdownOptionStripPercentSign{#1}}%
+\define@key{markdownOptions}{stripPercentSigns}[true]{%
+  \def\markdownOptionStripPercentSigns{#1}}%
 %    \end{macrocode}
 %
 % The following example \LaTeX{} code showcases a possible configuration of
@@ -4678,7 +4681,7 @@ local convert = md.new(\markdownLuaOptions)
 % we can use the backslash as an ordinary character inside the macro definition.
 % Likewise, swap the character codes of the percent sign (\t`\%`) and the
 % ampersand (\t`@`), so that we can remove percent signs from the beginning of
-% lines when \cs{markdownOptionStripPercentSign} is \t`true`.
+% lines when \cs{markdownOptionStripPercentSigns} is \t`true`.
 %  \begin{macrocode}
   \catcode`\^^M=13%
   \catcode`\^^I=13%
@@ -4706,15 +4709,15 @@ local convert = md.new(\markdownLuaOptions)
     |catcode`| =12@
     |markdownMakeOther@
 %    \end{macrocode}
-% The \mdef{markdownReadAndConvertStripPercentSign} macro will process the
+% The \mdef{markdownReadAndConvertStripPercentSigns} macro will process the
 % individual lines of output, stipping away leading percent signs (\t`\%`) when
-% \cs{markdownOptionStripPercentSign} is \t`true`.
+% \cs{markdownOptionStripPercentSigns} is \t`true`.
 % Notice the use of the comments (\t`@`) to ensure that the entire macro is at
 % a single line and therefore no (active) newline symbols
 % (\t`\textasciicircum\textasciicircum M`) are produced.
 %  \begin{macrocode}
     |def|markdownReadAndConvertStripPercentSign##1{@
-      |markdownIfOption{StripPercentSign}@
+      |markdownIfOption{StripPercentSigns}@
         |if##1%@
           |expandafter|expandafter|expandafter@
             |markdownReadAndConvertProcessLine@
