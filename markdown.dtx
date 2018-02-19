@@ -973,10 +973,10 @@ defaultOptions.underscores = true
 %
 % The \mdef{markdownIfOption}\t`\{`\meta{name}\t`\}` macro is provided for
 % testing, whether the value of \t`\textbackslash markdownOption`\meta{name} is
-% \t`true` or not.
+% \t`true` or \t`false`.
 %  \begin{macrocode}
 \def\markdownIfOption#1{%
-  \def\next##1##2##3##4{%
+  \def\next##1##2##3##4##5{%
     \expandafter\def\expandafter\next\expandafter{%
       \csname iffalse\endcsname}%
     \if##1t\if##2r\if##3u\if##4e
@@ -985,7 +985,7 @@ defaultOptions.underscores = true
     \fi\fi\fi\fi
     \next}%
   \expandafter\expandafter\expandafter\next
-    \csname markdownOption#1\endcsname\relax\relax\relax\relax}
+    \csname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
 %    \end{macrocode}
 %
 % \subsubsection{Token Renderers}\label{sec:texrenderersuser}
@@ -4682,8 +4682,8 @@ local convert = md.new(\markdownLuaOptions)
   \catcode`\^^I=13%
   \catcode`|=0%
   \catcode`\\=12%
-  \catcode`@=14%
-  \catcode`%=12@
+  |catcode`@=14%
+  |catcode`|%=12@
   |gdef|markdownReadAndConvert#1#2{@
     |begingroup@
 %    \end{macrocode}
