@@ -8,9 +8,10 @@ dependencies:
 
 test:
   override:
-    - mkdir -p                ~/{texmf/tex/{luatex,generic,latex,context/third},scripts}/markdown
+    - xetex markdown.ins
+    - mkdir -p                ~/texmf/{tex/{luatex,generic,latex,context/third},scripts}/markdown
     - cp -f markdown.lua      ~/texmf/tex/luatex/markdown/
-    - cp -f markdown-cli.lua  ~/scripts/markdown/
+    - cp -f markdown-cli.lua  ~/texmf/scripts/markdown/
     - cp -f markdown.tex      ~/texmf/tex/generic/markdown/
     - cp -f markdown.sty      ~/texmf/tex/latex/markdown/
     - cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
