@@ -4640,43 +4640,73 @@ local convert = md.new(\markdownLuaOptions)
 % Make the newline and tab characters active and swap the character codes of the
 % backslash symbol (\t`\textbackslash`) and the pipe symbol (\t`|`), so that
 % we can use the backslash as an ordinary character inside the macro definition.
+% Likewise, swap the character codes of the percent sign (\t`\%`) and the
+% ampersand (\t`@`), so that we can remove percent signs from the beginning of
+% lines when \cs{markdownOptionDoc} is \t`true`.
 %  \begin{macrocode}
   \catcode`\^^M=13%
   \catcode`\^^I=13%
   \catcode`|=0%
   \catcode`\\=12%
-  |gdef|markdownReadAndConvert#1#2{%
-    |begingroup%
+  \catcode`@=14%
+  \catcode`%=12@
+  |gdef|markdownReadAndConvert#1#2{@
+    |begingroup@
 %    \end{macrocode}
 % Open the \m{markdownOptionInputTempFileName} file for writing.
 %  \begin{macrocode}
-    |immediate|openout|markdownOutputFileStream%
-      |markdownOptionInputTempFileName%
-    |markdownInfo{Buffering markdown input into the temporary %
-      input file "|markdownOptionInputTempFileName" and scanning %
-      for the closing token sequence "#1"}%
+    |immediate|openout|markdownOutputFileStream@
+      |markdownOptionInputTempFileName@
+    |markdownInfo{Buffering markdown input into the temporary @
+      input file "|markdownOptionInputTempFileName" and scanning @
+      for the closing token sequence "#1"}@
 %    \end{macrocode}
 % Locally change the category of the special plain \TeX{} characters to
 % \emph{other} in order to prevent unwanted interpretation of the input.
 % Change also the category of the space character, so that we can retrieve it
 % unaltered.
 %  \begin{macrocode}
-    |def|do##1{|catcode`##1=12}|dospecials%
-    |catcode`| =12%
-    |markdownMakeOther%
+    |def|do##1{|catcode`##1=12}|dospecials@
+    |catcode`| =12@
+    |markdownMakeOther@
+%    \end{macrocode}
+% The \mdef{markdownReadAndConvertStripPercentSign} macro will process the
+% individual lines of output, stipping away leading percent signs (\t`\%`) when
+% \cs{markdownOptionDoc} is \t`true`.
+% Notice the use of the comments (\t`@`) to ensure that the entire macro is at
+% a single line and therefore no (active) newline symbols
+% (\t`\textasciicircum\textasciicircum M`) are produced.
+%  \begin{macrocode}
+    |def|markdownReadAndConvertStripPercentSign##1{@
+      |markdownIfOptionDoc@
+        |if##1%@
+          |expandafter|expandafter|expandafter@
+            |markdownReadAndConvertProcessLine@
+        |else@
+          |expandafter|expandafter|expandafter@
+            |markdownReadAndConvertProcessLine@
+            |expandafter|expandafter|expandafter##1@
+        |fi@
+      |else@
+        |expandafter@
+          |markdownReadAndConvertProcessLine@
+          |expandafter##1@
+      |fi}
 %    \end{macrocode}
 % The \mdef{markdownReadAndConvertProcessLine} macro will process the individual
-% lines of output. Note the use of the comments to ensure that the entire macro
-% is at a single line and therefore no (active) newline symbols are produced.
+% lines of output.
+% Notice the use of the comments (\t`@`) to ensure that the entire macro is at
+% a single line and therefore no (active) newline symbols
+% (\t`\textasciicircum\textasciicircum M`) are produced.
 %  \begin{macrocode}
-    |def|markdownReadAndConvertProcessLine##1#1##2#1##3|relax{%
+    |def|markdownReadAndConvertProcessLine##1#1##2#1##3|relax{@
 %    \end{macrocode}
 % When the ending token sequence does not appear in the line, store the line in
 % the \m{markdownOptionInputTempFileName} file.
 %  \begin{macrocode}
-      |ifx|relax##3|relax%
-        |immediate|write|markdownOutputFileStream{##1}%
-      |else%
+      |ifx|relax##3|relax@
+        |immediate|write|markdownOutputFileStream{##1}@
+      |else@
 %    \end{macrocode}
 % When the ending token sequence appears in the line, make the next newline
 % character close the \m{markdownOptionInputTempFileName} file, return the
@@ -4685,34 +4715,34 @@ local convert = md.new(\markdownLuaOptions)
 % \m{input} the result of the conversion, and expand the ending control
 % sequence.
 %  \begin{macrocode}
-        |def^^M{%
-          |markdownInfo{The ending token sequence was found}%
-          |immediate|closeout|markdownOutputFileStream%
-          |endgroup%
-          |markdownInput|markdownOptionInputTempFileName%
-          #2}%
-      |fi%
+        |def^^M{@
+          |markdownInfo{The ending token sequence was found}@
+          |immediate|closeout|markdownOutputFileStream@
+          |endgroup@
+          |markdownInput|markdownOptionInputTempFileName@
+          #2}@
+      |fi@
 %    \end{macrocode}
 % Repeat with the next line.
 %  \begin{macrocode}
-      ^^M}%
+      ^^M}@
 %    \end{macrocode}
 % Make the tab character active at expansion time and make it expand to a
 % literal tab character.
 %  \begin{macrocode}
-    |catcode`|^^I=13%
-    |def^^I{|markdownReadAndConvertTab}%
+    |catcode`|^^I=13@
+    |def^^I{|markdownReadAndConvertTab}@
 %    \end{macrocode}
 % Make the newline character active at expansion time and make it consume the
 % rest of the line on expansion. Throw away the rest of the first line and
 % pass the second line to the \m{markdownReadAndConvertProcessLine} macro.
 %  \begin{macrocode}
-    |catcode`|^^M=13%
-    |def^^M##1^^M{%
-      |def^^M####1^^M{%
-        |markdownReadAndConvertProcessLine####1#1#1|relax}%
-      ^^M}%
-    ^^M}%
+    |catcode`|^^M=13@
+    |def^^M##1^^M{@
+      |def^^M####1^^M{@
+        |markdownReadAndConvertStripPercentSign####1#1#1|relax}@
+      ^^M}@
+    ^^M}@
 %    \end{macrocode}
 % Reset the character categories back to the former state.
 %  \begin{macrocode}
