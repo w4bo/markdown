@@ -54,10 +54,10 @@ boundaries between the produced files are marked up using a XML-like syntax
 provided by the [DocStrip][] plain TeX package.
 
 Running the [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
-(`latexmk markdown.dtx`) typesets the documentation. In `markdown.dtx`, the
-documentation is placed inside TeX comments and marked up using the
-[ltxdockit][] LaTeX document class. Support for typesetting the documentation
-is provided by the [doc][] LaTeX package.
+(`latexmk markdown.dtx`) after the Markdown package has been installed typesets
+the documentation. In `markdown.dtx`, the documentation is placed inside TeX
+comments and marked up using the [ltxdockit][] LaTeX document class. Support
+for typesetting the documentation is provided by the [doc][] LaTeX package.
 
  [DocStrip]:  https://ctan.org/pkg/docstrip   (docstrip – Remove comments from file)
  [LaTeXMK]:   https://ctan.org/pkg/latexmk    (latexmk – Fully automated LaTeX document generation)
@@ -70,9 +70,9 @@ For further information, consult:
 
 1. the technical documentation, which can be typeset by running the
    [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
-   (`latexmk markdown.dtx`). [LaTeXMK][LaTeXMK] should be included in your TeX
-   distribution. The typeset documentation will reside in the file
-   `markdown.pdf`, and
+   (`latexmk markdown.dtx`) after installing the Markdown package.
+   [LaTeXMK][LaTeXMK] should be included in your TeX distribution. The typeset
+   documentation will reside in the file `markdown.pdf`, and
 2. the user manual, which can be produced by interpreting the `markdown.ins`
    file using a Unicode-aware TeX engine, such as XeTeX (`xetex markdown.ins`)
    or LuaTeX (`luatex markdown.ins`). The manual will reside in the file
