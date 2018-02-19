@@ -1,8 +1,9 @@
 .PHONY: all clean implode dist docs test
 SUBDIRECTORIES=examples
 AUXFILES=markdown.bbl markdown.cb markdown.cb2 markdown.glo markdown.bbl \
-	markdown.run.xml markdown.bib
-AUXDIRS=_minted-markdown
+	markdown.run.xml markdown.bib markdown.markdown.in markdown.markdown.lua \
+	markdown.markdown.out
+AUXDIRS=_minted-markdown _markdown_markdown
 TDSARCHIVE=markdown.tds.zip
 CTANARCHIVE=markdown.ctan.zip
 DISTARCHIVE=markdown.zip
@@ -13,7 +14,7 @@ EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
 	examples/latex-luatex.pdf examples/latex-pdftex.pdf
 TESTS=tests/test.sh tests/support/*.tex tests/templates/*/*.tex.m4 \
 	tests/templates/*/COMMANDS.m4 tests/testfiles/*/*.test
-MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES))
+MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES)) latexmkrc
 READMES=README.md LICENSE VERSION examples/README.md tests/README.md \
 	tests/support/README.md tests/templates/README.md tests/testfiles/README.md \
 	tests/templates/*/README.md tests/testfiles/*/README.md
@@ -39,8 +40,8 @@ $(INSTALLABLES) $(USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
 	xetex $<
 
 # This target typesets the manual.
-$(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE)
-	latexmk -pdf $<
+$(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE) $(INSTALLABLES)
+	latexmk $<
 
 # This target typesets the examples.
 $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)

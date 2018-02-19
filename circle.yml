@@ -4,11 +4,11 @@ dependencies:
   override:
     - mkdir -p                                   ~/aptcache/partial
     - sudo apt-get -o dir::cache::archives="$HOME"/aptcache update
-    - sudo apt-get -o dir::cache::archives="$HOME"/aptcache install texlive-full parallel
+    - sudo apt-get -o dir::cache::archives="$HOME"/aptcache install texlive-full parallel biber
 
 test:
   override:
-    - xetex markdown.ins
+    - make all
     - mkdir -p                ~/{texmf/tex/{luatex,generic,latex,context/third},scripts}/markdown
     - cp -f markdown.lua      ~/texmf/tex/luatex/markdown/
     - cp -f markdown-cli.lua  ~/scripts/markdown/
