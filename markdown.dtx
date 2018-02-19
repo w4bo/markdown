@@ -96,6 +96,20 @@
     date      = {2017-04-15},
     url       = {http://mirrors.ctan.org/macros/latex/base/source2e.pdf},
     urldate   = {2018-01-08}}
+  @book{mittelbach17,
+    author    = {Mittelbach, Frank},
+    title     = {The \texttt{doc} and \texttt{shortvrb} Packages},
+    date      = {2017-04-15},
+    url       = {http://mirrors.ctan.org/macros/latex/base/doc.pdf},
+    urldate   = {2018-02-19}}
+  @online{novotny15,
+    author    = {Novotný, Vít},
+    year      = {2015},
+    title     = {TeXový interpret jazyka Markdown (markdown.sty)},
+    location  = {Brno, Czech Republic},
+    publisher = {Masaryk University},
+    url       = {https://www.muni.cz/en/research/projects/32984},
+    urldate   = {2018-02-19}}
   @book{ierusalimschy13,
     author    = {Ierusalimschy, Roberto},
     year      = {2013},
@@ -113,14 +127,6 @@
     isbn      = {0-201-13447-0},
     pagetotal = {ix, 479},
     publisher = {Addison-Wesley}}
-  @online{novotny15,
-    author    = {Novotný, Vít},
-    year      = {2015},
-    title     = {TeXový interpret jazyka Markdown (markdown.sty)},
-    location  = {Brno, Czech Republic},
-    publisher = {Masaryk University},
-    url       = {https://www.muni.cz/en/research/projects/32984},
-    urldate   = {2018-02-19}}
 \end{filecontents}
 \usepackage[
   backend=biber,
@@ -952,6 +958,34 @@ defaultOptions.underscores = true
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
 \let\markdownOptionTightLists\undefined
+%    \end{macrocode}
+%
+% \paragraph{Miscellaneous options}
+% The \mdef{markdownOptionStripPercentSign} macro controls whether a percent
+% sign (\t`\%`) at the beginning of a line will be discarded when buffering
+% Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
+% enables the use of markdown when writing \TeX{} package documentation using
+% the Doc \LaTeX{}~package~\cite{mittelbach17} or similar. The recognized
+% values of the macro are \t`true` (discard), and \t`false` (retain).
+%  \begin{macrocode}
+\def\markdownOptionStripPercentSign{false}%
+%    \end{macrocode}
+%
+% The \mdef{markdownIfOption}\t`\{`\meta{name}\t`\}` macro is provided for
+% testing, whether the value of \t`\textbackslash markdownOption`\meta{name} is
+% \t`true` or not.
+%  \begin{macrocode}
+\def\markdownIfOption#1{%
+  \def\next##1##2##3##4{%
+    \expandafter\def\expandafter\next\expandafter{%
+      \csname iffalse\endcsname}%
+    \if##1t\if##2r\if##3u\if##4e
+      \expandafter\def\expandafter\next\expandafter{%
+        \csname iftrue\endcsname}%
+    \fi\fi\fi\fi
+    \next}%
+  \expandafter\expandafter\expandafter\next
+    \csname markdownOption#1\endcsname\relax\relax\relax\relax}
 %    \end{macrocode}
 %
 % \subsubsection{Token Renderers}\label{sec:texrenderersuser}
@@ -4615,7 +4649,7 @@ local convert = md.new(\markdownLuaOptions)
 }%
 %    \end{macrocode}
 %
-% \subsubsection{Buffering Markdown Input}
+% \subsubsection{Buffering Markdown Input}\label{sec:buffering}
 % The macros \mdef{markdownInputFileStream} and \mdef{markdownOutputFileStream}
 % contain the number of the input and output file streams that will be used for
 % the IO operations of the package.
@@ -4642,7 +4676,7 @@ local convert = md.new(\markdownLuaOptions)
 % we can use the backslash as an ordinary character inside the macro definition.
 % Likewise, swap the character codes of the percent sign (\t`\%`) and the
 % ampersand (\t`@`), so that we can remove percent signs from the beginning of
-% lines when \cs{markdownOptionDoc} is \t`true`.
+% lines when \cs{markdownOptionStripPercentSign} is \t`true`.
 %  \begin{macrocode}
   \catcode`\^^M=13%
   \catcode`\^^I=13%
@@ -4672,13 +4706,13 @@ local convert = md.new(\markdownLuaOptions)
 %    \end{macrocode}
 % The \mdef{markdownReadAndConvertStripPercentSign} macro will process the
 % individual lines of output, stipping away leading percent signs (\t`\%`) when
-% \cs{markdownOptionDoc} is \t`true`.
+% \cs{markdownOptionStripPercentSign} is \t`true`.
 % Notice the use of the comments (\t`@`) to ensure that the entire macro is at
 % a single line and therefore no (active) newline symbols
 % (\t`\textasciicircum\textasciicircum M`) are produced.
 %  \begin{macrocode}
     |def|markdownReadAndConvertStripPercentSign##1{@
-      |markdownIfOptionDoc@
+      |markdownIfOption{StripPercentSign}@
         |if##1%@
           |expandafter|expandafter|expandafter@
             |markdownReadAndConvertProcessLine@
