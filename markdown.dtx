@@ -5,13 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[american]{babel}
-\usepackage{microtype}
-\usepackage[stripPercentSigns]{markdown}
-\usepackage{amsmath}
-\usepackage{fancyvrb}
-\usepackage{hologo}
-\usepackage{xcolor}
-\usepackage{doc}
+\usepackage{microtype,amsmath,fancyvrb,hologo,xcolor,doc}
 
 % Set up the style.
 \emergencystretch=1em
@@ -45,8 +39,9 @@
   \phantomsection\label{lua:#1}\textcolor{spot}{\t`#1`}}
 \newcommand\luam[1]{% A Lua object / method reference
   \hyperref[lua:#1]{\t`#1`}}
-\def\t`#1`{% Inline code
+\def\inline#1{% Inline code
   \textcolor{spot}{\text{\texttt{#1}}}}
+\def\t`#1`{\inline{#1}}
 \newcommand\Optitem[2][]{\penalty -1000\relax % An option item definition
   \phantomsection\label{opt:#2}\optitem[#1]{#2}}
 \newcommand\Valitem[2][]{\penalty -1000\relax % A value item definition
@@ -55,6 +50,17 @@
   \hyperref[opt:#1]{\t`#1`}}
 \newcommand\acro[1]{% An acronym
   \textsc{#1}}
+
+% Set up markdown.
+\usepackage[
+  hybrid,
+  stripPercentSigns,
+  citations,
+  definitionLists]{markdown}
+\markdownSetup{
+  renderers = {
+    codeSpan = {\inline{#1}},
+    link = {#1\footnote{See \url{#3}.}}}}
 
 % Set up the catcodes.
 \catcode`\_=12 % We won't be typesetting math and Lua contains lots of `_`.
@@ -146,7 +152,10 @@
 %</driver>
 % \fi
 %
-% \section{Introduction}
+% \begin{markdown}
+%
+% Introduction
+%=============
 % This document is a technical documentation for the \pkg{Markdown} package. It
 % is split into three sections. This section explains the purpose and the
 % background of the package and outlines its prerequisites. Section
@@ -155,12 +164,11 @@
 % Section \ref{sec:implementation} describes the implementation of the package.
 % It is aimed at the developer of the package and the curious user.
 %
-% \begin{markdown}
 % The technical documentation contains only a limited amount of tutorials and
 % code examples. Please refer to the user guide distributed along with the
 % package for more of these.
-% \end{markdown}
 %
+% \end{markdown}
 % \iffalse
 %<*manual>
 ---
@@ -168,15 +176,18 @@ title:  Markdown Package User Manual
 author: Vít Novotný
 ---
 
-# Introduction
+Introduction
+============
 This document is a user manual for the Markdown package. It provides tutorials
 and code examples. For an in-depth description of the package prerequisites,
 interfaces, and implementation, please refer to the technical documentation
 distributed along with the package.
 %</manual>
 % \fi
+% \begin{markdown}
 %
-% \subsection{About \pkg{Markdown}}
+% About \pkg{Markdown}
+%---------------------
 % The \pkg{Markdown} package provides facilities for the conversion of markdown
 % markup to plain \TeX{}. These are provided both in the form of a Lua module
 % and in the form of plain \TeX{}, \LaTeX{}, and \Hologo{ConTeXt} macro
@@ -188,6 +199,7 @@ distributed along with the package.
 % package. On top of \pkg{Lunamark} sits code for the plain \TeX{}, \LaTeX{},
 % and \Hologo{ConTeXt} formats by Vít Novotný.
 %
+% \end{markdown}
 % \iffalse
 %<*lua,lua-cli>
 % \fi
@@ -211,167 +223,240 @@ if not modules then modules = { } end
 modules['markdown'] = metadata
 %    \end{macrocode}
 %
-% \subsection{Feedback}
-% Please use the \pkg{markdown} project page on
-% GitHub\footnote{\url{https://github.com/witiko/markdown/issues}} to report
-% bugs and submit feature requests. Before making a feature request, please
-% ensure that you have thoroughly studied this manual. If you do not want to
-% report a bug or request a feature but are simply in need of assistance, you
-% might want to consider posting your question on the \TeX-\LaTeX{} Stack
-% Exchange\footnote{\url{https://tex.stackexchange.com}}.
+% \begin{markdown}
 %
-% \subsection{Acknowledgements}
+% Feedback
+%---------
+% Please use the \pkg{markdown} project page on
+% [GitHub](https://github.com/witiko/markdown/issues) to report bugs and submit
+% feature requests. Before making a feature request, please ensure that you
+% have thoroughly studied this manual. If you do not want to report a bug or
+% request a feature but are simply in need of assistance, you might want to
+% consider posting your question on the [\TeX-\LaTeX{} Stack
+% Exchange](https://tex.stackexchange.com).
+%
+% Acknowledgements
+%-----------------
 % I would like to thank the creator of the Lunamark Lua module, John
 % Macfarlane, for releasing Lunamark under a permissive license that enabled
 % its inclusion into the package. Funding by the the Faculty of Informatics at
-% the Masaryk~University in~Brno~\cite{novotny15} is gratefully acknowledged.
+% the Masaryk~University in~Brno~[@novotny15] is gratefully acknowledged.
 %
 % The \TeX{} part of the package draws inspiration from several sources
 % including the source code of \Hologo{LaTeX2e}, the \pkg{minted} package by
 % Geoffrey M. Poore -- which likewise tackles the issue of interfacing with an
-% external interpreter from \TeX, the \pkg{filecontents} package by Scott
+% external interpreter from \TeX{}, the \pkg{filecontents} package by Scott
 % Pakin, and others.
 %
-% \subsection{Prerequisites}
+% Prerequisites
+%--------------
 % This section gives an overview of all resources required by the package.
 %
-% \subsubsection{Lua Prerequisites}\label{sec:luaprerequisites}
+%### Lua Prerequisites
+% \label{sec:luaprerequisites}
 % The Lua part of the package requires that the following Lua modules are
 % available from within the Lua\TeX{} engine:
-% \begin{description}
-%   \item[\pkg{LPeg${}\geq{}$0.10}] A pattern-matching library for the writing
-%     of recursive descent parsers via the Parsing Expression Grammars
-%     (\acro{peg}s). It is used by the \pkg{Lunamark} library to parse the
-%     markdown input. \pkg{LPeg${}\geq{}$0.10} is included in
-%     Lua\TeX${}\geq{}$0.72.0 (\TeX Live${}\geq{}2013$).
+%
+% \pkg{LPeg${}\geq{}$0.10}
+% 
+%:    A pattern-matching library for the writing of recursive descent parsers
+%     via the Parsing Expression Grammars (\acro{peg}s). It is used by the
+%     \pkg{Lunamark} library to parse the markdown input.
+%     \pkg{LPeg${}\geq{}$0.10} is included in Lua\TeX${}\geq{}$0.72.0 (\TeX
+%     Live${}\geq{}2013$).
+%
+% \end{markdown}
 %  \begin{macrocode}
 local lpeg = require("lpeg")
 %    \end{macrocode}
-%   \item[\pkg{Selene Unicode}] A library that provides support for the
-%     processing of wide strings. It is used by the \pkg{Lunamark} library to
-%     cast image, link, and footnote tags to the lower case. \pkg{Selene
-%     Unicode} is included in all releases of Lua\TeX{} (\TeX
-%     Live${}\geq{}2008$).
+% \begin{markdown}
+%
+% \pkg{Selene Unicode}
+%
+%:    A library that provides support for the processing of wide strings. It is
+%     used by the \pkg{Lunamark} library to cast image, link, and footnote tags
+%     to the lower case. \pkg{Selene Unicode} is included in all releases of
+%     Lua\TeX{} (\TeX Live${}\geq{}2008$).
+%
+% \end{markdown}
 %  \begin{macrocode}
 local unicode = require("unicode")
 %    \end{macrocode}
-%   \item[\pkg{MD5}] A library that provides \acro{md5} crypto functions. It is
-%     used by the \pkg{Lunamark} library to compute the digest of the input for
-%     caching purposes. \pkg{MD5} is included in all releases of Lua\TeX{}
-%     (\TeX Live${}\geq{}2008$).
+% \begin{markdown}
+%
+% \pkg{MD5}
+% 
+%:    A library that provides \acro{md5} crypto functions. It is used by the
+%     \pkg{Lunamark} library to compute the digest of the input for caching
+%     purposes. \pkg{MD5} is included in all releases of Lua\TeX{} (\TeX
+%     Live${}\geq{}2008$).
+%
+% \end{markdown}
 %  \begin{macrocode}
 local md5 = require("md5")
 %    \end{macrocode}
-% \end{description}
+% \begin{markdown}
+%
 % All the abovelisted modules are statically linked into the current version of
 % the Lua\TeX{} engine (see \cite[Section~3.3]{luatex17}).
 %
+% \end{markdown}
 % \iffalse
 %</lua>
 %<*tex>
 % \fi
-% \subsubsection{Plain \TeX{} Prerequisites}\label{sec:texprerequisites}
+% \begin{markdown}
+%
+%### Plain \TeX{} Prerequisites
+% \label{sec:texprerequisites}
 % The plain \TeX{} part of the package requires that the plain \TeX{}
 % format (or its superset) is loaded, all the Lua prerequisites (see
 % Section \ref{sec:luaprerequisites}), and the following Lua module:
-% \begin{description}
-%   \item[\pkg{Lua File System}] A library that provides access to the
-%     filesystem via \acro{os}-specific syscalls. It is used by the plain
-%     \TeX{} code to create the cache directory specified by the
-%     \m{markdownOptionCacheDir} macro before interfacing with the
-%     \pkg{Lunamark} library. \pkg{Lua File System} is included in all releases
-%     of Lua\TeX{} (\TeX Live${}\geq{}2008$).
+%
+% \pkg{Lua File System}
+%
+%:    A library that provides access to the filesystem via \acro{os}-specific
+%     syscalls. It is used by the plain \TeX{} code to create the cache
+%     directory specified by the \m{markdownOptionCacheDir} macro before
+%     interfacing with the \pkg{Lunamark} library. \pkg{Lua File System} is
+%     included in all releases of Lua\TeX{} (\TeX Live${}\geq{}2008$).
 %
 %     The plain \TeX{} code makes use of the \luam{isdir} method that was added
 %     to the \pkg{Lua File System} library by the Lua\TeX{} engine developers
-%     (see \cite[Section~3.2]{luatex17}).
-% \end{description}
-% The \pkg{Lua File System} module is statically linked into the Lua\TeX{}
-% engine (see \cite[Section~3.3]{luatex17}).
+%     (see [@luatex17, Section 3.2]).
 %
-% The plain \TeX{} part of the package also requires that either the Lua\TeX{}
+% The \pkg{Lua File System} module is statically linked into the Lua\TeX{}
+% engine (see [@luatex17, Section~3.3]).
+%
+% Unless you convert markdown documents to \TeX{} manually using the Lua
+% command-line interface (see Section~\ref{sec:lua-cli-interface}), the plain
+% \TeX{} part of the package will require that either the Lua\TeX{}
 % \m{directlua} primitive or the shell access file stream 18 is available in
 % your \TeX{} engine. If only the shell access file stream is available in your
 % \TeX{} engine (as is the case with \hologo{pdfTeX} and \Hologo{XeTeX}) or if
-% you enforce the use of shell using the \m{markdownMode} macro, then note that
-% unless your \TeX{} engine is globally configured to enable shell access, you
-% will need to provide the \t`-shell-escape` parameter to your engine when
-% typesetting a document.
+% you enforce the use of shell using the \m{markdownMode} macro, then unless
+% your \TeX{} engine is globally configured to enable shell access, you will
+% need to provide the `-shell-escape` parameter to your engine when typesetting
+% a document.
 %
+% \end{markdown}
 % \iffalse
 %</tex>
 %<*latex>
 % \fi
-% \subsubsection{\LaTeX{} Prerequisites}\label{sec:latexprerequisites}
+% \begin{markdown}
+%
+%### \LaTeX{} Prerequisites
+% \label{sec:latexprerequisites}
 % The \LaTeX{} part of the package requires that the \Hologo{LaTeX2e} format is
 % loaded,
+% \end{markdown}
 %  \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}%
 %    \end{macrocode}
+% \begin{markdown}
 % all the plain \TeX{} prerequisites (see Section \ref{sec:texprerequisites}),
 % and the following \Hologo{LaTeX2e} packages:
-% \begin{description}
-%   \item[\pkg{keyval}] A package that enables the creation of parameter sets.
-%     This package is used to provide the \m{markdownSetup} macro, the package
-%     options processing, as well as the parameters of the \envm{markdown*}
-%     \LaTeX{} environment.
+%
+% \pkg{keyval}
+%
+%:    A package that enables the creation of parameter sets. This package is
+%     used to provide the \m{markdownSetup} macro, the package options
+%     processing, as well as the parameters of the \envm{markdown*} \LaTeX{}
+%     environment.
+%
+% \end{markdown}
 %  \begin{macrocode}
 \RequirePackage{keyval}
 %    \end{macrocode}
-%   \item[\pkg{url}] A package that provides the \m{url} macro for the
-%     typesetting of \acro{url}s. It is used to provide the default token renderer
-%     prototype (see Section \ref{sec:texrendererprototypes}) for links.
+% \begin{markdown}
+% 
+% \pkg{url}
+% 
+%:    A package that provides the \m{url} macro for the typesetting of
+%     \acro{url}s. It is used to provide the default token renderer prototype
+%     (see Section \ref{sec:texrendererprototypes}) for links.
+%
+% \end{markdown}
 %  \begin{macrocode}
 \RequirePackage{url}
 %    \end{macrocode}
-%   \item[\pkg{graphicx}] A package that provides the \m{includegraphics} macro for
-%     the typesetting of images. It is used to provide the corresponding
-%     default token renderer prototype (see Section
-%     \ref{sec:texrendererprototypes}).
+% \begin{markdown}
+%
+% \pkg{graphicx}
+%
+%:    A package that provides the \m{includegraphics} macro for the typesetting
+%     of images. It is used to provide the corresponding default token renderer
+%     prototype (see Section \ref{sec:texrendererprototypes}).
+%
+% \end{markdown}
 %  \begin{macrocode}
 \RequirePackage{graphicx}
 %    \end{macrocode}
-%   \item[\pkg{paralist}] A package that provides the \envm{compactitem},
-%     \envm{compactenum}, and \envm{compactdesc} macros for the
-%     typesetting of tight bulleted lists, ordered lists, and definition lists.
-%     It is used to provide the corresponding default token renderer prototypes
-%     (see Section \ref{sec:texrendererprototypes}).
-%   \item[\pkg{ifthen}] A package that provides a concise syntax for the
-%     inspection of macro values. It is used to determine whether or not the
-%     \pkg{paralist} package should be loaded based on the user options.
+% \begin{markdown}
+%
+% \pkg{paralist}
+%
+%:    A package that provides the \envm{compactitem}, \envm{compactenum}, and
+%     \envm{compactdesc} macros for the typesetting of tight bulleted lists,
+%     ordered lists, and definition lists.  It is used to provide the
+%     corresponding default token renderer prototypes (see Section
+%     \ref{sec:texrendererprototypes}).
+%
+% \pkg{ifthen}
+%
+%:    A package that provides a concise syntax for the inspection of macro
+%     values. It is used to determine whether or not the \pkg{paralist} package
+%     should be loaded based on the user options.
+%
+% \end{markdown}
 %  \begin{macrocode}
 \RequirePackage{ifthen}
 %    \end{macrocode}
-%   \item[\pkg{fancyvrb}] A package that provides the \m{VerbatimInput} macros
-%     for the verbatim inclusion of files containing code.  It is used to
-%     provide the corresponding default token renderer prototype (see Section
+% \begin{markdown}
+%
+% \pkg{fancyvrb}
+%
+%:    A package that provides the \m{VerbatimInput} macros for the verbatim
+%     inclusion of files containing code. It is used to provide the
+%     corresponding default token renderer prototype (see Section
 %     \ref{sec:texrendererprototypes}).
+%
+% \end{markdown}
 %  \begin{macrocode}
 \RequirePackage{fancyvrb}
 %    \end{macrocode}
-%   \item[\pkg{csvsimple}] A package that provides the default token renderer
-%     prototype for iA\,Writer content blocks with the \acro{csv} filename
-%     extension (see Section \ref{sec:texrendererprototypes}).
+% \begin{markdown}
+%
+% \pkg{csvsimple}
+%
+%:    A package that provides the default token renderer prototype for
+%     iA\,Writer content blocks with the \acro{csv} filename extension (see
+%     Section \ref{sec:texrendererprototypes}).
+%
+% \end{markdown}
 %  \begin{macrocode}
 \RequirePackage{csvsimple}
 %    \end{macrocode}
-% \end{description}
-%
 % \iffalse
 %</latex>
 %<*context>
 % \fi
-% \subsubsection{\Hologo{ConTeXt} prerequisites}
+% \begin{markdown}
+%
+%### \Hologo{ConTeXt} prerequisites
 % The \Hologo{ConTeXt} part of the package requires that either the Mark II or
 % the Mark IV format is loaded, all the plain \TeX{} prerequisites (see
 % Section \ref{sec:texprerequisites}), and the following \Hologo{ConTeXt}
 % modules:
-% \begin{description}
-%   \item[\pkg{m-database}] A module that provides the default token renderer
-%     prototype for iA\,Writer content blocks with the \acro{csv} filename
-%     extension (see Section \ref{sec:texrendererprototypes}).
-% \end{description}
 %
+% \pkg{m-database}
+%
+%:    A module that provides the default token renderer prototype for
+%     iA\,Writer content blocks with the \acro{csv} filename extension (see
+%     Section \ref{sec:texrendererprototypes}).
+%
+% \end{markdown}
 % \section{Interfaces}\label{sec:interfaces}
 % This part of the documentation describes the interfaces exposed by the package
 % along with usage notes and examples. It is aimed at the user of the package.
@@ -1115,7 +1200,7 @@ end
 % sign (\t`\%`) at the beginning of a line will be discarded when buffering
 % Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
 % enables the use of markdown when writing \TeX{} package documentation using
-% the Doc \LaTeX{}~package~\cite{mittelbach17} or similar. The recognized
+% the \pkg{Doc} \LaTeX{}~package~\cite{mittelbach17} or similar. The recognized
 % values of the macro are \t`true` (discard), and \t`false` (retain).
 %  \begin{macrocode}
 \def\markdownOptionStripPercentSigns{false}%
