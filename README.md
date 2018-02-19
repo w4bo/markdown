@@ -37,10 +37,10 @@ consult the manual of your TeX distribution.
 
 ## Portable installation ##
 
-Alternatively, you can also store the `markdown.lua`, `markdown.tex`,
-`markdown.sty` and `t-markdown.tex` in the same folder as your TeX document
-and distribute them together. This way your document can be portably typeset on
-legacy TeX distributions.
+Alternatively, you can also store the `markdown.lua`, `markdown-cli.lua`,
+`markdown.tex`, `markdown.sty` and `t-markdown.tex` in the same folder as your
+TeX document and distribute them together. This way your document can be
+portably typeset on legacy TeX distributions.
 
 # Further information #
 
