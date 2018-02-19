@@ -24,8 +24,16 @@
   contentBlocks
 ]{markdown}
 \begin{document}
-  \markdownInput{example.md}
-  \begin{markdown}
+% Typeset the document `example.md` by letting the Markdown package handle
+% the conversion internally.
+\markdownInput{example.md}
+
+% Typeset the document `example.tex` that we prepared separately using the
+% Lua command-line interface of the Markdown package and that contains a
+% plain TeX representation of the document `example.md`.
+\input example
+
+\begin{markdown}
 Here are some non-ASCII characters: *ěščřžýáíé*.
-  \end{markdown}
+\end{markdown}
 \end{document}

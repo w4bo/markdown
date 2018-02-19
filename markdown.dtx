@@ -180,7 +180,7 @@ distributed along with the package.
 % and \Hologo{ConTeXt} formats by Vít Novotný.
 %
 % \iffalse
-%<*lua>
+%<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
 local metadata = {
@@ -191,6 +191,13 @@ local metadata = {
                  "2016-2018 Vít Novotný"},
     license   = "LPPL 1.3"
 }
+
+%    \end{macrocode}
+% \iffalse
+%</lua,lua-cli>
+%<*lua>
+% \fi
+%  \begin{macrocode}
 if not modules then modules = { } end
 modules['markdown'] = metadata
 %    \end{macrocode}
@@ -403,6 +410,10 @@ local M = {metadata = metadata}
 % \subsubsection{Options}\label{sec:luaoptions}
 % The Lua interface recognizes the following options. When unspecified, the
 % value of a key is taken from the \luamdef{defaultOptions} table.
+% \iffalse
+%</lua>
+%<*lua,lua-cli>
+% \fi
 %  \begin{macrocode}
 local defaultOptions = {}
 %    \end{macrocode}
@@ -766,9 +777,145 @@ defaultOptions.underscores = true
 % \end{optionlist}
 % 
 % \iffalse
-%</lua>
+%</lua,lua-cli>
+%<*lua-cli>
+% \fi
+% \subsubsection{Command-Line Interface}\label{sec:lua-cli-interface}
+% To provide finer control over the conversion and to simplify debugging, a
+% command-line Lua interface for converting a Markdown document to \TeX{} is
+% also provided.
+%  \begin{macrocode}
+
+HELP_STRING = [[
+Usage: texlua ]] .. arg[0] .. [[ [OPTIONS] -- [INPUT_FILE] [OUTPUT_FILE]
+where OPTIONS are documented in the Lua interface section of the
+technical Markdown package documentation.
+
+When OUTPUT_FILE is unspecified, the result of the conversion will be
+written to the standard output. When INPUT_FILE is also unspecified, the
+result of the conversion will be read from the standard input.
+
+Report bugs to: witiko@mail.muni.cz
+Markdown package home page: <https://github.com/Witiko/markdown>]]
+
+VERSION_STRING = [[
+markdown-cli.lua (Markdown) ]] .. metadata.version .. [[
+
+Copyright (C) ]] .. table.concat(metadata.copyright,
+                                 "\nCopyright (C) ") .. [[
+
+License: ]] .. metadata.license
+
+local function warn(s)
+  io.stderr:write("Warning: " .. s .. "\n") end
+
+local function error(s)
+  io.stderr:write("Error: " .. s .. "\n")
+  os.exit(1) end
+
+local process_options = true
+local options = {}
+local input_filename
+local output_filename
+for i = 1, #arg do
+  if process_options then
+%    \end{macrocode}
+% After the optional \t`-`{}\t`-` argument has been specified, the remaining
+% arguments are assumed to be input and output filenames. This argument is
+% optional, but encouraged, because it helps resolve ambiguities when
+% deciding whether an option of a filename has been specified.
+%  \begin{macrocode}
+    if arg[i] == "--" then
+      process_options = false
+      goto continue
+%    \end{macrocode}
+% Unless the \t`-`{}\t`-` argument has been specified before, an argument
+% containing the equals sign (\t`=`) is assumed to be an option specification
+% in a \meta{key}\t`=`\meta{value} format. The available options are listed in
+% Section~\ref{sec:luaoptions}.
+%  \begin{macrocode}
+    elseif arg[i]:match("=") then
+      key, value = arg[i]:match("(.-)=(.*)")
+%    \end{macrocode}
+% The \luam{defaultOptions} table is consulted to identify whether \meta{value}
+% should be parsed as a string or as a boolean.
+%  \begin{macrocode}
+      default_type = type(defaultOptions[key])
+      if default_type == "boolean" then
+        options[key] = (value == "true")
+      else
+        if default_type ~= "string" then
+          if default_type == "nil" then
+            warn('Option "' .. key .. '" not recognized.')
+          else
+            warn('Option "' .. key .. '" type not recognized, please file ' ..
+                 'a report to the package maintainer.')
+          end
+          warn('Parsing the ' .. 'value "' .. value ..'" of option "' ..
+               key .. '" as a string.')
+        end
+        options[key] = value
+      end
+      goto continue
+%    \end{macrocode}
+% Unless the \t`-`{}\t`-` argument has been specified before, an argument
+% \t`-`{}\t`-help`, or \t`-h` causes a brief documentation for how to invoke
+% the program to be printed to the standard output.
+%  \begin{macrocode}
+    elseif arg[i] == "--help" or arg[i] == "-h" then
+      print(HELP_STRING)
+      os.exit()
+%    \end{macrocode}
+% Unless the \t`-`{}\t`-` argument has been specified before, an argument
+% \t`-`{}\t`-version`, or \t`-v` causes the program to print information about
+% its name, version, origin and legal status, all on standard output.
+%  \begin{macrocode}
+    elseif arg[i] == "--version" or arg[i] == "-v" then
+      print(VERSION_STRING)
+      os.exit()
+    end
+  end
+%    \end{macrocode}
+% The first argument that matches none of the above patters is assumed to be
+% the input filename. The input filename should correspond to the Markdown
+% document that is going to be converted to a \TeX{} document.
+%  \begin{macrocode}
+  if input_filename == nil then
+    input_filename = arg[i]
+%    \end{macrocode}
+% The first argument that matches none of the above patters is assumed to be
+% the output filename. The output filename should correspond to the \TeX{}
+% document that will result from the conversion.
+%  \begin{macrocode}
+  elseif output_filename == nil then
+    output_filename = arg[i]
+  else
+    error('Unexpected argument: "' .. arg[i] .. '".')
+  end
+  ::continue::
+end
+%    \end{macrocode}
+%
+% The command-line Lua interface is implemented by the \t`markdown-cli.lua`
+% file that can be invoked from the command line as follows:
+% \begin{Verbatim}
+% texlua /path/to/markdown-cli.lua outputDir=. -- hello.md hello.tex
+% \end{Verbatim}
+% to convert the Markdown document \t`hello.md` to a \TeX{} document
+% \t`hello.tex`. After the Markdown package for our \TeX{} format has been
+% loaded, the converted document can be typeset as follows:
+% \begin{Verbatim}
+% \input hello
+% \end{Verbatim}
+% This shows another advantage of using the command-line interface compared
+% to using a higher-level \TeX{} interface -- it is unnecessary to provide
+% shell access for the \TeX{} engine.
+%
+% \iffalse
+%</lua-cli>
 %<*tex>
-% \fi\subsection{Plain \TeX{} Interface}\label{sec:texinterface}
+% \fi
+% \subsection{Plain \TeX{} Interface}\label{sec:texinterface}
 % The plain \TeX{} interface provides macros for the typesetting of markdown input
 % from within plain \TeX{}, for setting the Lua interface options (see Section
 % \ref{sec:luaoptions}) used during the conversion from markdown to plain
@@ -1645,9 +1792,8 @@ defaultOptions.underscores = true
 %
 % \subsubsection{Options}\label{sec:latexoptions}
 % The \LaTeX{} options are represented by a comma-delimited list of
-% \meta{\meta{key}=\meta{value}} pairs. For boolean options, the
-% \meta{=\meta{value}} part is optional, and \meta{\meta{key}} will be
-% interpreted as \meta{\meta{key}=true}.
+% \meta{key}\t`=`\meta{value} pairs. For boolean options, the \t`=`\meta{value}
+% part is optional, and \meta{key} will be interpreted as \meta{key}\t`=true`.
 %
 % The \LaTeX{} options map directly to the options recognized by the plain
 % \TeX{} interface (see Section \ref{sec:texoptions}) and to the markdown token
@@ -4431,8 +4577,59 @@ return M
 %
 % \iffalse
 %</lua>
+%<*lua-cli>
+% \fi
+% \subsubsection{Command-Line Implementation}\label{sec:lua-cli-implementation}
+% The command-line implementation provides the actual conversion routine for
+% the command-line interface described in Section~\ref{sec:lua-cli-interface}.
+%  \begin{macrocode}
+
+local input
+if input_filename then
+  local input_file = io.open(input_filename, "r")
+  input = assert(input_file:read("*a"))
+  input_file:close()
+else
+  input = assert(io.read("*a"))
+end
+
+%    \end{macrocode}
+% First, ensure that the `options.cacheDir` directory exists.
+%  \begin{macrocode}
+local lfs = require("lfs")
+if options.cacheDir and not lfs.isdir(options.cacheDir) then
+  assert(lfs.mkdir(options["cacheDir"]))
+end
+
+local kpse = require("kpse")
+kpse.set_program_name("luatex")
+local md = require("markdown")
+%    \end{macrocode}
+% Since we are loading the rest of the Lua implementation dynamically,
+% check that both the \t`markdown` module and the command line implementation
+% are the same version.
+%  \begin{macrocode}
+if metadata.version ~= md.metadata.version then
+  warn("markdown-cli.lua " .. metadata.version .. " used with " ..
+       "markdown.lua " .. md.metadata.version .. ".")
+end
+local convert = md.new(options)
+local output = convert(input:gsub("\r\n?", "\n"))
+
+if output_filename then
+  local output_file = io.open(output_filename, "w")
+  assert(output_file:write(output))
+  assert(output_file:close())
+else
+  assert(io.write(output))
+end
+%    \end{macrocode}
+%
+% \iffalse
+%</lua-cli>
 %<*tex>
-% \fi\subsection{Plain \TeX{} Implementation}\label{sec:teximplementation}
+% \fi
+% \subsection{Plain \TeX{} Implementation}\label{sec:teximplementation}
 % The plain \TeX{} implementation provides macros for the interfacing between
 % \TeX{} and Lua and for the buffering of input text. These macros are then
 % used to implement the macros for the conversion from markdown to plain \TeX{}
