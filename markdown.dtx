@@ -53,10 +53,11 @@
 
 % Set up markdown.
 \usepackage[
-  hybrid,
-  stripPercentSigns,
   citations,
-  definitionLists]{markdown}
+  definitionLists,
+  hybrid,
+  html,
+  stripPercentSigns]{markdown}
 \markdownSetup{
   renderers = {
     codeSpan = {\inline{#1}},
@@ -182,6 +183,7 @@ This document is a user manual for the Markdown package. It provides tutorials
 and code examples. For an in-depth description of the package prerequisites,
 interfaces, and implementation, please refer to the technical documentation
 distributed along with the package.
+
 %</manual>
 % \fi
 % \begin{markdown}
@@ -248,8 +250,32 @@ modules['markdown'] = metadata
 % external interpreter from \TeX{}, the \pkg{filecontents} package by Scott
 % Pakin, and others.
 %
-% Prerequisites
-%--------------
+% \end{markdown}
+% \iffalse
+%</lua>
+%<*manual>
+
+Getting started
+===============
+
+<!-- TODO -->
+
+Installation
+------------
+
+<!-- TODO -->
+
+% \fi
+% \begin{markdown}
+
+Prerequisites
+-------------
+
+<!-- TODO -->
+
+%</manual>
+%<*lua>
+%
 % This section gives an overview of all resources required by the package.
 %
 %### Lua Prerequisites
@@ -469,6 +495,27 @@ local md5 = require("md5")
 %
 % \iffalse
 %</context>
+%<*manual>
+
+An example document
+-------------------
+
+<!-- TODO -->
+
+### Using LaTeX
+
+<!-- TODO -->
+
+### Using a terminal
+
+<!-- TODO -->
+
+Examples
+========
+
+<!-- TODO -->
+
+%</manual>
 %<*lua>
 % \fi
 % \subsection{Lua Interface}\label{sec:luainterface}
@@ -482,6 +529,18 @@ local md5 = require("md5")
 %  \begin{macrocode}
 local M = {metadata = metadata}
 %    \end{macrocode}
+% \iffalse
+%</lua>
+%<*manual>
+
+Lua
+---
+
+<!-- TODO -->
+
+%</manual>
+%<*lua>
+% \fi
 %
 % \subsubsection{Conversion from Markdown to Plain \TeX{}}
 % \label{sec:luaconversion}
@@ -1018,6 +1077,18 @@ end
 \def\markdownLastModified{2018/01/08}%
 \def\markdownVersion{2.5.5}%
 %    \end{macrocode}
+% \iffalse
+%</tex>
+%<*manual>
+
+Plain TeX
+---------
+
+<!-- TODO -->
+
+%</manual>
+%<*tex>
+% \fi
 %
 % The plain \TeX{} interface is implemented by the \t`markdown.tex` file that
 % can be loaded as follows:
@@ -1856,6 +1927,19 @@ end
 % \ref{sec:latexrendererprototypes}) keys. This limitation is due to the way
 % \Hologo{LaTeX2e} parses package options.
 %
+% \iffalse
+%</latex>
+%<*manual>
+
+LaTeX
+-----
+
+<!-- TODO -->
+
+%</manual>
+%<*latex>
+% \fi
+%
 % \subsubsection{Typesetting Markdown}
 % The interface exposes the \envmdef{markdown} and \envmdef{markdown*}
 % \LaTeX{} environments, and redefines the \m{markdownInput} command.
@@ -2289,6 +2373,18 @@ end
 \writestatus{loading}{ConTeXt User Module / markdown}%
 \unprotect
 %    \end{macrocode}
+% \iffalse
+%</context>
+%<*manual>
+
+ConTeXt
+-------
+
+<!-- TODO -->
+
+%</manual>
+%<*context>
+% \fi
 %
 % The \Hologo{ConTeXt} interface is implemented by the
 % \t`t-markdown.tex` \Hologo{ConTeXt} module file that can be loaded as follows:
