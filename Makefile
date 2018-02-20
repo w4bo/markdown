@@ -49,7 +49,7 @@ $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
 
 # This target converts the user manual to an HTML page.
 %.html: %.md
-	pandoc -f markdown -t html -s --toc <$< >$@
+	pandoc -f markdown -t html -N -s --toc <$< >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:
