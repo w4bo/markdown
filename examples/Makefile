@@ -43,7 +43,7 @@ latex-luatex.pdf: latex.tex
 # using the Lua command-line interface for the Markdown package.
 example.tex: example.md
 	texlua "`kpsewhich markdown-cli.lua`" cacheDir=_markdown_example \
-		$(LUACLI_OPTIONS) -- $< $@
+	  $(LUACLI_OPTIONS) -- $< $@
 
 # This pseudo-target removes any existing auxiliary files and directories.
 clean:
