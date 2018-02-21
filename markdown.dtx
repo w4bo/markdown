@@ -1,11 +1,10 @@
 % \iffalse
 %<*driver>
 \documentclass{ltxdockit}
-\usepackage{btxdockit}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[american]{babel}
-\usepackage{microtype,amsmath,fancyvrb,hologo,xcolor,doc}
+\usepackage{amsmath,btxdockit,doc,fancyvrb,hologo,microtype,minted,xcolor}
 
 % Set up the style.
 \emergencystretch=1em
@@ -55,6 +54,7 @@
 \usepackage[
   citations,
   definitionLists,
+  fencedCode,
   hybrid,
   html,
   stripPercentSigns]{markdown}
@@ -284,7 +284,7 @@ Prerequisites
 % available from within the Lua\TeX{} engine:
 %
 % \pkg{LPeg${}\geq{}$0.10}
-% 
+%
 %:    A pattern-matching library for the writing of recursive descent parsers
 %     via the Parsing Expression Grammars (\acro{peg}s). It is used by the
 %     \pkg{Lunamark} library to parse the markdown input.
@@ -311,7 +311,7 @@ local unicode = require("unicode")
 % \begin{markdown}
 %
 % \pkg{MD5}
-% 
+%
 %:    A library that provides \acro{md5} crypto functions. It is used by the
 %     \pkg{Lunamark} library to compute the digest of the input for caching
 %     purposes. \pkg{MD5} is included in all releases of Lua\TeX{} (\TeX
@@ -396,9 +396,9 @@ local md5 = require("md5")
 \RequirePackage{keyval}
 %    \end{macrocode}
 % \begin{markdown}
-% 
+%
 % \pkg{url}
-% 
+%
 %:    A package that provides the \m{url} macro for the typesetting of
 %     \acro{url}s. It is used to provide the default token renderer prototype
 %     (see Section \ref{sec:texrendererprototypes}) for links.
@@ -482,8 +482,9 @@ local md5 = require("md5")
 %     iA\,Writer content blocks with the \acro{csv} filename extension (see
 %     Section \ref{sec:texrendererprototypes}).
 %
-% \end{markdown}
-% \section{Interfaces}\label{sec:interfaces}
+% Interfaces
+%===========
+% \label{sec:interfaces}
 % This part of the documentation describes the interfaces exposed by the package
 % along with usage notes and examples. It is aimed at the user of the package.
 %
@@ -493,6 +494,7 @@ local md5 = require("md5")
 % if they only access the package through the interface, the future minor
 % versions of the package should remain backwards compatible.
 %
+% \end{markdown}
 % \iffalse
 %</context>
 %<*manual>
@@ -518,14 +520,19 @@ Examples
 %</manual>
 %<*lua>
 % \fi
-% \subsection{Lua Interface}\label{sec:luainterface}
+% \begin{markdown}
+%
+% Lua Interface
+%--------------
+% \label{sec:luainterface}
 % The Lua interface provides the conversion from \acro{utf}-\oldstylenums8
 % encoded markdown to plain \TeX{}. This interface is used by the plain \TeX{}
 % implementation (see Section \ref{sec:teximplementation}) and will be of
 % interest to the developers of other packages and Lua modules.
 %
-% The Lua interface is implemented by the \t`markdown` Lua module.
+% The Lua interface is implemented by the `markdown` Lua module.
 %
+% \end{markdown}
 %  \begin{macrocode}
 local M = {metadata = metadata}
 %    \end{macrocode}
@@ -541,28 +548,32 @@ Lua
 %</manual>
 %<*lua>
 % \fi
+% \begin{markdown}
 %
-% \subsubsection{Conversion from Markdown to Plain \TeX{}}
+%### Conversion from Markdown to Plain \TeX{}
 % \label{sec:luaconversion}
-% The Lua interface exposes the \luamdef{new}\t`(options)` method.  This
+% The Lua interface exposes the \luamdef{new}`(options)` method.  This
 % method creates converter functions that perform the conversion from markdown
-% to plain \TeX{} according to the table \t`options` that contains options
+% to plain \TeX{} according to the table `options` that contains options
 % recognized by the Lua interface.  (see Section \ref{sec:luaoptions}). The
-% \t`options` parameter is optional; when unspecified, the behaviour will be
-% the same as if \t`options` were an empty table.
+% `options` parameter is optional; when unspecified, the behaviour will be
+% the same as if `options` were an empty table.
 %
-% The following example Lua code converts the markdown string \t`_Hello
+% The following example Lua code converts the markdown string `_Hello
 % world!_` to a \TeX{} output using the default options and prints the \TeX{}
 % output:
-% \begin{Verbatim}
+% ```lua
 % local md = require("markdown")
 % local convert = md.new()
 % print(convert("_Hello world!_"))
-% \end{Verbatim}
+% ```
 %
-% \subsubsection{Options}\label{sec:luaoptions}
+%### Options
+% \label{sec:luaoptions}
 % The Lua interface recognizes the following options. When unspecified, the
 % value of a key is taken from the \luamdef{defaultOptions} table.
+%
+% \end{markdown}
 % \iffalse
 %</lua>
 %<*lua,lua-cli>
@@ -570,68 +581,119 @@ Lua
 %  \begin{macrocode}
 local defaultOptions = {}
 %    \end{macrocode}
-% \pagebreak
-% \paragraph{File and Directory Names}
-% \begin{optionlist}
-%   \Valitem[.]{cacheDir}{path}
-%     A path to the directory containing auxiliary cache files. It is
-%     considered sane to set the path to a subdirectory of \t`outputDir`.
+% \begingroup
+% \markdownSetup{
+%   renderers = {
+%     dlBegin = {\begin{optionlist}},
+%     dlItem = {
+%       #1
+%       \begingroup
+%       \markdownSetup{
+%         renderers = {
+%           dlBegin = {
+%             \begingroup
+%             \markdownSetup{
+%               renderers = {
+%                 dlItem = {\item[####1]},
+%                 dlItemEnd = {}}}
+%             \begin{valuelist}},
+%           dlEnd = {
+%             \end{valuelist}
+%             \endgroup}}}},
+%     dlItemEnd = {\endgroup},
+%     dlEnd = {\end{optionlist}}}}
+% \begin{markdown}
+%
+%#### File and Directory Names
+%
+% \Valitem[.]{cacheDir}{path}
+%
+%:    A path to the directory containing auxiliary cache files. It is
+%     considered sane to set the path to a subdirectory of `outputDir`.
 %     If the last segment of the path does not exist, it will be created by the
 %     plain \TeX, \LaTeX, and \Hologo{ConTeXt} implementations. The Lua
 %     implementation expects that the entire path already exists.
-% 
+%
 %     When iteratively writing and typesetting a markdown document, the cache
 %     files are going to accumulate over time. You are advised to clean the
 %     cache directory every now and then, or to set it to a temporary filesystem
-%     (such as \t`/tmp` on \acro{un*x} systems), which gets periodically
+%     (such as `/tmp` on \acro{un*x} systems), which gets periodically
 %     emptied.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.cacheDir = "."
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Valitem[.]{outputDir}{path}
-%     A path to the directory containing output files. The path must be set
-%     to the same value as the \t`-output-directory` option of your \TeX\
+% \Valitem[.]{outputDir}{path}
+%
+%:    A path to the directory containing output files. The path must be set
+%     to the same value as the `-output-directory` option of your \TeX\
 %     engine for the package to function correctly.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.outputDir = "."
 %    \end{macrocode}
-% \end{optionlist}
-% \paragraph{Parser Options}
-% \begin{optionlist}
-%   \Optitem[false]{blankBeforeBlockquote}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Require a blank line between a paragraph and the following
-%         blockquote.
-%       \item[false] Do not require a blank line between a paragraph and the
-%         following blockquote.
-%     \end{valuelist}
+% \begin{markdown}
+%
+%### Parser Options
+%
+% \Optitem[false]{blankBeforeBlockquote}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Require a blank line between a paragraph and the following
+%          blockquote.
+%
+%     false
+%
+%     :    Do not require a blank line between a paragraph and the
+%          following blockquote.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.blankBeforeBlockquote = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{blankBeforeCodeFence}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Require a blank line between a paragraph and the following
-%         fenced code block.
-%       \item[false] Do not require a blank line between a paragraph and the
-%         following fenced code block.
-%     \end{valuelist}
+% \Optitem[false]{blankBeforeCodeFence}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Require a blank line between a paragraph and the following fenced code
+%          block.
+%
+%      false
+%
+%     :    Do not require a blank line between a paragraph and the
+%          following fenced code block.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.blankBeforeCodeFence = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{blankBeforeHeading}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Require a blank line between a paragraph and the following
-%         header.
-%       \item[false] Do not require a blank line between a paragraph and the
-%         following header.
-%     \end{valuelist}
+% \Optitem[false]{blankBeforeHeading}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Require a blank line between a paragraph and the following
+%          header.
+%
+%     false
+%
+%     :    Do not require a blank line between a paragraph and the
+%          following header.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.blankBeforeHeading = false
 %    \end{macrocode}
 %
+% \begin{optionlist}
 %   \Optitem[false]{breakableBlockquotes}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] A blank line separates block quotes.
@@ -661,7 +723,7 @@ defaultOptions.citationNbsps = true
 % Here is a simple parenthetical citation [@doe99] and here
 % is a string of several [see @doe99, pp. 33-35; also
 % @smith04, chap. 1].
-% 
+%
 % A parenthetical citation can have a [prenote @doe99] and
 % a [@smith04 postnote]. The name of the author can be
 % suppressed by inserting a dash before the name of an
@@ -727,15 +789,15 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 %       \item[true] Enable the pandoc definition list syntax extension:
 %         \begin{Verbatim}
 % Term 1
-% 
+%
 % :   Definition 1
-% 
+%
 % Term 2 with *inline markup*
-% 
+%
 % :   Definition 2
-% 
+%
 %         { some code, part of Definition 2 }
-% 
+%
 %     Third paragraph of definition 2.
 %         \end{Verbatim}
 %       \item[false] Disable the pandoc definition list syntax extension.
@@ -776,20 +838,20 @@ defaultOptions.fencedCode = false
 %       \item[true] Enable the pandoc footnote syntax extension:
 %         \begin{Verbatim}
 % Here is a footnote reference,[^1] and another.[^longnote]
-% 
+%
 % [^1]: Here is the footnote.
-% 
+%
 % [^longnote]: Here's one with multiple blocks.
-% 
+%
 %     Subsequent paragraphs are indented to show that they
 % belong to the previous footnote.
-% 
+%
 %         { some.code }
-% 
+%
 %     The whole paragraph can be indented, or just the
 %     first line.  In this way, multi-paragraph footnotes
 %     work like multi-paragraph list items.
-% 
+%
 % This paragraph won't be part of the note, because it
 % isn't indented.
 %         \end{Verbatim}
@@ -798,7 +860,7 @@ defaultOptions.fencedCode = false
 %  \begin{macrocode}
 defaultOptions.footnotes = false
 %    \end{macrocode}
-% 
+%
 %   \Optitem[false]{hashEnumerators}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] Enable the use of hash symbols (\t`\#`) as ordered item
@@ -814,7 +876,7 @@ defaultOptions.footnotes = false
 %  \begin{macrocode}
 defaultOptions.hashEnumerators = false
 %    \end{macrocode}
-% 
+%
 %   \Optitem[false]{html}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true]  Enable the recognition of \textsc{html} tags, block
@@ -928,7 +990,8 @@ defaultOptions.tightLists = true
 defaultOptions.underscores = true
 %    \end{macrocode}
 % \end{optionlist}
-% 
+%
+% \endgroup
 % \iffalse
 %</lua,lua-cli>
 %<*lua-cli>
@@ -1240,7 +1303,7 @@ Plain TeX
 % interface (see Section \ref{sec:luaoptions}) and are not processed by the
 % plain \TeX{} implementation, only passed along to Lua. They are undefined, which
 % makes them fall back to the default values provided by the Lua interface.
-% 
+%
 % For the macros that correspond to the non-boolean options recognized by the
 % Lua interface, the same limitations apply here in the case of the
 % \m{markdownOptionHelperScriptFileName} macro.
@@ -1897,7 +1960,7 @@ Plain TeX
   \fi
 \fi
 %    \end{macrocode}
-% 
+%
 % The following macros are no longer a part of the plain \TeX{} interface and
 % are only defined for backwards compatibility:
 %  \begin{macrocode}
@@ -2419,7 +2482,7 @@ ConTeXt
 % \stopmarkdown
 % \stoptext
 % \end{Verbatim}
-% 
+%
 % \section{Implementation}\label{sec:implementation}
 % This part of the documentation describes the implementation of the interfaces
 % exposed by the package (see Section \ref{sec:interfaces}) and is aimed at the
@@ -2446,7 +2509,7 @@ local P, R, S, V, C, Cg, Cb, Cmt, Cc, Ct, B, Cs, any =
   lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.C, lpeg.Cg, lpeg.Cb,
   lpeg.Cmt, lpeg.Cc, lpeg.Ct, lpeg.B, lpeg.Cs, lpeg.P(1)
 %    \end{macrocode}
-% 
+%
 % \subsubsection{Utility Functions}
 % This section documents the utility functions used by the plain \TeX{}
 % writer and the markdown reader. These functions are encapsulated in the
@@ -2455,7 +2518,7 @@ local P, R, S, V, C, Cg, Cb, Cmt, Cc, Ct, B, Cs, any =
 %  \begin{macrocode}
 local util = {}
 %    \end{macrocode}
-% 
+%
 % The \luamdef{util.err} method prints an error message \t`msg` and exits.
 % If \t`exit_code` is provided, it specifies the exit code.  Otherwise, the
 % exit code will be 1.
@@ -2606,7 +2669,7 @@ function util.intersperse(ary, x)
   return new
 end
 %    \end{macrocode}
-% 
+%
 % Given an array \t`ary` and a function \t`f`, the \luamdef{util.map} method
 % returns an array \t`new`, such that \t`new[i] == f(ary[i])` for all
 % $1\leq\t`i`\leq\t`\#ary`$.
@@ -2625,7 +2688,7 @@ end
 % to escaped strings, the \luamdef{util.escaper} method returns an escaper
 % function that escapes all occurances of escapable strings and characters (in
 % this order).
-% 
+%
 % The method uses \pkg{LPeg}, which is faster than the Lua \t`string.gsub`
 % built-in method.
 %  \begin{macrocode}
@@ -4011,7 +4074,7 @@ local function strip_atx_end(s)
   return s:gsub("[#%s]*\n$","")
 end
 %    \end{macrocode}
-% 
+%
 % \subsubsection{Markdown Reader}\label{sec:markdownreader}
 % This section documents the \luam{reader} object, which implements the
 % routines for parsing the markdown input. The object corresponds to the
@@ -4056,7 +4119,7 @@ function M.reader.new(writer, options)
       gsub(util.rope_to_string(tag), "[ \n\r\t]+", " "))
   end
 %    \end{macrocode}
-% 
+%
 % Define \luamdef{expandtabs} either as an identity function, when the
 % \Opt{preserveTabs} Lua inrerface option is \t`true`, or to a function that
 % expands tabs into spaces otherwise.
@@ -4074,7 +4137,7 @@ function M.reader.new(writer, options)
                  end
   end
 %    \end{macrocode}
-% 
+%
 % The \luamdef{larsers} (as in ``local \luam{parsers}'') hash table stores
 % \acro{peg} patterns that depend on the received \t`options`, which impedes
 % their reuse between different \luam{reader} objects.
@@ -5190,7 +5253,7 @@ local convert = md.new(\markdownLuaOptions)
 % The \mdef{markdownExecuteShellEscape} macro contains the numeric value indicating
 % whether the shell access is enabled (\t`1`), disabled (\t`0`), or restricted
 % (\t`2`).
-% 
+%
 % Inherit the value of the the \m{pdfshellescape} (Lua\TeX{}, \Hologo{pdfTeX})
 % or the \m{shellescape} (\Hologo{XeTeX}) commands. If neither of these
 % commands is defined and Lua is available, attempt to access the
@@ -5690,7 +5753,7 @@ local convert = md.new(\markdownLuaOptions)
 %  \begin{macrocode}
   \catcode`|=12}%
 %    \end{macrocode}
-% 
+%
 % \subsubsection{Logging Facilities}
 % The \Hologo{ConTeXt} implementation redefines the plain \TeX{} logging macros (see
 % Section \ref{sec:texinterfacelogging}) to use the \Hologo{ConTeXt}
@@ -5799,7 +5862,7 @@ local convert = md.new(\markdownLuaOptions)
     \typefile{#1}%
   \else
 %    \end{macrocode}
-% 
+%
 % The code fence infostring is used as a name from the \Hologo{ConTeXt}
 % \m{definetyping} macro. This allows the user to set up code highlighting
 % mapping as follows:
@@ -5807,7 +5870,7 @@ local convert = md.new(\markdownLuaOptions)
 % % Map the `TEX` syntax highlighter to the `latex` infostring.
 % \definetyping [latex]
 % \setuptyping  [latex] [option=TEX]
-% 
+%
 % \starttext
 %   \startmarkdown
 % ~~~ latex

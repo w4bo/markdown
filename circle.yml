@@ -4,7 +4,7 @@ dependencies:
   override:
     - mkdir -p                                   ~/aptcache/partial
     - sudo apt-get -o dir::cache::archives="$HOME"/aptcache update
-    - sudo apt-get -o dir::cache::archives="$HOME"/aptcache install texlive-full parallel biber
+    - sudo apt-get -o dir::cache::archives="$HOME"/aptcache install biber parallel python-pygments texlive-full
 
 test:
   override:
