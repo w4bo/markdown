@@ -8,9 +8,7 @@
 
 % Set up the style.
 \emergencystretch=1em
-\RecustomVerbatimEnvironment
-  {Verbatim}{Verbatim}
-  {gobble=2,frame=single}
+\fvset{gobble=0,frame=single}
 \setcounter{secnumdepth}{4}
 \addtokomafont{title}{\sffamily}
 \addtokomafont{paragraph}{\spotcolor}
@@ -326,7 +324,7 @@ local md5 = require("md5")
 % \begin{markdown}
 %
 % All the abovelisted modules are statically linked into the current version of
-% the Lua\TeX{} engine (see \cite[Section~3.3]{luatex17}).
+% the Lua\TeX{} engine (see [@luatex17, Section 3.3]).
 %
 % \end{markdown}
 % \iffalse
@@ -694,98 +692,142 @@ defaultOptions.blankBeforeCodeFence = false
 %  \begin{macrocode}
 defaultOptions.blankBeforeHeading = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-% \begin{optionlist}
-%   \Optitem[false]{breakableBlockquotes}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] A blank line separates block quotes.
-%       \item[false] Blank lines in the middle of a block quote are ignored.
-%     \end{valuelist}
+% \Optitem[false]{breakableBlockquotes}{\opt{true}, \opt{false}}
+%
+%:    true
+% 
+%     :    A blank line separates block quotes.
+%
+%     false
+%
+%     :    Blank lines in the middle of a block quote are ignored.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.breakableBlockquotes = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{citationNbsps}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Replace regular spaces with non-breakable spaces inside the
-%         prenotes and postnotes of citations produced via the pandoc citation
-%         syntax extension.
-%       \item[false] Do not replace regular spaces with non-breakable spaces
-%         inside the prenotes and postnotes of citations produced via the pandoc
-%         citation syntax extension.
-%     \end{valuelist}
+% \Optitem[false]{citationNbsps}{\opt{true}, \opt{false}}
+%
+%:    true
+% 
+%     :    Replace regular spaces with non-breakable spaces inside the
+%          prenotes and postnotes of citations produced via the pandoc citation
+%          syntax extension.
+%
+%     false
+%
+%     :    Do not replace regular spaces with non-breakable spaces
+%          inside the prenotes and postnotes of citations produced via the pandoc
+%          citation syntax extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.citationNbsps = true
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{citations}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the pandoc citation syntax extension:
-%         \begin{Verbatim}
-% Here is a simple parenthetical citation [@doe99] and here
-% is a string of several [see @doe99, pp. 33-35; also
-% @smith04, chap. 1].
+% \Optitem[false]{citations}{\opt{true}, \opt{false}}
 %
-% A parenthetical citation can have a [prenote @doe99] and
-% a [@smith04 postnote]. The name of the author can be
-% suppressed by inserting a dash before the name of an
-% author as follows [-@smith04].
+%:    true
 %
-% Here is a simple text citation @doe99 and here is
-% a string of several @doe99 [pp. 33-35; also @smith04,
-% chap. 1]. Here is one with the name of the author
-% suppressed -@doe99.
-%         \end{Verbatim}
-%       \item[false] Disable the pandoc citation syntax extension.
-%     \end{valuelist}
+%     :    Enable the pandoc citation syntax extension:
+%
+%          ```md
+%          Here is a simple parenthetical citation [@doe99] and here
+%          is a string of several [see @doe99, pp. 33-35; also
+%          @smith04, chap. 1].
+%
+%          A parenthetical citation can have a [prenote @doe99] and
+%          a [@smith04 postnote]. The name of the author can be
+%          suppressed by inserting a dash before the name of an
+%          author as follows [-@smith04].
+%
+%          Here is a simple text citation @doe99 and here is
+%          a string of several @doe99 [pp. 33-35; also @smith04,
+%          chap. 1]. Here is one with the name of the author
+%          suppressed -@doe99.
+%          ```
+%
+%:    false
+%
+%     :    Disable the pandoc citation syntax extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.citations = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[true]{codeSpans}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the code span syntax:
-%         \begin{Verbatim}
-% Use the `printf()` function.
-% ``There is a literal backtick (`) here.``
-%         \end{Verbatim}
-%       \item[false] Disable the code span syntax. This allows you to easily
-%         use the quotation mark ligatures in texts that do not contain code
-%         spans:
-%         \begin{Verbatim}
-% ``This is a quote.''
-%         \end{Verbatim}
-%     \end{valuelist}
+% \Optitem[true]{codeSpans}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Enable the code span syntax:
+%
+%          ~~~md
+%          Use the `printf()` function.
+%          ``There is a literal backtick (`) here.``
+%          ~~~
+%
+%:    false
+%
+%     :    Disable the code span syntax. This allows you to easily
+%          use the quotation mark ligatures in texts that do not contain code
+%          spans:
+%
+%          ~~~
+%          ``This is a quote.''
+%          ~~~
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.codeSpans = true
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{contentBlocks}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the iA\,Writer content blocks syntax
-%         extension~\cite{sotkov17}:
-%         \begin{Verbatim}
-% http://example.com/minard.jpg (Napoleon’s disastrous
-% Russian campaign of 1812)
-% /Flowchart.png "Engineering Flowchart"
-% /Savings Account.csv 'Recent Transactions'
-% /Example.swift
-% /Lorem Ipsum.txt
-%         \end{Verbatim}
-%       \item[false] Disable the iA\,Writer content blocks syntax extension.
-%     \end{valuelist}
+% \Optitem[false]{contentBlocks}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Enable the iA\,Writer content blocks syntax
+%          extension~[@sotkov17]:
+%
+%          ```
+%          http://example.com/minard.jpg (Napoleon's disastrous
+%                                         Russian campaign of 1812)
+%          /Flowchart.png "Engineering Flowchart"
+%          /Savings Account.csv 'Recent Transactions'
+%          /Example.swift
+%          /Lorem Ipsum.txt
+%         ```
+%
+%:    false
+%
+%     :    Disable the iA\,Writer content blocks syntax extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.contentBlocks = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Valitem[markdown-languages.json]{contentBlocksLanguageMap}{filename}
-%     The filename of the \acro{json} file that maps filename extensions to
+% \Valitem[markdown-languages.json]{contentBlocksLanguageMap}{filename}
+%
+%:    The filename of the \acro{json} file that maps filename extensions to
 %     programming language names in the iA\,Writer content blocks. See
 %     Section~\ref{sec:texcontentblockrenderers} for more information.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 %    \end{macrocode}
 %
+% \fvset{gobble=2}
+% \begin{optionlist}
 %   \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
 %     \begin{valuelist}
 %       \item[true] Enable the pandoc definition list syntax extension:
