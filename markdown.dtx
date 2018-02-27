@@ -71,7 +71,7 @@
   url={https://github.com/witiko/markdown},
   author={Vít Novotný},
   email={witiko@mail.muni.cz},
-  revision={\input VERSION},
+  revision=\markdownVersion,
   date={\today}}
 \hypersetup{%
   pdftitle={A Markdown Interpreter for \TeX{}},
@@ -562,11 +562,11 @@ Lua
 % The following example Lua code converts the markdown string `_Hello
 % world!_` to a \TeX{} output using the default options and prints the \TeX{}
 % output:
-% ```lua
+% ``` lua
 % local md = require("markdown")
 % local convert = md.new()
 % print(convert("_Hello world!_"))
-% ```
+% ```````
 %
 %### Options
 % \label{sec:luaoptions}
@@ -697,7 +697,7 @@ defaultOptions.blankBeforeHeading = false
 % \Optitem[false]{breakableBlockquotes}{\opt{true}, \opt{false}}
 %
 %:    true
-% 
+%
 %     :    A blank line separates block quotes.
 %
 %     false
@@ -713,7 +713,7 @@ defaultOptions.breakableBlockquotes = false
 % \Optitem[false]{citationNbsps}{\opt{true}, \opt{false}}
 %
 %:    true
-% 
+%
 %     :    Replace regular spaces with non-breakable spaces inside the
 %          prenotes and postnotes of citations produced via the pandoc citation
 %          syntax extension.
@@ -736,7 +736,7 @@ defaultOptions.citationNbsps = true
 %
 %     :    Enable the pandoc citation syntax extension:
 %
-%          ```md
+%          ``` md
 %          Here is a simple parenthetical citation [@doe99] and here
 %          is a string of several [see @doe99, pp. 33-35; also
 %          @smith04, chap. 1].
@@ -750,7 +750,7 @@ defaultOptions.citationNbsps = true
 %          a string of several @doe99 [pp. 33-35; also @smith04,
 %          chap. 1]. Here is one with the name of the author
 %          suppressed -@doe99.
-%          ```
+%          ``````
 %
 %:    false
 %
@@ -768,7 +768,7 @@ defaultOptions.citations = false
 %
 %     :    Enable the code span syntax:
 %
-%          ~~~md
+%          ~~~ md
 %          Use the `printf()` function.
 %          ``There is a literal backtick (`) here.``
 %          ~~~
@@ -781,7 +781,7 @@ defaultOptions.citations = false
 %
 %          ~~~
 %          ``This is a quote.''
-%          ~~~
+%          ~~~~~~
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -796,14 +796,14 @@ defaultOptions.codeSpans = true
 %     :    Enable the iA\,Writer content blocks syntax
 %          extension~[@sotkov17]:
 %
-%          ```
+%          ``` md
 %          http://example.com/minard.jpg (Napoleon's disastrous
 %                                         Russian campaign of 1812)
 %          /Flowchart.png "Engineering Flowchart"
 %          /Savings Account.csv 'Recent Transactions'
 %          /Example.swift
 %          /Lorem Ipsum.txt
-%         ```
+%         ``````
 %
 %:    false
 %
@@ -825,217 +825,299 @@ defaultOptions.contentBlocks = false
 %  \begin{macrocode}
 defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 %    \end{macrocode}
+% \begin{markdown}
 %
-% \fvset{gobble=2}
-% \begin{optionlist}
-%   \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the pandoc definition list syntax extension:
-%         \begin{Verbatim}
-% Term 1
+% \Optitem[false]{definitionLists}{\opt{true}, \opt{false}}
 %
-% :   Definition 1
+%:    true
 %
-% Term 2 with *inline markup*
+%     :    Enable the pandoc definition list syntax extension:
 %
-% :   Definition 2
+%          ``` md
+%          Term 1
 %
-%         { some code, part of Definition 2 }
+%          :   Definition 1
 %
-%     Third paragraph of definition 2.
-%         \end{Verbatim}
-%       \item[false] Disable the pandoc definition list syntax extension.
-%     \end{valuelist}
+%          Term 2 with *inline markup*
+%
+%          :   Definition 2
+%
+%                  { some code, part of Definition 2 }
+%
+%              Third paragraph of definition 2.
+%          `````
+%
+%:    false
+%
+%     :    Disable the pandoc definition list syntax extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.definitionLists = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{fencedCode}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the commonmark fenced code block extension:
-%         \begin{Verbatim}
-% ~~~ js
-% if (a > 3) {
-%     moveShip(5 * gravity, DOWN);
-% }
-% ~~~~~~
+% \Optitem[false]{fencedCode}{\opt{true}, \opt{false}}
 %
-%   ``` html
-%   <pre>
-%     <code>
-%       // Some comments
-%       line 1 of code
-%       line 2 of code
-%       line 3 of code
-%     </code>
-%   </pre>
-%   ```
-%         \end{Verbatim}
-%       \item[false] Disable the commonmark fenced code block extension.
-%     \end{valuelist}
+%:    true
+%
+%     :    Enable the commonmark fenced code block extension:
+%
+%          ~~~~~~~~ md
+%          ~~~ js
+%          if (a > 3) {
+%              moveShip(5 * gravity, DOWN);
+%          }
+%          ~~~~~~
+%
+%            ``` html
+%            <pre>
+%              <code>
+%                // Some comments
+%                line 1 of code
+%                line 2 of code
+%                line 3 of code
+%              </code>
+%            </pre>
+%            ```
+%          ~~~~~~~~~~~
+%
+%:    false
+%
+%     :    Disable the commonmark fenced code block extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.fencedCode = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{footnotes}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the pandoc footnote syntax extension:
-%         \begin{Verbatim}
-% Here is a footnote reference,[^1] and another.[^longnote]
+% \Optitem[false]{footnotes}{\opt{true}, \opt{false}}
 %
-% [^1]: Here is the footnote.
+%:    true
 %
-% [^longnote]: Here's one with multiple blocks.
+%     :    Enable the pandoc footnote syntax extension:
 %
-%     Subsequent paragraphs are indented to show that they
-% belong to the previous footnote.
+%          ``` md
+%          Here is a footnote reference,[^1] and another.[^longnote]
 %
-%         { some.code }
+%          [^1]: Here is the footnote.
 %
-%     The whole paragraph can be indented, or just the
-%     first line.  In this way, multi-paragraph footnotes
-%     work like multi-paragraph list items.
+%          [^longnote]: Here's one with multiple blocks.
 %
-% This paragraph won't be part of the note, because it
-% isn't indented.
-%         \end{Verbatim}
-%       \item[false] Disable the pandoc footnote syntax extension.
-%     \end{valuelist}
+%              Subsequent paragraphs are indented to show that they
+%          belong to the previous footnote.
+%
+%                  { some.code }
+%
+%              The whole paragraph can be indented, or just the
+%              first line.  In this way, multi-paragraph footnotes
+%              work like multi-paragraph list items.
+%
+%          This paragraph won't be part of the note, because it
+%          isn't indented.
+%          ``````
+%
+%:    false
+%
+%     :    Disable the pandoc footnote syntax extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.footnotes = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{hashEnumerators}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the use of hash symbols (\t`\#`) as ordered item
-%         list markers:
-%         \begin{Verbatim}
-% #.  Bird
-% #.  McHale
-% #.  Parish
-%         \end{Verbatim}
-%       \item[false] Disable the use of hash symbols (\t`\#`) as ordered item
-%         list markers.
-%     \end{valuelist}
+% \Optitem[false]{hashEnumerators}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Enable the use of hash symbols (`#`) as ordered item list
+%          markers:
+%
+%          ``` md
+%          #.  Bird
+%          #.  McHale
+%          #.  Parish
+%          ``````
+%
+%:    false
+%
+%     :    Disable the use of hash symbols (`#`) as ordered item list
+%          markers.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.hashEnumerators = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{html}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true]  Enable the recognition of \textsc{html} tags, block
-%                    elements, comments, \textsc{html} instructions, and
-%                    entities in the input. Tags, block elements (along with
-%                    contents), \textsc{html} instructions, and comments will
-%                    be ignored and \textsc{html} entities will be replaced
-%                    with the corresponding Unicode codepoints.
+% \Optitem[false]{html}{\opt{true}, \opt{false}}
 %
-%       \item[false] Disable the recognition of \textsc{html} markup. Any
-%                    \textsc{html} markup in the input will be rendered as
-%                    plain text.
-%     \end{valuelist}
+%:    true
+%
+%     :    Enable the recognition of \textsc{html} tags, block elements,
+%          comments, \textsc{html} instructions, and entities in the input.
+%          Tags, block elements (along with contents), \textsc{html}
+%          instructions, and comments will be ignored and \textsc{html}
+%          entities will be replaced with the corresponding Unicode codepoints.
+%
+%:    false
+%
+%     :    Disable the recognition of \textsc{html} markup. Any \textsc{html}
+%          markup in the input will be rendered as plain text.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.html = false
 %    \end{macrocode}
+% \begin{markdown}
 %
 %   \Optitem[false]{hybrid}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Disable the escaping of special plain \TeX{} characters,
-%         which makes it possible to intersperse your markdown markup with
-%         \TeX{} code. The intended usage is in documents prepared manually by
-%         a human author.  In such documents, it can often be desirable to mix
-%         \TeX{} and markdown markup freely.
 %
-%       \item[false] Enable the escaping of special plain \TeX{} characters
-%         outside verbatim environments, so that they are not interpretted by
-%         \TeX{}. This is encouraged when typesetting automatically generated
-%         content or markdown documents that were not prepared with this
-%         package in mind.
-%     \end{valuelist}
+%:    true
+%
+%     :    Disable the escaping of special plain \TeX{} characters, which makes
+%          it possible to intersperse your markdown markup with \TeX{} code.
+%          The intended usage is in documents prepared manually by a human
+%          author. In such documents, it can often be desirable to mix \TeX{}
+%          and markdown markup freely.
+%
+%:    false
+%
+%     :    Enable the escaping of special plain \TeX{} characters outside
+%          verbatim environments, so that they are not interpretted by \TeX{}.
+%          This is encouraged when typesetting automatically generated content
+%          or markdown documents that were not prepared with this package in
+%          mind.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.hybrid = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{inlineFootnotes}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Enable the pandoc inline footnote syntax extension:
-%         \begin{Verbatim}
-% Here is an inline note.^[Inlines notes are easier to
-% write, since you don't have to pick an identifier and
-% move down to type the note.]
-%         \end{Verbatim}
-%       \item[false] Disable the pandoc inline footnote syntax extension.
-%     \end{valuelist}
+% \Optitem[false]{inlineFootnotes}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Enable the pandoc inline footnote syntax extension:
+%
+%          ``` md
+%          Here is an inline note.^[Inlines notes are easier to
+%          write, since you don't have to pick an identifier and
+%          move down to type the note.]
+%          ``````
+%
+%:    false
+%
+%     :    Disable the pandoc inline footnote syntax extension.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.inlineFootnotes = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{preserveTabs}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Preserve all tabs in the input.
-%       \item[false] Convert any tabs in the input to spaces.
-%     \end{valuelist}
+% \Optitem[false]{preserveTabs}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Preserve all tabs in the input.
+%
+%:    false
+%
+%     :    Convert any tabs in the input to spaces.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.preserveTabs = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[false]{smartEllipses}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Convert any ellipses in the input to the
-%         \m{markdownRendererEllipsis} \TeX{} macro.
-%       \item[false] Preserve all ellipses in the input.
-%     \end{valuelist}
+% \Optitem[false]{smartEllipses}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Convert any ellipses in the input to the
+%          \m{markdownRendererEllipsis} \TeX{} macro.
+%
+%:    false
+%
+%     :    Preserve all ellipses in the input.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.smartEllipses = false
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[true]{startNumber}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Make the number in the first item in ordered lists
-%         significant. The item numbers will be passed to the
-%         \m{markdownRendererOlItemWithNumber} \TeX{} macro.
-%       \item[false] Ignore the number in the items of ordered lists. Each
-%         item will only produce a \m{markdownRendererOlItem} \TeX{} macro.
-%     \end{valuelist}
+% \Optitem[true]{startNumber}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Make the number in the first item in ordered lists significant. The
+%          item numbers will be passed to the
+%          \m{markdownRendererOlItemWithNumber} \TeX{} macro.
+%
+%:    false
+%
+%     :    Ignore the number in the items of ordered lists. Each item will only
+%          produce a \m{markdownRendererOlItem} \TeX{} macro.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.startNumber = true
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[true]{tightLists}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true] Lists whose bullets do not consist of multiple paragraphs
-%         will be detected and passed to the 
-%         \m{markdownRendererOlBeginTight}, \m{markdownRendererOlEndTight},
-%         \m{markdownRendererUlBeginTight}, \m{markdownRendererUlEndTight},
-%         \m{markdownRendererDlBeginTight}, and \m{markdownRendererDlEndTight}
-%         macros.
-%       \item[false] Lists whose bullets do not consist of multiple paragraphs
-%         will be treated the same way as lists that do.
-%     \end{valuelist}
+% \Optitem[true]{tightLists}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Lists whose bullets do not consist of multiple paragraphs will be
+%          detected and passed to the \m{markdownRendererOlBeginTight},
+%          \m{markdownRendererOlEndTight}, \m{markdownRendererUlBeginTight},
+%          \m{markdownRendererUlEndTight}, \m{markdownRendererDlBeginTight},
+%          and \m{markdownRendererDlEndTight} macros.
+%
+%:    false
+%
+%     :    Lists whose bullets do not consist of multiple paragraphs will be
+%          treated the same way as lists that do.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.tightLists = true
 %    \end{macrocode}
+% \begin{markdown}
 %
-%   \Optitem[true]{underscores}{\opt{true}, \opt{false}}
-%     \begin{valuelist}
-%       \item[true]  Both underscores and asterisks can be used to denote
-%         emphasis and strong emphasis:
-%         \begin{Verbatim}
-% *single asterisks*
-% _single underscores_
-% **double asterisks**
-% __double underscores__
-%         \end{Verbatim}
-%       \item[false] Only asterisks can be used to denote emphasis and strong
-%         emphasis. This makes it easy to write math with the \t`hybrid` option
-%         without the need to constantly escape subscripts.
-%     \end{valuelist}
+% \Optitem[true]{underscores}{\opt{true}, \opt{false}}
+%
+%:    true
+%
+%     :    Both underscores and asterisks can be used to denote emphasis and
+%          strong emphasis:
+%
+%          ```md
+%          *single asterisks*
+%          _single underscores_
+%          **double asterisks**
+%          __double underscores__
+%          `````
+%
+%:    false
+%
+%     :    Only asterisks can be used to denote emphasis and strong emphasis.
+%          This makes it easy to write math with the \Opt{hybrid} option
+%          without the need to constantly escape subscripts.
+%
+% \end{markdown}
 %  \begin{macrocode}
 defaultOptions.underscores = true
 %    \end{macrocode}
-% \end{optionlist}
-%
 % \endgroup
+% \fvset{gobble=2}
 % \iffalse
 %</lua,lua-cli>
 %<*lua-cli>
