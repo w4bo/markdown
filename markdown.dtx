@@ -143,10 +143,10 @@
 \addbibresource{markdown.bib}
 
 \begin{document}
-  \printtitlepage
-  \tableofcontents
-  \DocInput{markdown.dtx}
-  \printbibliography
+\printtitlepage
+\tableofcontents
+\DocInput{markdown.dtx}
+\printbibliography
 \end{document}
 %</driver>
 % \fi
@@ -1276,9 +1276,9 @@ end
 % ``` sh
 % texlua /path/to/markdown-cli.lua outputDir=. -- hello.md hello.tex
 % ``````
-% to convert the Markdown document `hello.md` to a \TeX{} document `hello.tex`.
-% After the Markdown package for our \TeX{} format has been loaded, the
-% converted document can be typeset as follows:
+% \noindent to convert the Markdown document `hello.md` to a \TeX{} document
+% `hello.tex`.  After the Markdown package for our \TeX{} format has been
+% loaded, the converted document can be typeset as follows:
 % ``` tex
 % \input hello
 % ```````
@@ -1292,12 +1292,17 @@ end
 %</lua-cli>
 %<*tex>
 % \fi
-% \fvset{gobble=2}
-% \subsection{Plain \TeX{} Interface}\label{sec:texinterface}
-% The plain \TeX{} interface provides macros for the typesetting of markdown input
-% from within plain \TeX{}, for setting the Lua interface options (see Section
-% \ref{sec:luaoptions}) used during the conversion from markdown to plain
-% \TeX{}, and for changing the way markdown the tokens are rendered.
+% \begin{markdown}
+%
+% Plain \TeX{} Interface
+%-----------------------
+% \label{sec:texinterface}
+% The plain \TeX{} interface provides macros for the typesetting of markdown
+% input from within plain \TeX{}, for setting the Lua interface options (see
+% Section \ref{sec:luaoptions}) used during the conversion from markdown to
+% plain \TeX{}, and for changing the way markdown the tokens are rendered.
+%
+% \end{markdown}
 %  \begin{macrocode}
 \def\markdownLastModified{2018/01/08}%
 \def\markdownVersion{2.5.5}%
@@ -1314,25 +1319,31 @@ Plain TeX
 %</manual>
 %<*tex>
 % \fi
+% \begin{markdown}
 %
-% The plain \TeX{} interface is implemented by the \t`markdown.tex` file that
-% can be loaded as follows:
-% \begin{Verbatim}
+% The plain \TeX{} interface is implemented by the `markdown.tex` file that can
+% be loaded as follows:
+% ``` tex
 % \input markdown
-% \end{Verbatim}
-% It is expected that the special plain \TeX{} characters have the expected
-% category codes, when \m{input}ting the file.
+% ```````
+% \noindent It is expected that the special plain \TeX{} characters have the
+% expected category codes, when \m{input}ting the file.
 %
-% \subsubsection{Typesetting Markdown}\label{sec:textypesetting}
+%### Typesetting Markdown
+% \label{sec:textypesetting}
 % The interface exposes the \mdef{markdownBegin}, \mdef{markdownEnd}, and
 % \mdef{markdownInput} macros.
 %
 % The \m{markdownBegin} macro marks the beginning of a markdown document
 % fragment and the \m{markdownEnd} macro marks its end.
+%
+% \end{markdown}
 %  \begin{macrocode}
 \let\markdownBegin\relax
 \let\markdownEnd\relax
 %    \end{macrocode}
+% \begin{markdown}
+%
 % You may prepend your own code to the \m{markdownBegin} macro and redefine the
 % \m{markdownEnd} macro to produce special effects before and after the
 % markdown block.
@@ -1347,13 +1358,14 @@ Plain TeX
 % Another limitation concerns spaces at the right end of an input line. In
 % markdown, these are used to produce a forced line break. However, any such
 % spaces are removed before the lines enter the input buffer of \TeX{} (see
-% \cite[p.~46]{knuth86}). As a corrolary, the \m{markdownBegin} macro also
-% ignores them.
+% [@knuth86, p. 46]). As a corrolary, the \m{markdownBegin} macro also ignores
+% them.
 %
 % The \m{markdownBegin} and \m{markdownEnd} macros will also consume the rest
 % of the lines at which they appear.  In the following example plain \TeX{}
-% code, the characters \t`c`, \t`e`, and \t`f` will not appear in the output.
-% \begin{Verbatim}
+% code, the characters `c`, `e`, and `f` will not appear in the output.
+%
+% ``` tex
 % \input markdown
 % a
 % b \markdownBegin c 
@@ -1361,38 +1373,46 @@ Plain TeX
 % e \markdownEnd   f
 % g 
 % \bye
-% \end{Verbatim}
+% ```````
 %
 % Note that you may also not nest the \m{markdownBegin} and \m{markdownEnd}
 % macros.
 %
 % The following example plain \TeX{} code showcases the usage of the
 % \m{markdownBegin} and \m{markdownEnd} macros:
-% \begin{Verbatim}
+%
+% ``` tex
 % \input markdown
 % \markdownBegin
 % _Hello_ **world** ...
 % \markdownEnd
 % \bye
-% \end{Verbatim}
+% ```````
 %
 % The \m{markdownInput} macro accepts a single parameter containing the
 % filename of a markdown document and expands to the result of the conversion
 % of the input markdown document to plain \TeX{}.
+%
+% \end{markdown}
 %  \begin{macrocode}
 \let\markdownInput\relax
 %    \end{macrocode}
+% \begin{markdown}
+%
 % This macro is not subject to the abovelisted limitations of the
 % \m{markdownBegin} and \m{markdownEnd} macros.
 %
 % The following example plain \TeX{} code showcases the usage of the
 % \m{markdownInput} macro:
-% \begin{Verbatim}
+%
+% ``` tex
 % \input markdown
 % \markdownInput{hello.md}
 % \bye
-% \end{Verbatim}
+% ```````
 %
+% \end{markdown}
+% \fvset{gobble=2}
 % \subsubsection{Options}\label{sec:texoptions}
 % The plain \TeX{} options are represented by \TeX{} macros. Some of them map
 % directly to the options recognized by the Lua interface (see Section
