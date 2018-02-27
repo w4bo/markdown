@@ -5594,7 +5594,7 @@ local convert = md.new(\markdownLuaOptions)
     \ifx\relax#2\relax
       \VerbatimInput{#1}%
     \else
-      \ifx\minted@jobname\undefined
+      \ifx\minted@code\undefined
         \ifx\lst@version\undefined
           \markdownRendererInputFencedCode{#1}{}%
 %    \end{macrocode}
