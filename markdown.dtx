@@ -1117,15 +1117,19 @@ defaultOptions.tightLists = true
 defaultOptions.underscores = true
 %    \end{macrocode}
 % \endgroup
-% \fvset{gobble=2}
 % \iffalse
 %</lua,lua-cli>
 %<*lua-cli>
 % \fi
-% \subsubsection{Command-Line Interface}\label{sec:lua-cli-interface}
+% \begin{markdown}
+%
+%### Command-Line Interface
+% \label{sec:lua-cli-interface}
 % To provide finer control over the conversion and to simplify debugging, a
 % command-line Lua interface for converting a Markdown document to \TeX{} is
 % also provided.
+%
+% \end{markdown}
 %  \begin{macrocode}
 
 HELP_STRING = [[
@@ -1162,25 +1166,37 @@ local output_filename
 for i = 1, #arg do
   if process_options then
 %    \end{macrocode}
-% After the optional \t`-`{}\t`-` argument has been specified, the remaining
+% \begin{markdown}
+%
+% After the optional `-`{}`-` argument has been specified, the remaining
 % arguments are assumed to be input and output filenames. This argument is
 % optional, but encouraged, because it helps resolve ambiguities when
 % deciding whether an option of a filename has been specified.
+%
+% \end{markdown}
 %  \begin{macrocode}
     if arg[i] == "--" then
       process_options = false
       goto continue
 %    \end{macrocode}
-% Unless the \t`-`{}\t`-` argument has been specified before, an argument
-% containing the equals sign (\t`=`) is assumed to be an option specification
-% in a \meta{key}\t`=`\meta{value} format. The available options are listed in
+% \begin{markdown}
+%
+% Unless the `-`{}`-` argument has been specified before, an argument
+% containing the equals sign (`=`) is assumed to be an option specification in
+% a \meta{key}`=`\meta{value} format. The available options are listed in
 % Section~\ref{sec:luaoptions}.
+%
+% \end{markdown}
 %  \begin{macrocode}
     elseif arg[i]:match("=") then
       key, value = arg[i]:match("(.-)=(.*)")
 %    \end{macrocode}
+% \begin{markdown}
+%
 % The \luam{defaultOptions} table is consulted to identify whether \meta{value}
 % should be parsed as a string or as a boolean.
+%
+% \end{markdown}
 %  \begin{macrocode}
       default_type = type(defaultOptions[key])
       if default_type == "boolean" then
@@ -1200,17 +1216,25 @@ for i = 1, #arg do
       end
       goto continue
 %    \end{macrocode}
-% Unless the \t`-`{}\t`-` argument has been specified before, an argument
-% \t`-`{}\t`-help`, or \t`-h` causes a brief documentation for how to invoke
-% the program to be printed to the standard output.
+% \begin{markdown}
+%
+% Unless the `-`{}`-` argument has been specified before, an argument
+% `-`{}`-help`, or `-h` causes a brief documentation for how to invoke the
+% program to be printed to the standard output.
+%
+% \end{markdown}
 %  \begin{macrocode}
     elseif arg[i] == "--help" or arg[i] == "-h" then
       print(HELP_STRING)
       os.exit()
 %    \end{macrocode}
-% Unless the \t`-`{}\t`-` argument has been specified before, an argument
-% \t`-`{}\t`-version`, or \t`-v` causes the program to print information about
-% its name, version, origin and legal status, all on standard output.
+% \begin{markdown}
+%
+% Unless the `-`{}`-` argument has been specified before, an argument
+% `-`{}`-version`, or `-v` causes the program to print information about its
+% name, version, origin and legal status, all on standard output.
+%
+% \end{markdown}
 %  \begin{macrocode}
     elseif arg[i] == "--version" or arg[i] == "-v" then
       print(VERSION_STRING)
@@ -1218,16 +1242,24 @@ for i = 1, #arg do
     end
   end
 %    \end{macrocode}
+% \begin{markdown}
+%
 % The first argument that matches none of the above patters is assumed to be
 % the input filename. The input filename should correspond to the Markdown
 % document that is going to be converted to a \TeX{} document.
+%
+% \end{markdown}
 %  \begin{macrocode}
   if input_filename == nil then
     input_filename = arg[i]
 %    \end{macrocode}
+% \begin{markdown}
+%
 % The first argument that matches none of the above patters is assumed to be
 % the output filename. The output filename should correspond to the \TeX{}
 % document that will result from the conversion.
+%
+% \end{markdown}
 %  \begin{macrocode}
   elseif output_filename == nil then
     output_filename = arg[i]
@@ -1237,26 +1269,30 @@ for i = 1, #arg do
   ::continue::
 end
 %    \end{macrocode}
+% \begin{markdown}
 %
 % The command-line Lua interface is implemented by the \t`markdown-cli.lua`
 % file that can be invoked from the command line as follows:
-% \begin{Verbatim}
+% ``` sh
 % texlua /path/to/markdown-cli.lua outputDir=. -- hello.md hello.tex
-% \end{Verbatim}
-% to convert the Markdown document \t`hello.md` to a \TeX{} document
-% \t`hello.tex`. After the Markdown package for our \TeX{} format has been
-% loaded, the converted document can be typeset as follows:
-% \begin{Verbatim}
+% ``````
+% to convert the Markdown document `hello.md` to a \TeX{} document `hello.tex`.
+% After the Markdown package for our \TeX{} format has been loaded, the
+% converted document can be typeset as follows:
+% ``` tex
 % \input hello
-% \end{Verbatim}
-% This shows another advantage of using the command-line interface compared
-% to using a higher-level \TeX{} interface -- it is unnecessary to provide
-% shell access for the \TeX{} engine.
+% ```````
 %
+% This shows another advantage of using the command-line interface compared to
+% using a higher-level \TeX{} interface -- it is unnecessary to provide shell
+% access for the \TeX{} engine.
+%
+% \end{markdown}
 % \iffalse
 %</lua-cli>
 %<*tex>
 % \fi
+% \fvset{gobble=2}
 % \subsection{Plain \TeX{} Interface}\label{sec:texinterface}
 % The plain \TeX{} interface provides macros for the typesetting of markdown input
 % from within plain \TeX{}, for setting the Lua interface options (see Section
