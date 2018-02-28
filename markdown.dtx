@@ -1585,14 +1585,14 @@ Plain TeX
 \def\markdownIfOption#1{%
   \def\next##1##2##3##4##5{%
     \expandafter\def\expandafter\next\expandafter{%
-      \mname iffalse\endcsname}%
+      \csname iffalse\endcsname}%
     \if##1t\if##2r\if##3u\if##4e
       \expandafter\def\expandafter\next\expandafter{%
-        \mname iftrue\endcsname}%
+        \csname iftrue\endcsname}%
     \fi\fi\fi\fi
     \next}%
   \expandafter\expandafter\expandafter\next
-    \mname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
+    \csname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -6043,8 +6043,8 @@ local convert = md.new(\markdownLuaOptions)
 %
 % \end{markdown}
 %  \begin{macrocode}
-\mname newread\endcsname\markdownInputFileStream
-\mname newwrite\endcsname\markdownOutputFileStream
+\csname newread\endcsname\markdownInputFileStream
+\csname newwrite\endcsname\markdownOutputFileStream
 %    \end{macrocode}
 % \par
 % \begin{markdown}
