@@ -1,4 +1,4 @@
-.PHONY: all clean implode dist docs test
+.PHONY: all clean implode dist test
 SUBDIRECTORIES=examples
 AUXFILES=markdown.bbl markdown.cb markdown.cb2 markdown.glo markdown.bbl \
 	markdown.run.xml markdown.bib markdown.markdown.in markdown.markdown.lua \
@@ -47,12 +47,9 @@ $(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE) $(INSTALLABLES)
 $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
 	make -C examples
 
-# This pseudo-target converts the user manual to an HTML page.
-docs: markdown.html
-
 # This target converts the user manual to an HTML page.
 %.html: %.md
-	pandoc -f markdown -t html -s --toc <$< >$@
+	pandoc -f markdown -t html -N -s --toc <$< >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:
