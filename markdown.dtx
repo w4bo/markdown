@@ -6619,7 +6619,7 @@ local convert = md.new(\markdownLuaOptions)
     \ifthenelse{\equal{#1}{csv}}{%
       \begin{table}%
         \begin{center}%
-          \mvautotabular{#3}%
+          \csvautotabular{#3}%
         \end{center}
         \ifx\empty#4\empty\else
           \caption{#4}%
