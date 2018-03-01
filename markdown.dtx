@@ -150,30 +150,6 @@
 \printbibliography
 \end{document}
 %</driver>
-% \fi
-% \par
-% \begin{markdown}
-%
-% Introduction
-%=============
-% This document is a technical documentation for the \pkg{Markdown} package. It
-% is split into three sections. This section explains the purpose and the
-% background of the package and outlines its prerequisites. Section
-% \ref{sec:interfaces} describes the interfaces exposed by the package along
-% with usage notes and examples. It is aimed at the user of the package.
-% Section \ref{sec:implementation} describes the implementation of the package.
-% It is aimed at the developer of the package and the curious user.
-%
-% Since version 2.6.0, this document is written in the markdown language and
-% typeset using the \pkg{Markdown} package itself, much like \TeX{} is used to
-% typeset the~\TeX book~[@knuth86].
-%
-% The technical documentation contains only a limited amount of tutorials and
-% code examples. Please refer to the user guide distributed along with the
-% package for more of these.
-%
-% \end{markdown}
-% \iffalse
 %<*manual-css>
 
 html {
@@ -196,7 +172,6 @@ body {
 
 a {
   color: #0645ad;
-  text-decoration: none;
 }
 
 a:visited {
@@ -509,33 +484,40 @@ title:  Markdown Package User Manual
 author: Vít Novotný
 ---
 
-Introduction
-============
-This document is a user manual for the Markdown package. It provides tutorials
-and code examples. For an in-depth description of the package prerequisites,
-interfaces, and implementation, please refer to the technical documentation
-distributed along with the package.
-
-%</manual>
 % \fi
 % \par
 % \begin{markdown}
+
+Introduction
+============
+The Markdown package converts markdown markup to TeX commands. The
+functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
+ConTeXt macro packages that can be used to directly typeset TeX documents
+containing markdown markup. Unlike other convertors, the Markdown package
+makes it easy to redefine how each and every markdown element is rendered.
+Creative abuse of the markdown syntax is encouraged.
+
+% This document is a technical documentation for the \pkg{Markdown} package. It
+% consists of three sections. This section introduces the package and outlines
+% its prerequisites. Section \ref{sec:interfaces} describes the interfaces
+% exposed by the package. Section \ref{sec:implementation} describes the
+% implementation of the package. The technical documentation contains only a
+% limited number of tutorials and code examples. You can find more of these in
+% the [user manual.][manual]
 %
-% About \pkg{Markdown}
-%---------------------
-% The \pkg{Markdown} package provides facilities for the conversion of markdown
-% markup to plain \TeX{}. These are provided both in the form of a Lua module
-% and in the form of plain \TeX{}, \LaTeX{}, and \Hologo{ConTeXt} macro
-% packages that enable the direct inclusion of markdown documents inside \TeX{}
-% documents.
-%
-% Architecturally, the package consists of the \pkg{Lunamark} v0.5.0 Lua module
-% by John MacFarlane, which was slimmed down and rewritten for the needs of the
-% package. On top of \pkg{Lunamark} sits code for the plain \TeX{}, \LaTeX{},
-% and \Hologo{ConTeXt} formats by Vít Novotný.
+%  [manual]: http://mirrors.ctan.org/macros/generic/markdown/markdown.html
 %
 % \end{markdown}
 % \iffalse
+
+This document is a user manual for the Markdown package. It provides beginner
+tutorials and code examples. For an in-depth description of the package
+requirements, interfaces, and implementation, please refer to the
+[technical documentation][techdoc].
+
+ [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf (A Markdown Interpreter for TeX)
+
+%</manual>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -564,57 +546,102 @@ modules['markdown'] = metadata
 %---------
 % Please use the \pkg{Markdown} project page on
 % [GitHub](https://github.com/witiko/markdown/issues) to report bugs and submit
-% feature requests. Before making a feature request, please ensure that you
-% have thoroughly studied this manual. If you do not want to report a bug or
-% request a feature but are simply in need of assistance, you might want to
-% consider posting your question on the [\TeX-\LaTeX{} Stack
-% Exchange.](https://tex.stackexchange.com)
+% feature requests. If you do not want to report a bug or request a feature but
+% are simply in need of assistance, you might want to consider posting your
+% question on the [\TeX-\LaTeX{} Stack Exchange.](https://tex.stackexchange.com)
 %
 % Acknowledgements
 %-----------------
-% I would like to thank the creator of the Lunamark Lua module, John
-% Macfarlane, for releasing Lunamark under a permissive license that enabled
-% its inclusion into the package. Funding by the the Faculty of Informatics at
-% the Masaryk~University in~Brno~[@novotny15] is gratefully acknowledged.
+% The Lunamark Lua module provides speedy markdown parsing for the package. I
+% would like to thank John Macfarlane, the creator of Lunamark, for releasing
+% Lunamark under a permissive license.
 %
-% The \TeX{} part of the package draws inspiration from several sources
-% including the source code of \Hologo{LaTeX2e}, the \pkg{minted} package by
-% Geoffrey M. Poore -- which likewise tackles the issue of interfacing with an
-% external interpreter from \TeX{}, the \pkg{filecontents} package by Scott
-% Pakin, and others.
+% Funding by the the Faculty of Informatics at the Masaryk~University
+% in~Brno~[@novotny15] is gratefully acknowledged.
+%
+% The \TeX{} implementation of the package draws inspiration from several
+% sources including the source code of \Hologo{LaTeX2e}, the \pkg{minted}
+% package by Geoffrey M. Poore -- which likewise tackles the issue of
+% interfacing with an external interpreter from \TeX{}, the \pkg{filecontents}
+% package by Scott Pakin, and others.
 %
 % \end{markdown}
 % \iffalse
 %</lua>
 %<*manual>
-
-Getting started
-===============
-
-<!-- TODO -->
-
-Installation
-------------
-
-<!-- TODO -->
-
 % \fi
 % \par
 % \begin{markdown}
 
-Prerequisites
--------------
-
-<!-- TODO -->
+Requirements
+------------
 
 % \iffalse
+
+The package requires a working TeX distribution. [TeX Live][] ≥ 2013 is known to
+work and so are recent installation of [MikTeX][]. If you are using a minimal
+installation of a TeX distribution, please consult the
+[technical documentation][techdoc] for a detailed list of required packages.
+
+ [TeX Live]: https://www.tug.org/texlive/ (TeX Live - TeX Users Group)
+ [MikTeX]: https://miktex.org/ (Home - MiKTeXorg)
+
+Installation
+------------
+
+The package comes pre-installed with [TeX Live][] ≥ 2016 and with recent
+installations of [MikTeX][]. Unless you explicitly wish to use the latest
+version of the package, you are encouraged to skip this step.
+
+To install the package, first download the package from the repository
+using Git:
+```sh
+$ git clone https://github.com/witiko/markdown
+```
+Next, enter the directory named `markdown` and interpret the file named
+`markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX or
+LuaTeX:
+```sh
+$ cd markdown
+$ luatex markdown.ins
+```
+This should produce the following files:
+
+ * `markdown.lua` – the Lua module,
+ * `markdown-cli.lua` – the Lua command-line interface,
+ * `markdown.tex` – the plain TeX macro package,
+ * `markdown.sty` – the LaTeX package, and
+ * `t-markdown.tex` – the ConTeXt module.
+
+### Local installation
+
+To perform a local installation, place the above files into your TeX directory
+structure. This is generally where the individual files should be placed:
+
+ * `<TEXMF>/tex/luatex/markdown/markdown.lua`
+ * `<TEXMF>/scripts/markdown/markdown-cli.lua`
+ * `<TEXMF>/tex/generic/markdown/markdown.tex`
+ * `<TEXMF>/tex/latex/markdown/markdown.sty`
+ * `<TEXMF>/tex/context/third/markdown/t-markdown.tex`
+
+where `<TEXMF>` corresponds to a root of your TeX distribution, such as
+`/usr/share/texmf` and `~/texmf` on UN\*X systems or
+`c:\users\<YOUR USERNAME>\texmfhome` on Windows systems. When in doubt,
+consult the manual of your TeX distribution.
+
+### Portable installation ###
+
+Alternatively, you can also store the above files in the same folder as your
+TeX document and distribute them together. This way your document can be
+portably typeset on legacy TeX distributions.
+
 %</manual>
 %<*lua>
 % \fi
 %
 % This section gives an overview of all resources required by the package.
 %
-%### Lua Prerequisites
+%### Lua Requirements
 % \label{sec:luaprerequisites}
 % The Lua part of the package requires that the following Lua modules are
 % available from within the Lua\TeX{} engine:
@@ -673,7 +700,7 @@ local md5 = require("md5")
 % \par
 % \begin{markdown}
 %
-%### Plain \TeX{} Prerequisites
+%### Plain \TeX{} Requirements
 % \label{sec:texprerequisites}
 % The plain \TeX{} part of the package requires that the plain \TeX{}
 % format (or its superset) is loaded, all the Lua prerequisites (see
@@ -713,7 +740,7 @@ local md5 = require("md5")
 % \par
 % \begin{markdown}
 %
-%### \LaTeX{} Prerequisites
+%### \LaTeX{} Requirements
 % \label{sec:latexprerequisites}
 % The \LaTeX{} part of the package requires that the \Hologo{LaTeX2e} format is
 % loaded,
@@ -846,18 +873,32 @@ local md5 = require("md5")
 %</context>
 %<*manual>
 
-An example document
--------------------
+First document
+--------------
 
-<!-- TODO -->
+In this section, we will take the necessary steps to typeset our first markdown
+document in TeX. This will serve as our first hands-on experience with the
+package and also as a reassurance that the package has been correctly installed.
 
-### Using LaTeX
+Using a text editor, create a text document named `hello.tex` with the
+following content:
+```tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+\begin{markdown}
+Hello *world*!
+\end{markdown}
+\end{document}
+```
 
-<!-- TODO -->
+Next, invoke pdfTeX from the terminal:
+```sh
+$ pdflatex --shell-escape hello.tex
+```
 
-### Using a terminal
-
-<!-- TODO -->
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!”
 
 Examples
 ========

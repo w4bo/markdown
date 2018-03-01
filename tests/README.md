@@ -9,6 +9,6 @@ installed to run the tests.
 
 Each time a commit is made to the Git repository of the project, this test
 suite is ran by a continuous integration service. The current status is:
-[![CircleCI](https://circleci.com/gh/Witiko/markdown/tree/master.svg)][link]
+[![CircleCI](https://circleci.com/gh/Witiko/markdown/tree/master.svg)][CircleCI]
 
- [link]: https://circleci.com/gh/Witiko/markdown/tree/master
+ [CircleCI]: https://circleci.com/gh/Witiko/markdown/tree/master (CircleCI)

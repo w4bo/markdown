@@ -15,16 +15,18 @@ EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
 TESTS=tests/test.sh tests/support/*.tex tests/templates/*/*.tex.m4 \
 	tests/templates/*/COMMANDS.m4 tests/testfiles/*/*.test
 MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES)) latexmkrc
-READMES=README.md LICENSE VERSION examples/README.md tests/README.md \
+READMES=README.md LICENSE examples/README.md tests/README.md \
 	tests/support/README.md tests/templates/README.md tests/testfiles/README.md \
 	tests/templates/*/README.md tests/testfiles/*/README.md
 DTXARCHIVE=markdown.dtx
 INSTALLER=markdown.ins docstrip.cfg
 TECHNICAL_DOCUMENTATION=markdown.pdf
-USER_MANUAL=markdown.md markdown.css
+MARKDOWN_USER_MANUAL=markdown.md markdown.css
+HTML_USER_MANUAL=markdown.html markdown.css
+USER_MANUAL=$(MARKDOWN_USER_MANUAL) $(HTML_USER_MANUAL)
 DOCUMENTATION=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL)
 INSTALLABLES=markdown.lua markdown-cli.lua markdown.tex markdown.sty t-markdown.tex
-MAKEABLES=$(TECHNICAL_DOCUMENTATION) $(INSTALLABLES) $(EXAMPLES)
+MAKEABLES=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL) $(INSTALLABLES) $(EXAMPLES)
 RESOURCES=$(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
 	$(MAKES) $(READMES) $(INSTALLER) $(DTXARCHIVE) $(TESTS)
 EVERYTHING=$(RESOURCES) $(INSTALLABLES)
@@ -36,7 +38,7 @@ all: $(MAKEABLES) clean
 		make -C $$DIR all; done
 
 # This target extracts the source files out of the DTX archive.
-$(INSTALLABLES) $(USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
+$(INSTALLABLES) $(MARKDOWN_USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
 	xetex $<
 
 # This target typesets the manual.
@@ -47,7 +49,7 @@ $(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE) $(INSTALLABLES)
 $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
 	make -C examples
 
-# This target converts the user manual to an HTML page.
+# This target converts the markdown user manual to an HTML page.
 %.html: %.md %.css
 	pandoc -f markdown -t html -N -s --toc --css=$(word 2, $^) <$< >$@
 
