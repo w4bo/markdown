@@ -78,4 +78,4 @@ For further information, consult:
 2. the user manual, which can be produced by interpreting the `markdown.ins`
    file using a Unicode-aware TeX engine, such as XeTeX (`xetex markdown.ins`)
    or LuaTeX (`luatex markdown.ins`). The manual will reside in the file
-   `markdown.md`.
+   `markdown.md` and the CSS stylesheet `markdown.css`.

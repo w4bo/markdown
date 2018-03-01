@@ -21,7 +21,7 @@ READMES=README.md LICENSE VERSION examples/README.md tests/README.md \
 DTXARCHIVE=markdown.dtx
 INSTALLER=markdown.ins docstrip.cfg
 TECHNICAL_DOCUMENTATION=markdown.pdf
-USER_MANUAL=markdown.md
+USER_MANUAL=markdown.md markdown.css
 DOCUMENTATION=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL)
 INSTALLABLES=markdown.lua markdown-cli.lua markdown.tex markdown.sty t-markdown.tex
 MAKEABLES=$(TECHNICAL_DOCUMENTATION) $(INSTALLABLES) $(EXAMPLES)
@@ -48,8 +48,8 @@ $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
 	make -C examples
 
 # This target converts the user manual to an HTML page.
-%.html: %.md
-	pandoc -f markdown -t html -N -s --toc <$< >$@
+%.html: %.md %.css
+	pandoc -f markdown -t html -N -s --toc --css=$(word 2, $^) <$< >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:
