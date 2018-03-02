@@ -22,25 +22,33 @@ jobs:
           sudo /tmp/install-tl*/install-tl <<<I
           sudo mv /usr/local/texlive ~/texlive-cache
         fi
-        echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
     # Install additional packages
-    - run: mkdir -p ~/apt-cache/partial
-    - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
-    - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
+    - run: |
+        set -e
+        mkdir -p ~/apt-cache/partial
+        sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
+        sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
         key: markdown-v2.5.5-tl2017-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
+    # Add TeX Live to the PATH environmental variable
+    - run: |
+        set -e
+        sudo mv ~/texlive-cache /usr/local/texlive
+        echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
     - checkout
-    - run: sudo mv ~/texlive-cache /usr/local/texlive
-    - run: xetex markdown.ins
-    - run: mkdir -p                ~/texmf/{tex/{luatex,generic,latex,context/third},scripts}/markdown
-    - run: cp -f markdown.lua      ~/texmf/tex/luatex/markdown/
-    - run: cp -f markdown-cli.lua  ~/texmf/scripts/markdown/
-    - run: cp -f markdown.tex      ~/texmf/tex/generic/markdown/
-    - run: cp -f markdown.sty      ~/texmf/tex/latex/markdown/
-    - run: cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
+    # Install the Markdown package
+    - run: |
+        set -e
+        xetex markdown.ins
+        mkdir -p                ~/texmf/{tex/{luatex,generic,latex,context/third},scripts}/markdown
+        cp -f markdown.lua      ~/texmf/tex/luatex/markdown/
+        cp -f markdown-cli.lua  ~/texmf/scripts/markdown/
+        cp -f markdown.tex      ~/texmf/tex/generic/markdown/
+        cp -f markdown.sty      ~/texmf/tex/latex/markdown/
+        cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
     - run: make all
     - run: |
         set -e
