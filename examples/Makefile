@@ -9,7 +9,8 @@ OUTPUT=context-mkii.pdf context-mkiv.pdf latex-pdftex.pdf \
 	latex-luatex.pdf latex-xetex.pdf
 
 # This is the default pseudo-target.
-all: $(OUTPUT) clean
+all: $(OUTPUT)
+	$(MAKE) clean
 
 # This target typesets the ConTeXt example using the Mark II format.
 context-mkii.pdf: context.tex example.tex
@@ -22,19 +23,19 @@ context-mkiv.pdf: context.tex example.tex
 	context context-mkiv.tex
 
 # This target typesets the LaTeX example using the pdfTeX engine.
-latex-pdftex.pdf: latex.tex
+latex-pdftex.pdf: latex.tex example.tex
 	cp latex.tex latex-pdftex.tex
 	pdflatex --shell-escape latex-pdftex
 	pdflatex --shell-escape latex-pdftex
 
 # This target typesets the LaTeX example using the XeTeX engine.
-latex-xetex.pdf: latex.tex
+latex-xetex.pdf: latex.tex example.tex
 	cp latex.tex latex-xetex.tex
 	xelatex --shell-escape --8bit latex-xetex
 	xelatex --shell-escape --8bit latex-xetex
 
 # This target typesets the LaTeX example using the LuaTeX engine.
-latex-luatex.pdf: latex.tex
+latex-luatex.pdf: latex.tex example.tex
 	cp latex.tex latex-luatex.tex
 	lualatex latex-luatex
 	lualatex latex-luatex

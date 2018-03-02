@@ -1,5 +1,4 @@
-.PHONY: all clean implode dist test
-SUBDIRECTORIES=examples
+.PHONY: all clean implode dist test examples
 AUXFILES=markdown.bbl markdown.cb markdown.cb2 markdown.glo markdown.bbl \
 	markdown.run.xml markdown.bib markdown.markdown.in markdown.markdown.lua \
 	markdown.markdown.out
@@ -11,7 +10,7 @@ ARCHIVES=$(TDSARCHIVE) $(CTANARCHIVE) $(DISTARCHIVE)
 EXAMPLES_RESOURCES=examples/example.md examples/scientists.csv
 EXAMPLES_SOURCES=examples/context.tex examples/latex.tex
 EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
-	examples/latex-luatex.pdf examples/latex-pdftex.pdf
+	examples/latex-pdftex.pdf examples/latex-luatex.pdf examples/latex-xetex.pdf
 TESTS=tests/test.sh tests/support/*.tex tests/templates/*/*.tex.m4 \
 	tests/templates/*/COMMANDS.m4 tests/testfiles/*/*.test
 MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES)) latexmkrc
@@ -33,9 +32,8 @@ EVERYTHING=$(RESOURCES) $(INSTALLABLES)
 
 # This is the default pseudo-target. It typesets the manual,
 # the examples, and extracts the package files.
-all: $(MAKEABLES) clean
-	for DIR in $(SUBDIRECTORIES); do \
-		make -C $$DIR all; done
+all: $(MAKEABLES)
+	$(MAKE) clean
 
 # This target extracts the source files out of the DTX archive.
 $(INSTALLABLES) $(MARKDOWN_USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
@@ -45,9 +43,12 @@ $(INSTALLABLES) $(MARKDOWN_USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
 $(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE) $(INSTALLABLES)
 	latexmk $<
 
-# This target typesets the examples.
-$(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
-	make -C examples
+# These targets typeset the examples.
+$(EXAMPLES): $(EXAMPLE_SOURCES) examples/example.tex $(INSTALLABLES)
+	$(MAKE) -C examples $(notdir $@)
+
+examples/example.tex: $(INSTALLABLES)
+	$(MAKE) -C examples $(notdir $@)
 
 # This target converts the markdown user manual to an HTML page.
 %.html: %.md %.css
@@ -55,11 +56,12 @@ $(EXAMPLES): $(EXAMPLE_SOURCES) $(INSTALLABLES)
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:
-	make -C tests
+	$(MAKE) -C tests
 
 # This pseudo-target produces the distribution archives.
 dist: implode
-	make $(ARCHIVES) clean
+	$(MAKE) $(ARCHIVES)
+	$(MAKE) clean
 
 # This target produces the TeX directory structure archive.
 $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
@@ -85,24 +87,24 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
 
 # This target produces the distribution archive.
 $(DISTARCHIVE): $(EVERYTHING) $(TDSARCHIVE)
-	ln -s . markdown
+	-ln -s . markdown
 	zip -MM -r -v -nw $@ $(addprefix markdown/,$(EVERYTHING)) $(TDSARCHIVE)
-	rm markdown
+	rm -f markdown-dist
 
 # This target produces the CTAN archive.
 $(CTANARCHIVE): $(RESOURCES) $(TDSARCHIVE)
-	ln -s . markdown
+	-ln -s . markdown
 	zip -MM -r -v -nw $@ $(addprefix markdown/,$(RESOURCES)) $(TDSARCHIVE)
-	rm markdown
+	rm -f markdown-dist
 
 # This pseudo-target removes any existing auxiliary files and directories.
 clean:
 	latexmk -c $(DTXARCHIVE)
 	rm -f $(AUXFILES)
 	rm -rf ${AUXDIRS}
+	$(MAKE) -C examples clean
 
 # This pseudo-target removes any makeable files.
 implode: clean
 	rm -f $(MAKEABLES) $(ARCHIVES)
-	for DIR in $(SUBDIRECTORIES); do \
-		make -C $$DIR implode; done
+	$(MAKE) -C examples implode

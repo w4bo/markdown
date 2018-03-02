@@ -49,9 +49,9 @@ jobs:
         cp -f markdown.tex      ~/texmf/tex/generic/markdown/
         cp -f markdown.sty      ~/texmf/tex/latex/markdown/
         cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
-    - run: make all
+    # Run the tests in four parallel threads
+    - run: make -j 4 all
     - run: |
         set -e
         cd tests
-        # Run the tests in four parallel threads
-        circleci tests glob 'testfiles/**/*.test' | parallel --jobs 4 --halt 2 ./test.sh
+        circleci tests glob 'testfiles/**/*.test' | parallel -j 4 --halt 2 ./test.sh
