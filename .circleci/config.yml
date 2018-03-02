@@ -2,6 +2,7 @@ version: 2
 jobs:
   build:
     working_directory: ~/Witiko/markdown
+    # Distribute the testing to four nodes
     parallelism: 4
     shell: /bin/bash --login
     docker:
@@ -13,6 +14,7 @@ jobs:
         - markdown-v2.5.5-tl2017-{{ .Branch }}
         - markdown-v2.5.5-tl2017-master
         - markdown-v2.5.5-tl2017-
+    # Install TeX Live
     - run: |
         set -e
         if [[ ! -e ~/texlive-cache ]]; then
@@ -21,6 +23,7 @@ jobs:
           sudo mv /usr/local/texlive ~/texlive-cache
         fi
         echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
+    # Install additional packages
     - run: mkdir -p ~/apt-cache/partial
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
@@ -42,4 +45,5 @@ jobs:
     - run: |
         set -e
         cd tests
+        # Run the tests in two parallel threads
         circleci tests glob 'testfiles/**/*.test' | parallel --jobs 2 --halt 2 ./test.sh
