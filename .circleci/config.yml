@@ -20,7 +20,7 @@ jobs:
           sudo /tmp/install-tl*/install-tl <<<I
           sudo mv /usr/local/texlive ~/texlive-cache
         fi
-        echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>.bashrc
+        echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
     - run: mkdir -p ~/apt-cache/partial
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
