@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     working_directory: ~/Witiko/markdown
-    parallelism: 1
+    parallelism: 4
     shell: /bin/bash --login
     docker:
     - image: circleci/build-image:ubuntu-14.04-XXL-upstart-1189-5614f37
@@ -14,10 +14,10 @@ jobs:
         - markdown-v2.5.5-tl2017-master-
         - markdown-v2.5.5-tl2017-
     - run: |
+        set -e
         if [[ ! -e ~/texlive-cache ]]; then
           wget -O- 'http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz' | tar xzvC /tmp
           sudo /tmp/install-tl*/install-tl <<<$'O\nL\n\n\n\nR\nI\n'
-          # The caching mechanism is unable to restore files in directories not writable for the user.
           sudo mv /usr/local/texlive ~/texlive-cache
         fi
     - run: mkdir -p ~/apt-cache/partial
@@ -37,4 +37,8 @@ jobs:
     - run: cp -f markdown.tex      ~/texmf/tex/generic/markdown/
     - run: cp -f markdown.sty      ~/texmf/tex/latex/markdown/
     - run: cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
-    - run: PARALLEL=-j2 make all test
+    - run: make all
+    - run: |
+        set -e
+        cd tests
+        circleci tests glob 'testfiles/**/*.test' | parallel --jobs 2 --halt 2 ./test.sh
