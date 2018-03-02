@@ -596,14 +596,14 @@ version of the package, you are encouraged to skip this step.
 To install the package, first download the package from the repository
 using Git:
 ```sh
-$ git clone https://github.com/witiko/markdown
+git clone https://github.com/witiko/markdown
 ```
 Next, enter the directory named `markdown` and interpret the file named
 `markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX or
 LuaTeX:
 ```sh
-$ cd markdown
-$ luatex markdown.ins
+cd markdown
+luatex markdown.ins
 ```
 This should produce the following files:
 
@@ -892,13 +892,15 @@ Hello *world*!
 \end{document}
 ```
 
-Next, invoke pdfTeX from the terminal:
+Next, invoke LuaTeX from the terminal:
 ```sh
-$ pdflatex --shell-escape hello.tex
+lualatex hello.tex
 ```
-
 A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!”
+*world*!” Invoking pdfTeX should have the same effect:
+```sh
+pdflatex --shell-escape hello.tex
+```
 
 Examples
 ========
