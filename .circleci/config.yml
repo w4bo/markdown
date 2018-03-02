@@ -17,9 +17,10 @@ jobs:
         set -e
         if [[ ! -e ~/texlive-cache ]]; then
           wget -O- 'http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz' | tar xzvC /tmp
-          sudo /tmp/install-tl*/install-tl <<<$'O\nL\n\n\n\nR\nI\n'
+          sudo /tmp/install-tl*/install-tl <<<I
           sudo mv /usr/local/texlive ~/texlive-cache
         fi
+        echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>.bashrc
     - run: mkdir -p ~/apt-cache/partial
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
