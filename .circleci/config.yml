@@ -37,4 +37,4 @@ jobs:
     - run: cp -f markdown.tex      ~/texmf/tex/generic/markdown/
     - run: cp -f markdown.sty      ~/texmf/tex/latex/markdown/
     - run: cp -f t-markdown.tex    ~/texmf/tex/context/third/markdown/
-    - run: PARALLEL=-uj1 make all test
+    - run: PARALLEL=-j2 make all test
