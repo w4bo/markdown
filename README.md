@@ -11,7 +11,7 @@ functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
 ConTeXt macro packages that can be used to directly typeset TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
 makes it easy to redefine how each and every markdown element is rendered.
-Creative abuse of the markdown syntax is encouraged.
+Creative abuse of the markdown syntax is encouraged. 😉
 
 Contributing
 ------------
