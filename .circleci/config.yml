@@ -53,5 +53,5 @@ jobs:
     - run: |
         set -e
         cd tests
-        # Run the tests in two parallel threads
-        circleci tests glob 'testfiles/**/*.test' | parallel --jobs 2 --halt 2 ./test.sh
+        # Run the tests in four parallel threads
+        circleci tests glob 'testfiles/**/*.test' | parallel --jobs 4 --halt 2 ./test.sh
