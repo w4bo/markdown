@@ -18,7 +18,7 @@ jobs:
         - markdown-
     - run: mkdir -p ~/aptcache/partial
     - run: sudo apt-get -o dir::cache::archives="$HOME"/aptcache update
-    - run: sudo apt-get -o dir::cache::archives="$HOME"/aptcache install biber parallel python-pygments texlive-full
+    - run: sudo apt-get -o dir::cache::archives="$HOME"/aptcache install biber pandoc parallel python-pygments texlive-full
     - save_cache:
         key: markdown-{{ .Branch }}-{{ epoch }}
         paths:
