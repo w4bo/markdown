@@ -1,12 +1,12 @@
 .PHONY: all clean
 AUXFILES=*.tmp *.tui *.tuo *.mp *.tuc *.markdown.in *.markdown.out \
-	*.markdown.lua *.log *.aux context-mkii.tex context-mkiv.tex \
-	latex-pdftex.tex latex-xetex.tex latex-luatex.tex example.tex
+  *.markdown.lua *.log *.aux context-mkii.tex context-mkiv.tex \
+  latex-pdftex.tex latex-xetex.tex latex-luatex.tex example.tex
 AUXDIRS=_markdown_*/
 LUACLI_OPTIONS=hashEnumerators=true definitionLists=true footnotes=true \
-	inlineFootnotes=true smartEllipses=true fencedCode=true contentBlocks=true
+  inlineFootnotes=true smartEllipses=true fencedCode=true contentBlocks=true
 OUTPUT=context-mkii.pdf context-mkiv.pdf latex-pdftex.pdf \
-	latex-luatex.pdf latex-xetex.pdf
+  latex-luatex.pdf latex-xetex.pdf
 
 # This is the default pseudo-target.
 all: $(OUTPUT)
