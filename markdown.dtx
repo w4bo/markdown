@@ -595,16 +595,16 @@ version of the package, you are encouraged to skip this step.
 
 To install the package, first download the package from the repository
 using Git:
-```sh
+``` sh
 git clone https://github.com/witiko/markdown
-```
+``````
 Next, enter the directory named `markdown` and interpret the file named
 `markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX or
 LuaTeX:
-```sh
+``` sh
 cd markdown
 luatex markdown.ins
-```
+``````
 This should produce the following files:
 
  * `markdown.lua` – the Lua module,
@@ -626,7 +626,7 @@ structure. This is generally where the individual files should be placed:
 
 where `<TEXMF>` corresponds to a root of your TeX distribution, such as
 `/usr/share/texmf` and `~/texmf` on UN\*X systems or
-`c:\users\<YOUR USERNAME>\texmfhome` on Windows systems. When in doubt,
+`C:\Users\<YOUR␣USERNAME>\texmf` on Windows systems. When in doubt,
 consult the manual of your TeX distribution.
 
 ### Portable installation ###
@@ -880,9 +880,95 @@ In this section, we will take the necessary steps to typeset our first markdown
 document in TeX. This will serve as our first hands-on experience with the
 package and also as a reassurance that the package has been correctly installed.
 
+### Using Lua
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input hello
+\bye
+```````
+
+#### Using Lua module
+
+Using a text editor, create a text document named `hello.lua` with the
+following content:
+``` lua
+local kpse = require("kpse")
+kpse.set_program_name("luatex")
+local md = require("markdown")
+local convert = md.new()
+print(convert("Hello *world*!"))
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua hello.lua > hello.tex
+luatex document.tex
+``````
+
+A PDF document named `document.pdf` should be produced containing the text
+“Hello *world*!” Invoking pdfTeX should have the same effect:
+``` sh
+texlua hello.lua > hello.tex
+pdftex document.tex
+``````
+
+#### Using Lua command-line interface
+
+Using a text editor, create a text document named `hello.md` with the
+following content:
+``` md
+Hello *world*!
+``````
+Next, locate the Lua command-line interface script file using Kpathsea:
+``` sh
+kpsewhich markdown-cli.lua
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> hello.md hello.tex
+luatex document.tex
+``````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua command-line
+interface script file, such as `~/texmf/scripts/markdown/markdown-cli.lua` on
+UN\*X systems or `C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua`
+on Windows systems.
+
+A PDF document named `document.pdf` should be produced containing the text “Hello
+*world*!” Invoking pdfTeX should have the same effect:
+``` sh
+texlua <CLI␣PATHNAME> hello.md hello.tex
+pdftex document.tex
+``````
+
+### Using plain TeX
+
 Using a text editor, create a text document named `hello.tex` with the
 following content:
-```tex
+``` tex
+\input markdown
+\markdownBegin
+Hello *world*!
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex hello.tex
+``````
+
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!” Invoking pdfTeX should have the same effect:
+``` sh
+pdftex --shell-escape hello.tex
+```````
+
+### Using LaTeX
+
+Using a text editor, create a text document named `hello.tex` with the
+following content:
+``` tex
 \documentclass{article}
 \usepackage{markdown}
 \begin{document}
@@ -890,22 +976,44 @@ following content:
 Hello *world*!
 \end{markdown}
 \end{document}
-```
-
+```````
 Next, invoke LuaTeX from the terminal:
-```sh
+``` sh
 lualatex hello.tex
-```
+``````
 A PDF document named `hello.pdf` should be produced containing the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
-```sh
+``` sh
 pdflatex --shell-escape hello.tex
-```
+``````
+
+### Using ConTeXt
+
+Using a text editor, create a text document named `hello.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+\startmarkdown
+Hello *world*!
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context hello.tex
+``````
+
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!” Invoking pdfTeX should have the same effect:
+``` sh
+texexec --passon=--shell-escape hello.tex
+``````
 
 Examples
 ========
 
-<!-- TODO -->
+This section will show how to use the package by example.
 
 %</manual>
 %<*lua>
@@ -916,6 +1024,24 @@ Examples
 % Lua Interface
 %--------------
 % \label{sec:luainterface}
+%
+% \iffalse
+%</lua>
+%<*manual>
+
+Lua
+---
+
+<!-- TODO -->
+
+### Interfaces
+
+<!-- TODO -->
+
+%</manual>
+%<*lua>
+% \fi
+%
 % The Lua interface provides the conversion from \acro{utf}-\oldstylenums8
 % encoded markdown to plain \TeX{}. This interface is used by the plain \TeX{}
 % implementation (see Section \ref{sec:teximplementation}) and will be of
@@ -927,18 +1053,6 @@ Examples
 %  \begin{macrocode}
 local M = {metadata = metadata}
 %    \end{macrocode}
-% \iffalse
-%</lua>
-%<*manual>
-
-Lua
----
-
-<!-- TODO -->
-
-%</manual>
-%<*lua>
-% \fi
 % \par
 % \begin{markdown}
 %
@@ -951,13 +1065,13 @@ Lua
 % `options` parameter is optional; when unspecified, the behaviour will be
 % the same as if `options` were an empty table.
 %
-% The following example Lua code converts the markdown string `_Hello
-% world!_` to a \TeX{} output using the default options and prints the \TeX{}
+% The following example Lua code converts the markdown string `Hello
+% *world*!` to a \TeX{} output using the default options and prints the \TeX{}
 % output:
 % ``` lua
 % local md = require("markdown")
 % local convert = md.new()
-% print(convert("_Hello world!_"))
+% print(convert("Hello *world*!"))
 % ```````
 %
 %### Options
@@ -968,6 +1082,13 @@ Lua
 % \end{markdown}
 % \iffalse
 %</lua>
+%<*manual>
+
+### Options
+
+<!-- TODO -->
+
+%</manual>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -1690,6 +1811,24 @@ end
 % Plain \TeX{} Interface
 %-----------------------
 % \label{sec:texinterface}
+%
+% \iffalse
+%</tex>
+%<*manual>
+
+Plain TeX
+---------
+
+<!-- TODO -->
+
+### Interfaces
+
+<!-- TODO -->
+
+%</manual>
+%<*tex>
+% \fi
+%
 % The plain \TeX{} interface provides macros for the typesetting of markdown
 % input from within plain \TeX{}, for setting the Lua interface options (see
 % Section \ref{sec:luaoptions}) used during the conversion from markdown to
@@ -1700,18 +1839,6 @@ end
 \def\markdownLastModified{2018/01/08}%
 \def\markdownVersion{2.5.5}%
 %    \end{macrocode}
-% \iffalse
-%</tex>
-%<*manual>
-
-Plain TeX
----------
-
-<!-- TODO -->
-
-%</manual>
-%<*tex>
-% \fi
 % \par
 % \begin{markdown}
 %
@@ -1809,6 +1936,19 @@ Plain TeX
 %
 %### Options
 % \label{sec:texoptions}
+%
+% \iffalse
+%</tex>
+%<*manual>
+
+### Options
+
+<!-- TODO -->
+
+%</manual>
+%<*tex>
+% \fi
+%
 % The plain \TeX{} options are represented by \TeX{} macros. Some of them map
 % directly to the options recognized by the Lua interface (see
 % Section~\ref{sec:luaoptions}), while some of them are specific to the plain
@@ -1971,6 +2111,19 @@ Plain TeX
 %
 %### Token Renderers
 % \label{sec:texrenderersuser}
+%
+% \iffalse
+%</tex>
+%<*manual>
+
+### Token renderers
+
+<!-- TODO -->
+
+%</manual>
+%<*tex>
+% \fi
+%
 % The following \TeX{} macros may occur inside the output of the
 % converter functions exposed by the Lua interface (see Section
 % \ref{sec:luaconversion}) and represent the parsed markdown tokens. These
@@ -2813,6 +2966,24 @@ Plain TeX
 % \LaTeX{} Interface
 %-------------------
 % \label{sec:latexinterface}
+%
+% \iffalse
+%</latex>
+%<*manual>
+
+LaTeX
+-----
+
+<!-- TODO -->
+
+### Interfaces
+
+<!-- TODO -->
+
+%</manual>
+%<*latex>
+% \fi
+%
 % The \LaTeX{} interface provides \LaTeX{} environments for the typesetting of
 % markdown input from within \LaTeX{}, facilities for setting Lua interface
 % options (see Section \ref{sec:luaoptions}) used during the conversion from
@@ -2835,18 +3006,6 @@ Plain TeX
 % \Hologo{LaTeX2e} parses package options.
 %
 % \end{markdown}
-% \iffalse
-%</latex>
-%<*manual>
-
-LaTeX
------
-
-<!-- TODO -->
-
-%</manual>
-%<*latex>
-% \fi
 % \par
 % \begin{markdown}
 %
@@ -2912,6 +3071,19 @@ LaTeX
 %
 %### Options
 % \label{sec:latexoptions}
+%
+% \iffalse
+%</latex>
+%<*manual>
+
+### Options
+
+<!-- TODO -->
+
+%</manual>
+%<*latex>
+% \fi
+%
 % The \LaTeX{} options are represented by a comma-delimited list of
 % \meta{key}`=`\meta{value} pairs. For boolean options, the `=`\meta{value}
 % part is optional, and \meta{key} will be interpreted as \meta{key}`=true`.
@@ -3013,6 +3185,19 @@ LaTeX
 %
 %#### Plain \TeX{} Markdown Token Renderers
 % \label{sec:latexrenderers}
+%
+% \iffalse
+%</latex>
+%<*manual>
+
+### Token renderers
+
+<!-- TODO -->
+
+%</manual>
+%<*latex>
+% \fi
+%
 % The \LaTeX{} interface recognizes an option with the `renderers` key,
 % whose value must be a list of options that map directly to the markdown token
 % renderer macros exposed by the plain \TeX{} interface (see Section
@@ -3300,6 +3485,32 @@ LaTeX
 % \Hologo{ConTeXt} Interface
 %---------------------------
 % \label{sec:contextinterface}
+%
+% \iffalse
+%</context>
+%<*manual>
+
+ConTeXt
+-------
+
+<!-- TODO -->
+
+### Interfaces
+
+<!-- TODO -->
+
+### Options
+
+<!-- TODO -->
+
+### Token renderers
+
+<!-- TODO -->
+
+%</manual>
+%<*context>
+% \fi
+%
 % The \Hologo{ConTeXt} interface provides a start-stop macro pair for the
 % typesetting of markdown input from within \Hologo{ConTeXt}. The rest of the
 % interface is inherited from the plain \TeX{} interface (see Section
@@ -3310,18 +3521,6 @@ LaTeX
 \writestatus{loading}{ConTeXt User Module / markdown}%
 \unprotect
 %    \end{macrocode}
-% \iffalse
-%</context>
-%<*manual>
-
-ConTeXt
--------
-
-<!-- TODO -->
-
-%</manual>
-%<*context>
-% \fi
 % \par
 % \begin{markdown}
 %
