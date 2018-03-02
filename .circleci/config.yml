@@ -10,8 +10,8 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.5.5-tl2017-{{ .Branch }}-
-        - markdown-v2.5.5-tl2017-master-
+        - markdown-v2.5.5-tl2017-{{ .Branch }}
+        - markdown-v2.5.5-tl2017-master
         - markdown-v2.5.5-tl2017-
     - run: |
         set -e
@@ -25,7 +25,7 @@ jobs:
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
     - run: sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.5.5-tl2017-{{ .Branch }}-{{ epoch }}
+        key: markdown-v2.5.5-tl2017-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
