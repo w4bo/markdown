@@ -492,12 +492,15 @@ author: Vít Novotný
 
 Introduction
 ============
-The Markdown package converts markdown markup to TeX commands. The
+The Markdown package converts [markdown][] markup to TeX commands. The
 functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
 ConTeXt macro packages that can be used to directly typeset TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
 makes it easy to redefine how each and every markdown element is rendered.
 Creative abuse of the markdown syntax is encouraged. <i class="em em-wink"></i>
+
+ [markdown]: https://daringfireball.net/projects/markdown/basics/
+             (Daring Fireball: Markdown Basics)
 
 % This document is a technical documentation for the \pkg{Markdown} package. It
 % consists of three sections. This section introduces the package and outlines
@@ -571,14 +574,9 @@ modules['markdown'] = metadata
 % \iffalse
 %</lua>
 %<*manual>
-% \fi
-% \par
-% \begin{markdown}
 
 Requirements
 ------------
-
-% \iffalse
 
 The package requires a working TeX distribution. [TeX Live][] ≥ 2013 is known to
 work and so are recent installation of [MikTeX][]. If you are using a minimal
@@ -640,6 +638,11 @@ portably typeset on legacy TeX distributions.
 %</manual>
 %<*lua>
 % \fi
+% \par
+% \begin{markdown}
+%
+% Requirements
+%-------------
 %
 % This section gives an overview of all resources required by the package.
 %
@@ -908,7 +911,6 @@ Next, invoke LuaTeX from the terminal:
 texlua hello.lua > hello.tex
 luatex document.tex
 ``````
-
 A PDF document named `document.pdf` should be produced containing the text
 “Hello *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
@@ -959,12 +961,12 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 luatex hello.tex
 ``````
-
 A PDF document named `hello.pdf` should be produced containing the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 pdftex --shell-escape hello.tex
 ```````
+
 
 ### Using LaTeX
 
@@ -989,6 +991,23 @@ A PDF document named `hello.pdf` should be produced containing the text “Hello
 pdflatex --shell-escape hello.tex
 ``````
 
+***
+
+As the next step, try typesetting the example documents distributed along with
+the Markdown package:
+``` sh
+git clone https://github.com/witiko/markdown
+cd markdown/examples
+lualatex latex.tex
+``````
+A PDF document named `latex.pdf` should be produced. Open the text documents
+`latex.tex` and `example.md` in a text editor to see how the example documents
+are structured. Try changing the documents and typesetting them as follows:
+``` sh
+lualatex latex.tex
+``````
+to see the effect of your changes.
+
 ### Using ConTeXt
 
 Using a text editor, create a text document named `hello.tex` with the
@@ -1005,12 +1024,28 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 context hello.tex
 ``````
-
 A PDF document named `hello.pdf` should be produced containing the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 texexec --passon=--shell-escape hello.tex
 ``````
+
+***
+
+As the next step, try typesetting the example documents distributed along with
+the Markdown package:
+``` sh
+git clone https://github.com/witiko/markdown
+cd markdown/examples
+context context.tex
+``````
+A PDF document named `context.pdf` should be produced. Open the text documents
+`context.tex` and `example.md` in a text editor to see how the example documents
+are structured. Try changing the documents and typesetting them as follows:
+``` sh
+context context.tex
+``````
+to see the effect of your changes.
 
 Examples
 ========
