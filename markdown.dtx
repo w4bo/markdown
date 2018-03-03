@@ -1069,7 +1069,12 @@ This section will show how to use the package by example.
 Lua
 ---
 
-<!-- TODO -->
+The Lua part of the package makes it possible to convert a markdown document
+into TeX commands and typeset it later when convenient. Although the typical
+user will not find this terribly useful and will instead use the plain TeX,
+LaTeX, and ConTeXt macro packages to convert and typeset the markdown documents
+as a single step, they will still benefit from learning the options that
+control the behavior of the Lua parser.
 
 ### Interfaces
 
@@ -1856,7 +1861,12 @@ end
 Plain TeX
 ---------
 
-<!-- TODO -->
+The plain TeX macro package provides TeX commands for typesetting markdown
+documents that invoke the Lua parser in the background. Beside TeX commands
+that correspond to the Lua options, the macro package also provides commands
+corresponding to additional plain TeX-specific options, and so-called *token
+renderer* commands that define how the individual markdown elements will be
+typeset.
 
 ### Interfaces
 
@@ -3011,6 +3021,9 @@ Plain TeX
 LaTeX
 -----
 
+The LaTeX macro package provides additional syntactic sugar on top of the plain
+TeX macro package and provides sane default definitions for the token renderers.
+
 <!-- TODO -->
 
 ### Interfaces
@@ -3530,7 +3543,9 @@ LaTeX
 ConTeXt
 -------
 
-<!-- TODO -->
+The ConTeXt macro package provides additional syntactic sugar on top of the
+plain TeX macro package and provides sane default definitions for the token
+renderers.
 
 ### Interfaces
 
