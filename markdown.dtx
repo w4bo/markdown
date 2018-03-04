@@ -895,15 +895,16 @@ following content:
 \bye
 ```````
 
-#### Using Lua module
+#### Using the Lua module
 
 Using a text editor, create a text document named `hello.lua` with the
 following content:
 ``` lua
+#!/usr/bin/env texlua
 local kpse = require("kpse")
 kpse.set_program_name("luatex")
-local md = require("markdown")
-local convert = md.new()
+local markdown = require("markdown")
+local convert = markdown.new()
 print(convert("Hello *world*!"))
 ```````
 Next, invoke LuaTeX from the terminal:
@@ -918,7 +919,7 @@ texlua hello.lua > hello.tex
 pdftex document.tex
 ``````
 
-#### Using Lua command-line interface
+#### Using the Lua command-line interface
 
 Using a text editor, create a text document named `hello.md` with the
 following content:
@@ -1073,12 +1074,8 @@ The Lua part of the package makes it possible to convert a markdown document
 into TeX commands and typeset it later when convenient. Although the typical
 user will not find this terribly useful and will instead use the plain TeX,
 LaTeX, and ConTeXt macro packages to convert and typeset the markdown documents
-as a single step, they will still benefit from learning the options that
+in a single step, they will still benefit from learning the options that
 control the behavior of the Lua parser.
-
-### Interfaces
-
-<!-- TODO -->
 
 %</manual>
 %<*lua>
@@ -1115,6 +1112,89 @@ local M = {metadata = metadata}
 % local convert = md.new()
 % print(convert("Hello *world*!"))
 % ```````
+%
+% \end{markdown}
+% \iffalse
+%</lua>
+%<*manual>
+
+### Interfaces
+
+The Lua part of the package exposes two interfaces – the `markdown` Lua module,
+and the Lua command-line interface. The `options` parameter is optional; when
+unspecified, the behaviour will be the same as if `options` were an empty table.
+
+#### The Lua module
+
+The `markdown` Lua module exposes the `new(options)` method, which creates a
+converter function from markdown to TeX. The properties of the converter
+function are specified by the Lua table `options`.
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\def\markdownRendererEmphasis#1{{\it #1}}
+\input example
+\bye
+```````
+Using a text editor, create a text document named `example.lua` with the
+following content:
+``` lua
+#!/usr/bin/env texlua
+local kpse = require("kpse")
+kpse.set_program_name("luatex")
+local markdown = require("markdown")
+local convert_safe = markdown.new()
+local convert_unsafe = markdown.new({hybrid = true})
+local input = [[$\sqrt{-1}$ *equals* $i$.]]
+print(convert_safe(input) .. " " .. convert_unsafe(input))
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua example.lua > example.tex
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced containing the text
+“\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
+the same effect:
+``` sh
+texlua example.lua > example.tex
+pdftex document.tex
+``````
+
+***
+
+Rather than use the `texlua` interpreter, we can also access the `markdown` Lua
+module directly from our document. Using a text editor, create a text document
+named `document.tex` with the following content:
+``` tex
+\input markdown
+\input lmfonts
+\def\markdownRendererEmphasis#1{{\it #1}}
+\directlua{
+  local markdown = require("markdown")
+  local convert_safe = markdown.new()
+  local convert_unsafe = markdown.new({hybrid = true})
+  local input = [[$\noexpand\sqrt{-1}$ *equals* $i$.]]
+  tex.sprint(convert_safe(input) .. " " .. convert_unsafe(input)) }
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced containing the text
+“\$\\sqrt {-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” In this case, we cannot
+use pdfTeX, because pdfTeX does not define the `\directlua` TeX command.
+
+#### The Lua command-line interface
+
+%</manual>
+%<*lua>
+% \fi
+% \begin{markdown}
 %
 %### Options
 % \label{sec:luaoptions}
@@ -3022,7 +3102,7 @@ LaTeX
 -----
 
 The LaTeX macro package provides additional syntactic sugar on top of the plain
-TeX macro package and provides sane default definitions for the token renderers.
+TeX macro package and provides sane default definitions of the token renderers.
 
 <!-- TODO -->
 
@@ -3544,7 +3624,7 @@ ConTeXt
 -------
 
 The ConTeXt macro package provides additional syntactic sugar on top of the
-plain TeX macro package and provides sane default definitions for the token
+plain TeX macro package and provides sane default definitions of the token
 renderers.
 
 ### Interfaces
@@ -4362,7 +4442,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.pack(name)
-    return [[\input"]] .. name .. [["\relax]]
+    return [[\input"]] .. name .. [["\relax{}]]
   end
 %    \end{macrocode}
 % \par
@@ -6485,8 +6565,8 @@ end
 \def\markdownRendererLineBreakPrototype{\hfil\break}%
 \let\markdownRendererEllipsisPrototype\dots
 \def\markdownRendererNbspPrototype{~}%
-\def\markdownRendererLeftBracePrototype{\char`{}%
-\def\markdownRendererRightBracePrototype{\char`}}%
+\def\markdownRendererLeftBracePrototype{\char`\{}%
+\def\markdownRendererRightBracePrototype{\char`\}}%
 \def\markdownRendererDollarSignPrototype{\char`$}%
 \def\markdownRendererPercentSignPrototype{\char`\%}%
 \def\markdownRendererAmpersandPrototype{\char`&}%
@@ -6531,7 +6611,7 @@ end
 \def\markdownRendererBlockQuoteBeginPrototype{\par\begingroup\it}%
 \def\markdownRendererBlockQuoteEndPrototype{\endgroup\par}%
 \def\markdownRendererInputVerbatimPrototype#1{%
-  \par{\tt\input"#1"\relax}\par}%
+  \par{\tt\input"#1"\relax{}}\par}%
 \def\markdownRendererInputFencedCodePrototype#1#2{%
   \markdownRendererInputVerbatimPrototype{#1}}%
 \def\markdownRendererHeadingOnePrototype#1{#1}%
