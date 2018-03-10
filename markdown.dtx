@@ -7316,8 +7316,6 @@ local convert = md.new(\markdownLuaOptions)
   tilde = {\textasciitilde},
   pipe = {\textbar},
   codeSpan = {\texttt{#1}},
-  link = {#1\footnote{\ifx\empty#4\empty\else#4:
-    \fi\texttt<\url{#3}\texttt>}},
   contentBlock = {%
     \ifthenelse{\equal{#1}{csv}}{%
       \begin{table}%
@@ -7491,6 +7489,25 @@ local convert = md.new(\markdownLuaOptions)
       \markdownLaTeXBibLaTeXTextCitations
       \expandafter{\expandafter}%
     \fi}}}
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% Before consuming the parameters for the hyperlink renderer, we change the
+% category code of the hash sign (`#`) to other, so that it cannot be
+% mistaken for a parameter character. After the hyperlink has been typeset,
+% we restore the original catcode.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\def\markdownRendererLinkPrototype{%
+  \begingroup
+  \catcode`\#=12
+  \def\next##1##2##3##4{%
+    ##1\footnote{%
+      \ifx\empty##4\empty\else##4: \fi\texttt<\url{##3}\texttt>}%
+    \endgroup}%
+  \next}
 %    \end{macrocode}
 % \par
 % \begin{markdown}
