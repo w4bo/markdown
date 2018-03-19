@@ -922,26 +922,25 @@ texlua hello.lua > hello.tex
 pdftex document.tex
 ``````
 
-#### Using the Lua command-line interface
+#### Using the Lua CLI
 
 Using a text editor, create a text document named `hello.md` with the
 following content:
 ``` md
 Hello *world*!
 ``````
-Next, locate the Lua command-line interface script file using Kpathsea:
-``` sh
-kpsewhich markdown-cli.lua
-``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
 texlua <CLI␣PATHNAME> -- hello.md hello.tex
 luatex document.tex
 ``````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua command-line
-interface script file, such as `~/texmf/scripts/markdown/markdown-cli.lua` on
-UN\*X systems or `C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua`
-on Windows systems.
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+ [Kpathsea]: https://tug.org/kpathsea/ (Kpathsea - TeX Users Group)
 
 A PDF document named `document.pdf` should be produced containing the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
@@ -1124,7 +1123,7 @@ local M = {metadata = metadata}
 ### Interfaces
 
 The Lua part of the package exposes two interfaces – the `markdown` Lua module,
-and the Lua command-line interface.
+and the Lua command-line interface (CLI).
 
 #### The Lua module
 
@@ -1139,7 +1138,6 @@ following content:
 ``` tex
 \input markdown
 \input lmfonts
-\def\markdownRendererEmphasis#1{{\it #1}}
 \input example
 \bye
 ```````
@@ -1176,7 +1174,6 @@ named `document.tex` with the following content:
 ``` tex
 \input markdown
 \input lmfonts
-\def\markdownRendererEmphasis#1{{\it #1}}
 \directlua{
   local markdown = require("markdown")
   local convert_safe = markdown.new()
@@ -1193,17 +1190,16 @@ A PDF document named `document.pdf` should be produced containing the text
 “\$\\sqrt {-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” In this case, we cannot
 use pdfTeX, because pdfTeX does not define the `\directlua` TeX command.
 
-#### The Lua command-line interface
+#### The Lua CLI
 
-The Lua command-line interface accepts the same options as the `markdown` Lua
-module, but now the options are specified as command-line parameters.
+The Lua command-line interface (CLI) accepts the same options as the `markdown`
+Lua module, but now the options are specified as command-line parameters.
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \input markdown
 \input lmfonts
-\def\markdownRendererEmphasis#1{{\it #1}}
 \input safe\ \input unsafe
 \bye
 ```````
@@ -1212,20 +1208,17 @@ following content:
 ``` md
 $\sqrt{-1}$ *equals* $i$.
 ``````
-Next, locate the Lua command-line interface script file using Kpathsea:
-``` sh
-kpsewhich markdown-cli.lua
-``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
 texlua <CLI␣PATHNAME> -- example.md safe.tex
 texlua <CLI␣PATHNAME> hybrid=true -- example.md unsafe.tex
 luatex document.tex
 ``````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua command-line
-interface script file, such as `~/texmf/scripts/markdown/markdown-cli.lua` on
-UN\*X systems or `C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua`
-on Windows systems.
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
 
 A PDF document named `document.pdf` should be produced containing the text
 “\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
@@ -1253,7 +1246,9 @@ pdftex document.tex
 
 ### Options
 
-<!-- TODO -->
+This section will cover the options recognized by the Lua interface. The
+interfaces of the plain TeX, LaTeX, and ConTeXt macro packages recognize these
+options as well, in addition to their own options.
 
 %</manual>
 %<*lua,lua-cli>
@@ -1283,25 +1278,157 @@ local defaultOptions = {}
 %     dlItemEnd = {\endgroup},
 %     dlEnd = {\end{optionlist}}}}
 % \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual>
+% \fi
+% \begin{markdown}
+
+#### File and Directory Names
+
+% \end{markdown}
+% \par
+% \iffalse
+<a name="cacheDir">`cacheDir` (default value: `.`)</a>
+% \fi
 % \begin{markdown}
 %
-%#### File and Directory Names
-%
 % \Valitem[.]{cacheDir}{path}
-%
-%:    A path to the directory containing auxiliary cache files. It is
-%     considered sane to set the path to a subdirectory of `outputDir`.
-%     If the last segment of the path does not exist, it will be created by the
-%     plain \TeX, \LaTeX, and \Hologo{ConTeXt} implementations. The Lua
-%     implementation expects that the entire path already exists.
-%
-%     When iteratively writing and typesetting a markdown document, the cache
-%     files are going to accumulate over time. You are advised to clean the
-%     cache directory every now and then, or to set it to a temporary filesystem
-%     (such as `/tmp` on \acro{un*x} systems), which gets periodically
-%     emptied.
-%
+
+:    A path to the directory containing auxiliary cache files. It is considered
+     sane to set the path to a subdirectory of `outputDir`.  If the last
+     segment of the path does not exist, it will be created by the plain TeX,
+     LaTeX, and ConTeXt implementations. The Lua implementation expects that
+     the entire path already exists.
+
+     When iteratively writing and typesetting a markdown document, the cache
+     files are going to accumulate over time. You are advised to clean the
+     cache directory every now and then, or to set it to a temporary filesystem
+     (such as `/tmp` on UN*X systems), which gets periodically emptied.
+
 % \end{markdown}
+% \iffalse
+
+##### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new({cacheDir = "cache"})
+  local input = "Hello *world*!"
+  tex.sprint(convert(input)) }
+\bye
+```````
+Create an empty directory named `cache` next to our text document. Then, invoke
+LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced containing the text
+“Hello *world*!” Several auxiliary files of the Markdown package will also be
+produced in the `cache` directory as we requested using the `cacheDir` option.
+
+##### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input hello
+\bye
+```````
+Using a text editor, create a text document named `hello.md` with the
+following content:
+``` md
+Hello *world*!
+``````
+Create an empty directory named `cache` next to our text document. Next, invoke
+LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> cacheDir=cache -- hello.md hello.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced containing the text
+“Hello *world*!” Several auxiliary files of the Markdown package will also be
+produced in the `cache` directory as we requested using the `cacheDir` option.
+
+##### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `hello.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionCacheDir{cache}
+\markdownBegin
+Hello *world*!
+\markdownEnd
+\bye
+```````
+Create an empty directory named `cache` next to our text document. Next, invoke
+LuaTeX from the terminal:
+``` sh
+luatex hello.tex
+``````
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!” Several auxiliary files of the Markdown package will also be
+produced in the `cache` directory as we requested using the `cacheDir` option.
+
+##### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `hello.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[cacheDir=cache]{markdown}
+\begin{document}
+\begin{markdown}
+Hello *world*!
+\end{markdown}
+\end{document}
+```````
+Create an empty directory named `cache` next to our text document. Next, invoke
+LuaTeX from the terminal:
+``` sh
+lualatex hello.tex
+``````
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!” Several auxiliary files of the Markdown package will also be
+produced in the `cache` directory as we requested using the `cacheDir` option.
+
+##### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `hello.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionCacheDir{cache}
+\starttext
+\startmarkdown
+Hello *world*!
+\stopmarkdown
+\stoptext
+```````
+Create an empty directory named `cache` next to our text document. Next, invoke
+LuaTeX from the terminal:
+``` sh
+context hello.tex
+``````
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!” Several auxiliary files of the Markdown package will also be
+produced in the `cache` directory as we requested using the `cacheDir` option.
+
+%</manual>
+%<*lua,lua-cli>
+% \fi
 %  \begin{macrocode}
 defaultOptions.cacheDir = "."
 %    \end{macrocode}

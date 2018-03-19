@@ -52,7 +52,7 @@ examples/example.tex: $(INSTALLABLES)
 
 # This target converts the markdown user manual to an HTML page.
 %.html: %.md %.css
-	pandoc -f markdown -t html -N -s --toc --css=$(word 2, $^) <$< >$@
+	pandoc -f markdown -t html -N -s --toc --toc-depth=4 --css=$(word 2, $^) <$< >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:
