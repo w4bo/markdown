@@ -1289,7 +1289,9 @@ local defaultOptions = {}
 % \end{markdown}
 % \par
 % \iffalse
-<a name="cacheDir">`cacheDir` (default value: `.`)</a>
+##### Option `cacheDir`
+
+`cacheDir` (default value: `.`)
 % \fi
 % \begin{markdown}
 %
@@ -1309,7 +1311,7 @@ local defaultOptions = {}
 % \end{markdown}
 % \iffalse
 
-##### Lua module example {.unnumbered}
+###### Lua module example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1331,7 +1333,7 @@ A PDF document named `document.pdf` should be produced containing the text
 “Hello *world*!” Several auxiliary files of the Markdown package will also be
 produced in the `cache` directory as we requested using the `cacheDir` option.
 
-##### Lua CLI example {.unnumbered}
+###### Lua CLI example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1345,8 +1347,7 @@ following content:
 ``` md
 Hello *world*!
 ``````
-Create an empty directory named `cache` next to our text document. Next, invoke
-LuaTeX from the terminal:
+Next, invoke LuaTeX from the terminal:
 ``` sh
 texlua <CLI␣PATHNAME> cacheDir=cache -- hello.md hello.tex
 luatex document.tex
@@ -1357,11 +1358,12 @@ such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
-A PDF document named `document.pdf` should be produced containing the text
-“Hello *world*!” Several auxiliary files of the Markdown package will also be
-produced in the `cache` directory as we requested using the `cacheDir` option.
+A PDF document named `hello.pdf` should be produced containing the text “Hello
+*world*!” A directory named `cache` containing several auxiliary files of the
+Markdown package will also be produced as we requested using the `cacheDir`
+option.
 
-##### Plain TeX example {.unnumbered}
+###### Plain TeX example {.unnumbered}
 
 Using a text editor, create a text document named `hello.tex` with the
 following content:
@@ -1373,16 +1375,16 @@ Hello *world*!
 \markdownEnd
 \bye
 ```````
-Create an empty directory named `cache` next to our text document. Next, invoke
-LuaTeX from the terminal:
+Next, invoke LuaTeX from the terminal:
 ``` sh
 luatex hello.tex
 ``````
 A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” Several auxiliary files of the Markdown package will also be
-produced in the `cache` directory as we requested using the `cacheDir` option.
+*world*!” A directory named `cache` containing several auxiliary files of the
+Markdown package will also be produced as we requested using the `cacheDir`
+option.
 
-##### LaTeX example {.unnumbered}
+###### LaTeX example {.unnumbered}
 
 Using a text editor, create a text document named `hello.tex` with the
 following content:
@@ -1395,16 +1397,16 @@ Hello *world*!
 \end{markdown}
 \end{document}
 ```````
-Create an empty directory named `cache` next to our text document. Next, invoke
-LuaTeX from the terminal:
+Next, invoke LuaTeX from the terminal:
 ``` sh
 lualatex hello.tex
 ``````
 A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” Several auxiliary files of the Markdown package will also be
-produced in the `cache` directory as we requested using the `cacheDir` option.
+*world*!” A directory named `cache` containing several auxiliary files of the
+Markdown package will also be produced as we requested using the `cacheDir`
+option.
 
-##### ConTeXt example {.unnumbered}
+###### ConTeXt example {.unnumbered}
 
 Using a text editor, create a text document named `hello.tex` with the
 following content:
@@ -1417,14 +1419,14 @@ Hello *world*!
 \stopmarkdown
 \stoptext
 ```````
-Create an empty directory named `cache` next to our text document. Next, invoke
-LuaTeX from the terminal:
+Next, invoke LuaTeX from the terminal:
 ``` sh
 context hello.tex
 ``````
 A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” Several auxiliary files of the Markdown package will also be
-produced in the `cache` directory as we requested using the `cacheDir` option.
+*world*!” A directory named `cache` containing several auxiliary files of the
+Markdown package will also be produced as we requested using the `cacheDir`
+option.
 
 %</manual>
 %<*lua,lua-cli>
