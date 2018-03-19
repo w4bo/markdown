@@ -1121,14 +1121,15 @@ local M = {metadata = metadata}
 ### Interfaces
 
 The Lua part of the package exposes two interfaces – the `markdown` Lua module,
-and the Lua command-line interface. The `options` parameter is optional; when
-unspecified, the behaviour will be the same as if `options` were an empty table.
+and the Lua command-line interface.
 
 #### The Lua module
 
 The `markdown` Lua module exposes the `new(options)` method, which creates a
 converter function from markdown to TeX. The properties of the converter
-function are specified by the Lua table `options`.
+function are specified by the Lua table `options`. The parameter is optional;
+when unspecified, the behaviour will be the same as if `options` were an empty
+table.
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1190,6 +1191,47 @@ A PDF document named `document.pdf` should be produced containing the text
 use pdfTeX, because pdfTeX does not define the `\directlua` TeX command.
 
 #### The Lua command-line interface
+
+The Lua command-line interface accepts the same options as the `markdown` Lua
+module, but now the options are specified as command-line parameters.
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\def\markdownRendererEmphasis#1{{\it #1}}
+\input safe\ \input unsafe
+\bye
+```````
+Using a text editor, create a text document named `example.md` with the
+following content:
+``` md
+$\sqrt{-1}$ *equals* $i$.
+``````
+Next, locate the Lua command-line interface script file using Kpathsea:
+``` sh
+kpsewhich markdown-cli.lua
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> example.md safe.tex
+texlua <CLI␣PATHNAME> hybrid=true example.md unsafe.tex
+luatex document.tex
+``````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua command-line
+interface script file, such as `~/texmf/scripts/markdown/markdown-cli.lua` on
+UN\*X systems or `C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua`
+on Windows systems.
+
+A PDF document named `document.pdf` should be produced containing the text
+“\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
+the same effect:
+``` sh
+texlua <CLI␣PATHNAME> example.md safe.tex
+texlua <CLI␣PATHNAME> hybrid=true example.md unsafe.tex
+pdftex document.tex
+``````
 
 %</manual>
 %<*lua>
