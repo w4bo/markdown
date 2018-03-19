@@ -932,7 +932,7 @@ kpsewhich markdown-cli.lua
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> hello.md hello.tex
+texlua <CLI␣PATHNAME> -- hello.md hello.tex
 luatex document.tex
 ``````
 where `<CLI␣PATHNAME>` corresponds to the location of the Lua command-line
@@ -943,7 +943,7 @@ on Windows systems.
 A PDF document named `document.pdf` should be produced containing the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
-texlua <CLI␣PATHNAME> hello.md hello.tex
+texlua <CLI␣PATHNAME> -- hello.md hello.tex
 pdftex document.tex
 ``````
 
@@ -1215,8 +1215,8 @@ kpsewhich markdown-cli.lua
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> example.md safe.tex
-texlua <CLI␣PATHNAME> hybrid=true example.md unsafe.tex
+texlua <CLI␣PATHNAME> -- example.md safe.tex
+texlua <CLI␣PATHNAME> hybrid=true -- example.md unsafe.tex
 luatex document.tex
 ``````
 where `<CLI␣PATHNAME>` corresponds to the location of the Lua command-line
@@ -1228,8 +1228,8 @@ A PDF document named `document.pdf` should be produced containing the text
 “\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
 the same effect:
 ``` sh
-texlua <CLI␣PATHNAME> example.md safe.tex
-texlua <CLI␣PATHNAME> hybrid=true example.md unsafe.tex
+texlua <CLI␣PATHNAME> -- example.md safe.tex
+texlua <CLI␣PATHNAME> hybrid=true -- example.md unsafe.tex
 pdftex document.tex
 ``````
 
