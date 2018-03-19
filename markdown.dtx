@@ -488,11 +488,11 @@ author: Vít Novotný
 % \par
 % \begin{markdown}
 
-<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet" />
 
 Introduction
 ============
-The Markdown package converts [markdown][] markup to TeX commands. The
+The [Markdown package][pkg] converts [markdown][] markup to TeX commands. The
 functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
 ConTeXt macro packages that can be used to directly typeset TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
@@ -501,6 +501,8 @@ Creative abuse of the markdown syntax is encouraged. <i class="em em-wink"></i>
 
  [markdown]: https://daringfireball.net/projects/markdown/basics/
              (Daring Fireball: Markdown Basics)
+ [pkg]:      https://ctan.org/pkg/markdown
+             (CTAN: Package markdown)
 
 % This document is a technical documentation for the \pkg{Markdown} package. It
 % consists of three sections. This section introduces the package and outlines
@@ -515,12 +517,13 @@ Creative abuse of the markdown syntax is encouraged. <i class="em em-wink"></i>
 % \end{markdown}
 % \iffalse
 
-This document is a user manual for the Markdown package. It provides beginner
-tutorials and code examples. For an in-depth description of the package
-requirements, interfaces, and implementation, please refer to the
+This document is a user manual for the [Markdown package][pkg]. It provides
+beginner tutorials and code examples. For an in-depth description of the
+package requirements, interfaces, and implementation, please refer to the
 [technical documentation][techdoc].
 
- [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf (A Markdown Interpreter for TeX)
+ [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf
+            (A Markdown Interpreter for TeX)
 
 %</manual>
 %<*lua,lua-cli>
