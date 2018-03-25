@@ -1299,11 +1299,10 @@ local defaultOptions = {}
 %
 % \Valitem[.]{cacheDir}{path}
 %
-:    A path to the directory containing auxiliary cache files. It is considered
-     sane to set the path to a subdirectory of `outputDir`.  If the last
-     segment of the path does not exist, it will be created by the plain TeX,
-     LaTeX, and ConTeXt implementations. The Lua implementation expects that
-     the entire path already exists.
+:    A path to the directory containing auxiliary cache files. If the last
+     segment of the path does not exist, it will be created by the Lua
+     command-line and plain TeX implementations. The Lua implementation expects
+     that the entire path already exists.
 
      When iteratively writing and typesetting a markdown document, the cache
      files are going to accumulate over time. You are advised to clean the
@@ -1435,32 +1434,6 @@ option.
 % \fi
 %  \begin{macrocode}
 defaultOptions.cacheDir = "."
-%    \end{macrocode}
-% \par
-% \iffalse
-%</lua,lua-cli>
-%<*manual>
-
-##### Option `outputDir`
-
-`outputDir` (default value: `"."`)
-
-% \fi
-% \begin{markdown}
-%
-% \Valitem[.]{outputDir}{path}
-%
-:    A path to the directory containing output files. The path must be set
-     to the same value as the `-output-directory` option of your TeX
-     engine for the package to function correctly.
-
-% \end{markdown}
-% \iffalse
-%</manual>
-%<*lua,lua-cli>
-% \fi
-%  \begin{macrocode}
-defaultOptions.outputDir = "."
 %    \end{macrocode}
 % \par
 % \iffalse
@@ -2408,7 +2381,7 @@ end
 % The command-line Lua interface is implemented by the `markdown-cli.lua`
 % file that can be invoked from the command line as follows:
 % ``` sh
-% texlua /path/to/markdown-cli.lua outputDir=. -- hello.md hello.tex
+% texlua /path/to/markdown-cli.lua cacheDir=. -- hello.md hello.tex
 % ``````
 % \noindent to convert the Markdown document `hello.md` to a \TeX{} document
 % `hello.tex`.  After the Markdown package for our \TeX{} format has been
@@ -2639,7 +2612,7 @@ typeset.
 % \begin{markdown}
 %
 % The \mdef{markdownOptionCacheDir} macro corresponds to the Lua interface
-% \Opt{cacheDir} option that sets the name of the directory that will contain
+% \Opt{cacheDir} option that sets the path to the directory that will contain
 % the produced cache files. The option defaults to `_markdown_`\m{jobname},
 % which is a similar naming scheme to the one used by the \pkg{minted} \LaTeX{}
 % package. The same limitations apply here as in the case of the
@@ -2652,11 +2625,16 @@ typeset.
 % \par
 % \begin{markdown}
 %
-% The \mdef{markdownOptionOutputDir} macro corresponds to the Lua interface
-% \Opt{outputDir} option that sets the name of the directory that will contain
-% the produced cache files. The option defaults to `.`. The same limitations
-% apply here as in the case of the \m{markdownOptionHelperScriptFileName}
-% macro.
+% The \mdef{markdownOptionOutputDir} macro sets the path to the directory that
+% will contain the cache files produced by the Lua implementation and also the
+% auxiliary files produced by the plain TeX implementation. The option defaults
+% to `.`.
+%
+% The path must be set to the same value as the `-output-directory` option of
+% your TeX engine for the package to function correctly. We need this macro to
+% make the Lua implementation aware where it should store the helper files.
+% The same limitations apply here as in the case of the
+% \m{markdownOptionHelperScriptFileName} macro.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -7185,7 +7163,6 @@ end
 \ifx\markdownOptionInlineFootnotes\undefined\else
   inlineFootnotes = \markdownOptionInlineFootnotes,
 \fi
-  outputDir = "\markdownOptionOutputDir",
 \ifx\markdownOptionPreserveTabs\undefined\else
   preserveTabs = \markdownOptionPreserveTabs,
 \fi
