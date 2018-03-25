@@ -915,7 +915,7 @@ Next, invoke LuaTeX from the terminal:
 texlua hello.lua > hello.tex
 luatex document.tex
 ``````
-A PDF document named `document.pdf` should be produced containing the text
+A PDF document named `document.pdf` should be produced and contain the text
 “Hello *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 texlua hello.lua > hello.tex
@@ -942,7 +942,7 @@ script file using [Kpathsea][].
 
  [Kpathsea]: https://tug.org/kpathsea/ (Kpathsea - TeX Users Group)
 
-A PDF document named `document.pdf` should be produced containing the text “Hello
+A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 texlua <CLI␣PATHNAME> -- hello.md hello.tex
@@ -964,7 +964,7 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 luatex hello.tex
 ``````
-A PDF document named `hello.pdf` should be produced containing the text “Hello
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 pdftex --shell-escape hello.tex
@@ -988,7 +988,7 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 lualatex hello.tex
 ``````
-A PDF document named `hello.pdf` should be produced containing the text “Hello
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 pdflatex --shell-escape hello.tex
@@ -1027,7 +1027,7 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 context hello.tex
 ``````
-A PDF document named `hello.pdf` should be produced containing the text “Hello
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
 texexec --passon=--shell-escape hello.tex
@@ -1158,7 +1158,7 @@ Next, invoke LuaTeX from the terminal:
 texlua example.lua > example.tex
 luatex document.tex
 ``````
-A PDF document named `document.pdf` should be produced containing the text
+A PDF document named `document.pdf` should be produced and contain the text
 “\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
 the same effect:
 ``` sh
@@ -1186,7 +1186,7 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 luatex document.tex
 ```````
-A PDF document named `document.pdf` should be produced containing the text
+A PDF document named `document.pdf` should be produced and contain the text
 “\$\\sqrt {-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” In this case, we cannot
 use pdfTeX, because pdfTeX does not define the `\directlua` TeX command.
 
@@ -1220,7 +1220,7 @@ such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
-A PDF document named `document.pdf` should be produced containing the text
+A PDF document named `document.pdf` should be produced and contain the text
 “\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
 the same effect:
 ``` sh
@@ -1331,8 +1331,8 @@ LuaTeX from the terminal:
 ``` sh
 luatex document.tex
 ```````
-A PDF document named `document.pdf` should be produced containing the text
-“Hello *world*!” Several auxiliary files of the Markdown package will also be
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” Several cache files of the Markdown package will also be
 produced in the `cache` directory as we requested using the `cacheDir` option.
 
 ###### Lua CLI example {.unnumbered}
@@ -1360,8 +1360,8 @@ such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
-A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” A directory named `cache` containing several auxiliary files of the
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
+*world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
@@ -1381,8 +1381,8 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 luatex hello.tex
 ``````
-A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” A directory named `cache` containing several auxiliary files of the
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
+*world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
@@ -1403,8 +1403,8 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 lualatex hello.tex
 ``````
-A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” A directory named `cache` containing several auxiliary files of the
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
+*world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
@@ -1425,8 +1425,8 @@ Next, invoke LuaTeX from the terminal:
 ``` sh
 context hello.tex
 ``````
-A PDF document named `hello.pdf` should be produced containing the text “Hello
-*world*!” A directory named `cache` containing several auxiliary files of the
+A PDF document named `hello.pdf` should be produced and contain the text “Hello
+*world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
