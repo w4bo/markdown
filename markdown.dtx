@@ -951,7 +951,7 @@ pdftex document.tex
 
 ### Using plain TeX
 
-Using a text editor, create a text document named `hello.tex` with the
+Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \input markdown
@@ -962,18 +962,17 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-luatex hello.tex
+luatex document.tex
 ``````
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
-*world*!” Invoking pdfTeX should have the same effect:
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
-pdftex --shell-escape hello.tex
+pdftex --shell-escape document.tex
 ```````
-
 
 ### Using LaTeX
 
-Using a text editor, create a text document named `hello.tex` with the
+Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \documentclass{article}
@@ -986,12 +985,12 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-lualatex hello.tex
+lualatex document.tex
 ``````
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
+A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
-pdflatex --shell-escape hello.tex
+pdflatex --shell-escape document.tex
 ``````
 
 ***
@@ -1013,7 +1012,7 @@ to see the effect of your changes.
 
 ### Using ConTeXt
 
-Using a text editor, create a text document named `hello.tex` with the
+Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \usemodule[t][markdown]
@@ -1025,12 +1024,12 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-context hello.tex
+context document.tex
 ``````
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
+A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
-texexec --passon=--shell-escape hello.tex
+texexec --passon=--shell-escape document.tex
 ``````
 
 ***
@@ -1359,14 +1358,14 @@ such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
-*world*!” A directory named `cache` containing several cache files of the
-Markdown package will also be produced as we requested using the `cacheDir`
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A directory named `cache` containing several cache files of
+the Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
 ###### Plain TeX example {.unnumbered}
 
-Using a text editor, create a text document named `hello.tex` with the
+Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \input markdown
@@ -1378,16 +1377,16 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-luatex hello.tex
+luatex document.tex
 ``````
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
+A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
 ###### LaTeX example {.unnumbered}
 
-Using a text editor, create a text document named `hello.tex` with the
+Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \documentclass{article}
@@ -1400,16 +1399,16 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-lualatex hello.tex
+lualatex document.tex
 ``````
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
+A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
 ###### ConTeXt example {.unnumbered}
 
-Using a text editor, create a text document named `hello.tex` with the
+Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \usemodule[t][markdown]
@@ -1422,9 +1421,9 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-context hello.tex
+context document.tex
 ``````
-A PDF document named `hello.pdf` should be produced and contain the text “Hello
+A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” A directory named `cache` containing several cache files of the
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
@@ -1467,6 +1466,182 @@ defaultOptions.cacheDir = "."
 
 % \end{markdown}
 % \iffalse
+
+###### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\directlua{
+  local markdown = require("markdown")
+  local newline = [[^^J^^J]]
+  local convert, input
+
+  convert = markdown.new()
+  input = "A paragraph." .. newline ..
+          "> A quote."   .. newline
+  tex.sprint(convert(input))
+
+  convert = markdown.new({blankBeforeBlockquote = true})
+  input = "A paragraph."   .. newline ..
+          "> Not a quote." .. newline
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> > A quote.
+>
+> A paragraph > Not a quote.
+
+###### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\input optionfalse
+\input optiontrue
+\bye
+```````
+Using a text editor, create a text document named `content.md` with the
+following content:
+``` md
+A paragraph.
+> A quote?
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
+texlua <CLI␣PATHNAME> blankBeforeBlockquote=true -- content.md optiontrue.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> > A quote?
+>
+> A paragraph > A quote?
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+
+\markdownBegin
+A paragraph.
+> A quote.
+\markdownEnd
+
+\def\markdownOptionBlankBeforeBlockquote{true}
+\markdownBegin
+A paragraph.
+> Not a quote.
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> > A quote.
+>
+> A paragraph > Not a quote.
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+
+\begin{markdown}
+A paragraph.
+> A quote.
+\end{markdown}
+
+\begin{markdown*}{blankBeforeBlockquote}
+A paragraph.
+> Not a quote.
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> > A quote.
+>
+> A paragraph > Not a quote.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+A paragraph.
+> A quote.
+\stopmarkdown
+
+\def\markdownOptionBlankBeforeBlockquote{true}
+\startmarkdown
+A paragraph.
+> Not a quote.
+\stopmarkdown
+
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> > A quote.
+>
+> A paragraph > Not a quote.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
