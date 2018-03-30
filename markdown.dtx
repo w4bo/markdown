@@ -1539,7 +1539,7 @@ following text:
 >
 > > A quote?
 >
-> A paragraph > A quote?
+> A paragraph. > A quote?
 
 ###### Plain TeX example {.unnumbered}
 
@@ -1674,6 +1674,213 @@ defaultOptions.blankBeforeBlockquote = false
 
 % \end{markdown}
 % \iffalse
+
+###### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\directlua{
+  local markdown = require("markdown")
+  local newline = [[^^J^^J]]
+  local convert, input
+
+  convert = markdown.new({fencedCode = true})
+  input = "A paragraph."   .. newline ..
+          "```"            .. newline ..
+          "A code fence."  .. newline ..
+          "```"            .. newline
+  tex.sprint(convert(input))
+
+  convert = markdown.new({
+    fencedCode = true, blankBeforeCodeFence = true})
+  input = "A paragraph."       .. newline ..
+          "```"                .. newline ..
+          "Not a code fence."  .. newline ..
+          "```"                .. newline
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> ```
+> A code fence.
+> ```
+>
+> A paragraph. ``` Not a code fence. ```
+
+###### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\input optionfalse
+\input optiontrue
+\bye
+```````
+Using a text editor, create a text document named `content.md` with the
+following content:
+```` md
+A paragraph.
+```
+A code fence?
+```
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> fencedCode=true -- content.md optionfalse.tex
+texlua <CLI␣PATHNAME> fencedCode=true blankBeforeCodeFence=true  -- content.md optiontrue.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> ```
+> A code fence?
+> ```
+>
+> A paragraph. ``` A code fence? ```
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+```` tex
+\input markdown
+\def\markdownOptionFencedCode{true}
+
+\markdownBegin
+A paragraph.
+```
+A code fence.
+```
+\markdownEnd
+
+\def\markdownOptionBlankBeforeCodeFence{true}
+\markdownBegin
+A paragraph.
+```
+Not a code fence.
+```
+\markdownEnd
+
+\bye
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> ```
+> A code fence.
+> ```
+>
+> A paragraph. ``` Not a code fence. ```
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+```` tex
+\documentclass{article}
+\usepackage[fencedCode]{markdown}
+\begin{document}
+
+\begin{markdown}
+A paragraph.
+```
+A code fence.
+```
+\end{markdown}
+
+\begin{markdown*}{blankBeforeCodeFence}
+A paragraph.
+```
+Not a code fence.
+```
+\end{markdown*}
+
+\end{document}
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> ```
+> A code fence.
+> ```
+>
+> A paragraph. ``` Not a code fence. ```
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+```` tex
+\usemodule[t][markdown]
+\def\markdownOptionFencedCode{true}
+\starttext
+
+\startmarkdown
+A paragraph.
+```
+A code fence.
+```
+\stopmarkdown
+
+\def\markdownOptionBlankBeforeCodeFence{true}
+\startmarkdown
+A paragraph.
+```
+Not a code fence.
+```
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A paragraph.
+>
+> ```
+> A code fence.
+> ```
+>
+> A paragraph. ``` Not a code fence. ```
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
