@@ -2133,6 +2133,190 @@ defaultOptions.blankBeforeHeading = false
 
 % \end{markdown}
 % \iffalse
+
+###### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\def\markdownRendererHeadingOne#1{{\bf #1}\par}
+\directlua{
+  local markdown = require("markdown")
+  local newline = [[^^J^^J]]
+  local convert, input
+
+  convert = markdown.new()
+  input = "> A single"     .. newline .. newline ..
+          "> block quote." .. newline
+  tex.sprint(convert(input))
+
+  convert = markdown.new({breakableBlockquotes = true})
+  input = "> A block quote."       .. newline .. newline ..
+          "> Another block quote." .. newline
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> > A single block quote.
+>
+> > A block quote.
+>
+> > Another block quote.
+
+###### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\input optionfalse
+\input optiontrue
+\bye
+```````
+Using a text editor, create a text document named `content.md` with the
+following content:
+``` md
+> A single block quote
+
+> or two block quotes?
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
+texlua <CLI␣PATHNAME> breakableBlockquotes=true  -- content.md optiontrue.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> > A single block quote or two block quotes?
+>
+> > A single block quote
+>
+> > or two block quotes?
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+
+\markdownBegin
+> A single
+
+> block quote.
+\markdownEnd
+
+\def\markdownOptionBreakableBlockquotes{true}
+\markdownBegin
+> A block quote.
+
+> Another block quote.
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> > A single block quote.
+>
+> > A block quote.
+>
+> > Another block quote.
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+
+\begin{markdown}
+> A single
+
+> block quote.
+\end{markdown}
+
+\begin{markdown*}{breakableBlockquotes}
+> A block quote.
+
+> Another block quote.
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> > A single block quote.
+>
+> > A block quote.
+>
+> > Another block quote.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+> A single
+
+> block quote.
+\stopmarkdown
+
+\def\markdownOptionBreakableBlockquotes{true}
+\startmarkdown
+> A block quote.
+
+> Another block quote.
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> > A single block quote.
+>
+> > A block quote.
+>
+> > Another block quote.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
