@@ -2531,6 +2531,173 @@ defaultOptions.citations = false
 
 % \end{markdown}
 % \iffalse
+
+###### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new()
+  local input =
+    "``This is a code span.'' " ..
+    "``This is no longer a code span.''"
+  tex.sprint(convert(input)) }
+\par
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new({codeSpans = false})
+  local input =
+    "``This is a quote.'' " ..
+    "``This is another quote.''"
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> ``This is a code span.'' ``This is no longer a code span.''
+>
+> “This is a quote.” “This is another quote.”
+
+###### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\input optionfalse
+\par
+\input optiontrue
+\bye
+```````
+Using a text editor, create a text document named `content.md` with the
+following content:
+``` md
+``Is this a code span?'' ``Or a quote?''
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> codeSpans=false -- content.md optionfalse.tex
+texlua <CLI␣PATHNAME> -- content.md optiontrue.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> “Is this a code span?” “Or a quote?”
+>
+> ``Is this a code span?'' ``Or a quote?''
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+
+\markdownBegin
+``This is a code span.''
+``This is no longer a code span.''
+\markdownEnd
+
+\def\markdownOptionCodeSpans{false}
+\markdownBegin
+``This is a quote.''
+``This is another quote.''
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> ``This is a code span.'' ``This is no longer a code span.''
+>
+> “This is a quote.” “This is another quote.”
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+
+\begin{markdown}
+``This is a code span.''
+``This is no longer a code span.''
+\end{markdown}
+
+\begin{markdown*}{codeSpans=false}
+``This is a quote.''
+``This is another quote.''
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> ``This is a code span.'' ``This is no longer a code span.''
+>
+> “This is a quote.” “This is another quote.”
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+``This is a code span.''
+``This is no longer a code span.''
+\stopmarkdown
+
+\def\markdownOptionCodeSpans{false}
+\startmarkdown
+``This is a quote.''
+``This is another quote.''
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> ``This is a code span.'' ``This is no longer a code span.''
+>
+> “This is a quote.” “This is another quote.”
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
