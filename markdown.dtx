@@ -2351,6 +2351,54 @@ defaultOptions.breakableBlockquotes = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[citations]{markdown}
+\usepackage{filecontents}
+\begin{filecontents}{document.bib}
+@book{knuth:tex,
+  author    = "Knuth, Donald Ervin",
+  title     = "The \TeX book, volume A of Computers and typesetting",
+  publisher = "Addison-Wesley",
+  year      = "1984"}
+\end{filecontents}
+\begin{document}
+
+\begin{markdown}
+The TeXbook [@knuth:tex, p. 123 and 130] is good.
+\end{markdown}
+
+\begin{markdown*}{citationNbsps = false}
+The TeXbook [@knuth:tex, p. 123 and 130] is good.
+\end{markdown*}
+
+\bibliographystyle{plain}
+\bibliography{document}
+\end{document}
+```````
+Next, invoke LuaTeX and BibTeX from the terminal:
+``` sh
+lualatex document.tex
+bibtex document.aux
+lualatex document.tex
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text, where the middot (`·`) denotes a non-breakable space:
+
+> The TeXbook [1, p.·123·and·130] is good.
+>
+> The TeXbook [1, p. 123 and 130] is good.
+>
+> ### References
+> \[1\] Donald·Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
+>       Addison-Wesley, 1984.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
