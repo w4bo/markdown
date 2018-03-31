@@ -2354,19 +2354,20 @@ defaultOptions.breakableBlockquotes = false
 
 ###### LaTeX example {.unnumbered}
 
+Using a text editor, create a text document named `document.bib` with the
+following content:
+``` bib
+@book{knuth:tex,
+  author    = "Knuth, Donald Ervin",
+  title     = "The \TeX book, volume A of Computers and typesetting",
+  publisher = "Addison-Wesley",
+  year      = "1984" }
+```````
 Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \documentclass{article}
 \usepackage[citations]{markdown}
-\usepackage{filecontents}
-\begin{filecontents}{document.bib}
-@book{knuth:tex,
-  author    = "Knuth, Donald Ervin",
-  title     = "The \TeX book, volume A of Computers and typesetting",
-  publisher = "Addison-Wesley",
-  year      = "1984"}
-\end{filecontents}
 \begin{document}
 
 \begin{markdown}
@@ -2378,7 +2379,7 @@ The TeXbook [@knuth:tex, p. 123 and 130] is good.
 \end{markdown*}
 
 \bibliographystyle{plain}
-\bibliography{document}
+\bibliography{document.bib}
 \end{document}
 ```````
 Next, invoke LuaTeX and BibTeX from the terminal:
@@ -2396,8 +2397,8 @@ following text, where the middot (`·`) denotes a non-breakable space:
 > The TeXbook [1, p. 123 and 130] is good.
 >
 > ### References
-> \[1\] Donald·Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
->       Addison-Wesley, 1984.
+> [1] Donald·Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
+>     Addison-Wesley, 1984.
 
 %</manual>
 %<*lua,lua-cli>
@@ -2445,6 +2446,50 @@ defaultOptions.citationNbsps = true
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.bib` with the
+following content:
+``` bib
+@book{knuth:tex,
+  author    = "Knuth, Donald Ervin",
+  title     = "The \TeX book, volume A of Computers and typesetting",
+  publisher = "Addison-Wesley",
+  year      = "1984" }
+```````
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{document.bib}
+\usepackage[citations]{markdown}
+\begin{document}
+
+\begin{markdown}
+The TeXbook [@knuth:tex, p. 123 and 130] was written by @knuth:tex.
+\end{markdown}
+
+\printbibliography
+\end{document}
+```````
+Next, invoke LuaTeX and Biber from the terminal:
+``` sh
+lualatex document.tex
+biber document.bcf
+lualatex document.tex
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The TeXbook [1, p.·123 and 130] was written by Knuth [1].
+>
+> ### References
+> [1] Donald Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
+>     Addison-Wesley, 1984.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
