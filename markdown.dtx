@@ -3487,9 +3487,9 @@ defaultOptions.footnotes = false
         markers:
 
         ``` md
-        #.  Bird
-        #.  McHale
-        #.  Parish
+        #. Bird
+        #. McHale
+        #. Parish
         ``````
 
 :    false
@@ -3499,6 +3499,90 @@ defaultOptions.footnotes = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+
+\begin{markdown}
+#. Bird
+#. McHale
+#. Parish
+\end{markdown}
+
+\begin{markdown*}{hashEnumerators}
+#. Bird
+#. McHale
+#. Parish
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> . Bird
+> ========
+> . McHale
+> ========
+> . Parish
+> ========
+>
+> #. Bird
+> #. McHale
+> #. Parish
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+#. Bird
+#. McHale
+#. Parish
+\stopmarkdown
+
+\def\markdownOptionHashEnumerators{true}
+
+\startmarkdown
+#. Bird
+#. McHale
+#. Parish
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> . Bird
+> ========
+> . McHale
+> ========
+> . Parish
+> ========
+>
+> #. Bird
+> #. McHale
+> #. Parish
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
