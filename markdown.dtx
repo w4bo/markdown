@@ -4364,7 +4364,7 @@ defaultOptions.smartEllipses = false
 %
 :    true
 
-     :   Make the number in the first item in ordered lists significant. The
+     :   Make the number in the first item of an ordered lists significant. The
          item numbers will be passed to the
 %        \m{markdownRendererOlItemWithNumber} \TeX{} macro.
 %        \iffalse
@@ -4373,7 +4373,7 @@ defaultOptions.smartEllipses = false
 
 :    false
 
-     :   Ignore the number in the items of ordered lists. Each item will only
+     :   Ignore the numbers in the ordered list items. Each item will only
          produce a
 %        \m{markdownRendererOlItem} \TeX{} macro.
 %        \iffalse
@@ -4405,7 +4405,7 @@ defaultOptions.startNumber = true
 :    true
 
      :   Lists whose bullets do not consist of multiple paragraphs will be
-         detected and passed to the
+         passed to the
 %        \m{markdownRendererOlBeginTight}, \m{markdownRendererOlEndTight},
 %        \m{markdownRendererUlBeginTight}, \m{markdownRendererUlEndTight},
 %        \m{markdownRendererDlBeginTight}, and
@@ -4420,7 +4420,7 @@ defaultOptions.startNumber = true
 :    false
 
      :   Lists whose bullets do not consist of multiple paragraphs will be
-         treated the same way as lists that do.
+         treated the same way as lists that do consist of multiple paragraphs.
 
 % \end{markdown}
 % \iffalse
@@ -4525,7 +4525,7 @@ for i = 1, #arg do
 % After the optional `-`{}`-` argument has been specified, the remaining
 % arguments are assumed to be input and output filenames. This argument is
 % optional, but encouraged, because it helps resolve ambiguities when
-% deciding whether an option of a filename has been specified.
+% deciding whether an option or a filename has been specified.
 % \end{markdown}
 %  \begin{macrocode}
     if arg[i] == "--" then
