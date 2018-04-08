@@ -54,5 +54,4 @@ For further information, consult:
    documentation will reside in the file `markdown.pdf`.
 
  [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  (A Markdown Interpreter for TeX)
- [manual]:  http://fi.muni.cz/~xnovot32/markdown.html                     (Markdown Package User Manual)
-<!-- [manual]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual) -->
+ [manual]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual)
