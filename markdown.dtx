@@ -4622,6 +4622,98 @@ defaultOptions.tightLists = true
 
 % \end{markdown}
 % \iffalse
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionHybrid{true}
+
+\markdownBegin
+This is _emphasized text_ and this is a math subscript: $m\_n$.
+\markdownEnd
+
+\def\markdownOptionUnderscores{false}
+\markdownBegin
+This is *emphasized text* and this is a math subscript: $m_n$.
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is _emphasized text_ and this is a math subscript: *mₙ*.
+>
+> This is _emphasized text_ and this is a math subscript: *mₙ*.
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[hybrid]{markdown}
+\begin{document}
+
+\begin{markdown}
+This is _emphasized text_ and this is a math subscript: $m\_n$.
+\end{markdown}
+
+\begin{markdown*}{underscores=false}
+This is *emphasized text* and this is a math subscript: $m_n$.
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is _emphasized text_ and this is a math subscript: *mₙ*.
+>
+> This is _emphasized text_ and this is a math subscript: *mₙ*.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionHybrid{true}
+\starttext
+
+\startmarkdown
+This is _emphasized text_ and this is a math subscript: $m\_n$.
+\stopmarkdown
+
+\def\markdownOptionUnderscores{false}
+\startmarkdown
+This is *emphasized text* and this is a math subscript: $m_n$.
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is _emphasized text_ and this is a math subscript: *mₙ*.
+>
+> This is _emphasized text_ and this is a math subscript: *mₙ*.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
