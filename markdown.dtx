@@ -2891,6 +2891,130 @@ defaultOptions.contentBlocks = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `table.csv` with the
+following content:
+``` csv
+Name,Surname,Born
+Albert,Einstein,1879
+Marie,Curie,1867
+Thomas,Edison,1847
+```````
+Create also a text document named `language-map.json` with the following
+content:
+``` js
+{
+  "tex": "LaTeX"
+}
+``````
+Create also a text document named `code.tex` with the following content:
+``` tex
+This is an example code listing in \LaTeX.
+```````
+Create also a text document named `part.md` with the following content:
+``` md
+This is a *transcluded markdown document*.
+``````
+Create also a text document named `document.tex` with the following content:
+``` tex
+\documentclass{article}
+\usepackage{minted}
+\usepackage[contentBlocks]{markdown}
+\markdownSetup{
+  contentBlocksLanguageMap = {language-map.json},
+}
+\begin{document}
+\begin{markdown}
+/table.csv  (An example table)
+/code.tex   (An example code listing)
+/part.md    (A file transclusion example)
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex --shell-escape document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> | Name   | Surname  | Born |
+> | ------ | ---------| ---- |
+> | Albert | Einstein | 1879 |
+> | Marie  | Curie    | 1867 |
+> | Thomas | Edison   | 1847 |
+>
+> Table 1: An example table
+>
+> ``` tex
+> This is an example code listing in \LaTeX.
+> ```````
+>
+> This is a *transcluded markdown document*.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `table.csv` with the
+following content:
+``` csv
+Name,Surname,Born
+Albert,Einstein,1879
+Marie,Curie,1867
+Thomas,Edison,1847
+```````
+Create also a text document named `language-map.json` with the following
+content:
+``` js
+{
+  "tex": "ConTeXt"
+}
+``````
+Create also a text document named `code.tex` with the following content:
+``` tex
+This is an example code listing in \ConTeXt.
+```````
+Create also a text document named `part.md` with the following content:
+``` md
+This is a *transcluded markdown document*.
+``````
+Create also a text document named `document.tex` with the following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionContentBlocks{true}
+\def\markdownOptionContentBlocksLanguageMap{language-map.json}
+\definetyping [ConTeXt]
+\setuptyping  [ConTeXt] [option=TEX]
+\starttext
+\startmarkdown
+/table.csv  (An example table)
+/code.tex   (An example code listing)
+/part.md    (A file transclusion example)
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> | Name   | Surname  | Born |
+> | ------ | ---------| ---- |
+> | Albert | Einstein | 1879 |
+> | Marie  | Curie    | 1867 |
+> | Thomas | Edison   | 1847 |
+>
+> Table 1: An example table
+>
+> ``` tex
+> This is an example code listing in \ConTeXt.
+> ```````
+>
+> This is a *transcluded markdown document*.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
