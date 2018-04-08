@@ -4045,6 +4045,60 @@ defaultOptions.hybrid = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[footnotes, inlineFootnotes]{markdown}
+\begin{document}
+\begin{markdown}
+Here is an inline note.^[Inlines notes are easier to
+write, since you don't have to pick an identifier and
+move down to type the note.]
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Here is an inline note.^[Inlines notes are easier to
+> write, since you don't have to pick an identifier and
+> move down to type the note.]
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFootnotes{true}
+\def\markdownOptionInlineFootnotes{true}
+\starttext
+\startmarkdown
+Here is an inline note.^[Inlines notes are easier to
+write, since you don't have to pick an identifier and
+move down to type the note.]
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Here is an inline note.^[Inlines notes are easier to
+> write, since you don't have to pick an identifier and
+> move down to type the note.]
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
