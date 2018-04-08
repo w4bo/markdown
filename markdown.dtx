@@ -3352,6 +3352,115 @@ defaultOptions.fencedCode = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[footnotes]{markdown}
+\begin{document}
+\begin{markdown}
+Here is a footnote reference,[^1] and another.[^longnote]
+
+[^1]: Here is the footnote.
+
+[^longnote]: Here's one with multiple blocks.
+
+    Subsequent paragraphs are indented to show that they
+belong to the previous footnote.
+
+        { some.code }
+
+    The whole paragraph can be indented, or just the
+    first line.  In this way, multi-paragraph footnotes
+    work like multi-paragraph list items.
+
+This paragraph won't be part of the note, because it
+isn't indented.
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Here is a footnote reference,[^1] and another.[^longnote]
+> 
+> [^1]: Here is the footnote.
+> 
+> [^longnote]: Here's one with multiple blocks.
+> 
+>     Subsequent paragraphs are indented to show that they
+> belong to the previous footnote.
+> 
+>         { some.code }
+> 
+>     The whole paragraph can be indented, or just the
+>     first line.  In this way, multi-paragraph footnotes
+>     work like multi-paragraph list items.
+> 
+> This paragraph won't be part of the note, because it
+> isn't indented.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFootnotes{true}
+\starttext
+\startmarkdown
+Here is a footnote reference,[^1] and another.[^longnote]
+
+[^1]: Here is the footnote.
+
+[^longnote]: Here's one with multiple blocks.
+
+    Subsequent paragraphs are indented to show that they
+belong to the previous footnote.
+
+        { some.code }
+
+    The whole paragraph can be indented, or just the
+    first line.  In this way, multi-paragraph footnotes
+    work like multi-paragraph list items.
+
+This paragraph won't be part of the note, because it
+isn't indented.
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Here is a footnote reference,[^1] and another.[^longnote]
+> 
+> [^1]: Here is the footnote.
+> 
+> [^longnote]: Here's one with multiple blocks.
+> 
+>     Subsequent paragraphs are indented to show that they
+> belong to the previous footnote.
+> 
+>         { some.code }
+> 
+>     The whole paragraph can be indented, or just the
+>     first line.  In this way, multi-paragraph footnotes
+>     work like multi-paragraph list items.
+> 
+> This paragraph won't be part of the note, because it
+> isn't indented.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
