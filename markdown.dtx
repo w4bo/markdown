@@ -3059,6 +3059,91 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[definitionLists]{markdown}
+\begin{document}
+\begin{markdown}
+Term 1
+
+:   Definition 1
+
+Term 2 with *inline markup*
+
+:   Definition 2
+
+        { some code, part of Definition 2 }
+
+    Third paragraph of definition 2.
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Term 1
+> 
+> :   Definition 1
+> 
+> Term 2 with *inline markup*
+> 
+> :   Definition 2
+> 
+>         { some code, part of Definition 2 }
+> 
+>     Third paragraph of definition 2.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionDefinitionLists{true}
+\starttext
+\startmarkdown
+Term 1
+
+:   Definition 1
+
+Term 2 with *inline markup*
+
+:   Definition 2
+
+        { some code, part of Definition 2 }
+
+    Third paragraph of definition 2.
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Term 1
+> 
+> :   Definition 1
+> 
+> Term 2 with *inline markup*
+> 
+> :   Definition 2
+> 
+>         { some code, part of Definition 2 }
+> 
+>     Third paragraph of definition 2.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
