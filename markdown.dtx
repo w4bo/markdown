@@ -4382,6 +4382,99 @@ defaultOptions.smartEllipses = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+
+\begin{markdown}
+The following list respects the numbers specified in the markup:
+
+3. third item
+4. fourth item
+5. fifth item
+\end{markdown}
+
+\begin{markdown*}{startNumber=false}
+The following list does not respect the numbers specified in the
+markup:
+
+3. third item
+4. fourth item
+5. fifth item
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The following list respects the numbers specified in the markup:
+> 
+> 3. third item
+> 4. fourth item
+> 5. fifth item
+>
+> The following list does not respect the numbers specified in the markup:
+> 
+> 1. third item
+> 2. fourth item
+> 3. fifth item
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+The following list respects the numbers specified in the markup:
+
+3. third item
+4. fourth item
+5. fifth item
+\stopmarkdown
+
+\def\markdownOptionStartNumber{false}
+\startmarkdown
+The following list respects the numbers specified in the markup:
+
+3. third item
+4. fourth item
+5. fifth item
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The following list respects the numbers specified in the markup:
+> 
+> 3. third item
+> 4. fourth item
+> 5. fifth item
+>
+> The following list does not respect the numbers specified in the markup:
+> 
+> 1. third item
+> 2. fourth item
+> 3. fifth item
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
