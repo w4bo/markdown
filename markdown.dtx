@@ -3618,6 +3618,13 @@ defaultOptions.hashEnumerators = false
 % \end{markdown}
 % \iffalse
 
+When the option is enabled, HTML entities are currently incorrectly parsed.
+See [the corresponding issue][issue-38] in the package repository.
+
+ [issue-36]: https://github.com/Witiko/markdown/issues/36
+             (HTML entities with the `html` Lua option enabled produce a Lua
+              parser error)
+
 ###### Lua module example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
@@ -4129,6 +4136,14 @@ defaultOptions.inlineFootnotes = false
 
 % \end{markdown}
 % \iffalse
+
+This option is currently non-functional. See [the corresponding
+issue][issue-38] in the package repository.
+
+ [issue-38]: https://github.com/Witiko/markdown/issues/38
+             (Tabs are stripped even with the `preserveTabs=true`
+              Lua option enabled)
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
