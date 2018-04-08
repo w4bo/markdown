@@ -3556,7 +3556,6 @@ following content:
 \stopmarkdown
 
 \def\markdownOptionHashEnumerators{true}
-
 \startmarkdown
 #. Bird
 #. McHale
@@ -3618,6 +3617,223 @@ defaultOptions.hashEnumerators = false
 
 % \end{markdown}
 % \iffalse
+
+###### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new()
+  local newline = [[^^J^^J]]
+  local input =
+    "<div>*There is no block tag support.*</div>"        .. newline ..
+    "*There is no <inline tag="tag"></inline> support.*" .. newline ..
+    "_There is no <!-- comment --> support._"            .. newline ..
+    "_There is no <? HTML instruction ?> support._"
+  tex.sprint(convert(input)) }
+\par
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new({html = true})
+  local input =
+    "<div>*There is block tag support.*</div>"        .. newline ..
+    "*There is <inline tag="tag"></inline> support.*" .. newline ..
+    "_There is <!-- comment --> support._"            .. newline ..
+    "_There is <? HTML instruction ?> support._"
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \<div>There is no block tag support.\</div>
+> There is no \<inline tag=”tag”>\</inline> support.
+> There is no \<!-- comment --> support.
+> There is no <? HTML instruction ?> support.
+>
+> There is support. There is support. There is support.
+
+###### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+\input optionfalse
+\par
+\input optiontrue
+\bye
+```````
+Using a text editor, create a text document named `content.md` with the
+following content:
+``` html
+<div>
+*Is there block tag support?*
+</div>
+*Is there <inline tag="tag"></inline> support?*
+_Is there <!-- comment --> support?_
+_Is there <? HTML instruction ?> support?_
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
+texlua <CLI␣PATHNAME> html=true -- content.md optiontrue.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \<div>Is there block tag support?\</div>
+> Is there \<inline tag=”tag”>\</inline> support?
+> Is there \<!-- comment --> support?
+> Is there <? HTML instruction ?> support?
+>
+> Is there support? Is there support? Is there support?
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+
+\markdownBegin
+<div>
+*There is no block tag support.*
+</div>
+*There is no <inline tag="tag"></inline> support.*
+_There is no <!-- comment --> support._
+_There is no <? HTML instruction ?> support._
+\markdownEnd
+
+\def\markdownOptionHtml{true}
+\markdownBegin
+<div>
+*There is block tag support.*
+</div>
+*There is <inline tag="tag"></inline> support.*
+_There is <!-- comment --> support._
+_There is <? HTML instruction ?> support._
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \<div>There is no block tag support.\</div>
+> There is no \<inline tag=”tag”>\</inline> support.
+> There is no \<!-- comment --> support.
+> There is no <? HTML instruction ?> support.
+>
+> There is support. There is support. There is support.
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
+
+\begin{markdown}
+<div>
+*There is no block tag support.*
+</div>
+*There is no <inline tag="tag"></inline> support.*
+_There is no <!-- comment --> support._
+_There is no <? HTML instruction ?> support._
+\end{markdown}
+
+\begin{markdown*}{html}
+<div>
+*There is block tag support.*
+</div>
+*There is <inline tag="tag"></inline> support.*
+_There is <!-- comment --> support._
+_There is <? HTML instruction ?> support._
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \<div>There is no block tag support.\</div>
+> There is no \<inline tag=”tag”>\</inline> support.
+> There is no \<!-- comment --> support.
+> There is no <? HTML instruction ?> support.
+>
+> There is support. There is support. There is support.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+<div>
+*There is no block tag support.*
+</div>
+*There is no <inline tag="tag"></inline> support.*
+_There is no <!-- comment --> support._
+_There is no <? HTML instruction ?> support._
+\stopmarkdown
+
+\def\markdownOptionHtml{true}
+\startmarkdown
+<div>
+*There is block tag support.*
+</div>
+*There is <inline tag="tag"></inline> support.*
+_There is <!-- comment --> support._
+_There is <? HTML instruction ?> support._
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \<div>There is no block tag support.\</div>
+> There is no \<inline tag=”tag”>\</inline> support.
+> There is no \<!-- comment --> support.
+> There is no <? HTML instruction ?> support.
+>
+> There is support. There is support. There is support.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
