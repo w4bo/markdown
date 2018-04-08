@@ -4178,6 +4178,170 @@ defaultOptions.preserveTabs = false
 
 % \end{markdown}
 % \iffalse
+
+###### Lua module example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererEllipsis{. . .}
+\input lmfonts
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new()
+  input = "These are just three regular dots ..."
+  tex.sprint(convert(input)) }
+\par
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new({smartEllipses = true})
+  input = "... and this is a victorian ellipsis."
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> These are just three regular dots ...
+>
+> . . . and this is a victorian ellipsis.
+
+###### Lua CLI example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererEllipsis{. . .}
+\input lmfonts
+\input optionfalse
+\par
+\input optiontrue
+\bye
+```````
+Using a text editor, create a text document named `content.md` with the
+following content:
+``` md
+Are these just three regular dots, a victorian ellipsis, or ... ?
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
+texlua <CLI␣PATHNAME> smartEllipses=true -- content.md optiontrue.tex
+luatex document.tex
+```````
+where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Are these just three regular dots, a victorian ellipsis, or ... ?
+>
+> Are these just three regular dots, a victorian ellipsis, or . . . ?
+
+###### Plain TeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererEllipsis{. . .}
+
+\markdownBegin
+These are just three regular dots ...
+\markdownEnd
+
+\def\markdownOptionSmartEllipses{true}
+\markdownBegin
+... and this is a victorian ellipsis.
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> These are just three regular dots ...
+>
+> . . . and this is a victorian ellipsis.
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    ellipsis = {. . .} }}
+\begin{document}
+
+\begin{markdown}
+These are just three regular dots ...
+\end{markdown}
+
+\begin{markdown*}{smartEllipses}
+... and this is a victorian ellipsis.
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> These are just three regular dots ...
+>
+> . . . and this is a victorian ellipsis.
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererEllipsis{. . .}
+\starttext
+
+\startmarkdown
+These are just three regular dots ...
+\stopmarkdown
+
+\def\markdownOptionSmartEllipses{true}
+\startmarkdown
+... and this is a victorian ellipsis.
+\stopmarkdown
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> These are just three regular dots ...
+>
+> . . . and this is a victorian ellipsis.
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
