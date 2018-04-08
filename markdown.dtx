@@ -3193,6 +3193,115 @@ defaultOptions.definitionLists = false
 
 % \end{markdown}
 % \iffalse
+
+###### LaTeX example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{minted}
+\usepackage[fencedCode]{markdown}
+\begin{document}
+\begin{markdown}
+~~~ js
+if (a > 3) {
+    moveShip(5 * gravity, DOWN);
+}
+~~~~~~
+
+  ``` html
+  <pre>
+    <code>
+      // Some comments
+      line 1 of code
+      line 2 of code
+      line 3 of code
+    </code>
+  </pre>
+  ```
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex --shell-escape document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> ~~~ js
+> if (a > 3) {
+>     moveShip(5 * gravity, DOWN);
+> }
+> ~~~~~~
+> 
+> ``` html
+> <pre>
+>   <code>
+>     // Some comments
+>     line 1 of code
+>     line 2 of code
+>     line 3 of code
+>   </code>
+> </pre>
+> ```
+
+###### ConTeXt example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFencedCode{true}
+\definetyping [js]
+\definetyping [html]
+\setuptyping  [html] [option=XML]
+\starttext
+\startmarkdown
+~~~ js
+if (a > 3) {
+    moveShip(5 * gravity, DOWN);
+}
+~~~~~~
+
+  ``` html
+  <pre>
+    <code>
+      // Some comments
+      line 1 of code
+      line 2 of code
+      line 3 of code
+    </code>
+  </pre>
+  ```
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> ~~~ js
+> if (a > 3) {
+>     moveShip(5 * gravity, DOWN);
+> }
+> ~~~~~~
+> 
+> ``` html
+> <pre>
+>   <code>
+>     // Some comments
+>     line 1 of code
+>     line 2 of code
+>     line 3 of code
+>   </code>
+> </pre>
+> ```
+
 %</manual>
 %<*lua,lua-cli>
 % \fi
