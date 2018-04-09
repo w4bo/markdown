@@ -11,15 +11,15 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.6.0-tl2017-{{ .Branch }}
-        - markdown-v2.6.0-tl2017-master
-        - markdown-v2.6.0-tl2017-
+        - markdown-v2.6.0-tl2018_pretest-{{ .Branch }}
+        - markdown-v2.6.0-tl2018_pretest-master
+        - markdown-v2.6.0-tl2018_pretest-
     # Install TeX Live
     - run: |
         set -e
         if [[ ! -e ~/texlive-cache ]]; then
-          wget -O- 'http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz' | tar xzvC /tmp
-          sudo /tmp/install-tl*/install-tl <<<I
+          wget -O- 'ftp://ftp.math.utah.edu/pub/tlpretest/install-tl-unx.tar.gz' | tar xzvC /tmp
+          sudo /tmp/install-tl*/install-tl -repository ftp://ftp.math.utah.edu/pub/tlpretest/ <<<I
           sudo mv /usr/local/texlive ~/texlive-cache
         fi
     # Install additional packages
@@ -29,7 +29,7 @@ jobs:
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.6.0-tl2017-{{ .Branch }}
+        key: markdown-v2.6.0-tl2018_pretest-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
@@ -37,7 +37,7 @@ jobs:
     - run: |
         set -e
         sudo mv ~/texlive-cache /usr/local/texlive
-        echo 'export PATH=/usr/local/texlive/2017/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
+        echo 'export PATH=/usr/local/texlive/2018/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
     - checkout
     # Install the Markdown package
     - run: |
