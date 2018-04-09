@@ -11,9 +11,9 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.5.5-tl2017-{{ .Branch }}
-        - markdown-v2.5.5-tl2017-master
-        - markdown-v2.5.5-tl2017-
+        - markdown-v2.6.0-tl2017-{{ .Branch }}
+        - markdown-v2.6.0-tl2017-master
+        - markdown-v2.6.0-tl2017-
     # Install TeX Live
     - run: |
         set -e
@@ -29,7 +29,7 @@ jobs:
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.5.5-tl2017-{{ .Branch }}
+        key: markdown-v2.6.0-tl2017-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
