@@ -15,6 +15,26 @@ Creative abuse of the markdown syntax is encouraged. 😉
 
  [markdown]: https://daringfireball.net/projects/markdown/basics/ (Daring Fireball: Markdown Basics)
 
+Further information
+-------------------
+For further information, consult:
+
+1. the [user manual][manual], which can be produced by interpreting the
+   `markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX
+   (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`). The manual will
+   reside in the file `markdown.md` and the CSS stylesheet `markdown.css`, and
+2. the [technical documentation][techdoc], which can be typeset by running the
+   [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
+   (`latexmk markdown.dtx`) after installing the Markdown package.
+   [LaTeXMK][LaTeXMK] should be included in your TeX distribution. The typeset
+   documentation will reside in the file `markdown.pdf`, and
+3. [tutorials and example documents][tutor] by Lian Tze Lim at [Overleaf][].
+
+ [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  (A Markdown Interpreter for TeX)
+ [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual)
+ [tutor]:    https://www.overleaf.com/blog?search=Markdown                 (Blog - News and Articles from Overleaf)
+ [overleaf]: https://www.overleaf.com/                                     (Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview)
+
 Contributing
 ------------
 Apart from the example markdown documents and tests, which are placed in the
@@ -38,23 +58,3 @@ for typesetting the documentation is provided by the [doc][] LaTeX package.
  [LaTeXMK]:   https://ctan.org/pkg/latexmk    (latexmk – Fully automated LaTeX document generation)
  [ltxdockit]: https://ctan.org/pkg/ltxdockit  (ltxdockit – Documentation support)
  [doc]:       https://ctan.org/pkg/doc        (doc – Format LaTeX documentation)
-
-Further information
--------------------
-For further information, consult:
-
-1. the [user manual][manual], which can be produced by interpreting the
-   `markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX
-   (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`). The manual will
-   reside in the file `markdown.md` and the CSS stylesheet `markdown.css`, and
-2. the [technical documentation][techdoc], which can be typeset by running the
-   [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
-   (`latexmk markdown.dtx`) after installing the Markdown package.
-   [LaTeXMK][LaTeXMK] should be included in your TeX distribution. The typeset
-   documentation will reside in the file `markdown.pdf`, and
-3. [tutorials and example documents][tutor] by Lian Tze Lim at [Overleaf][].
-
- [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  (A Markdown Interpreter for TeX)
- [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual)
- [tutor]:    https://www.overleaf.com/blog?search=Markdown                 (Blog - News and Articles from Overleaf)
- [overleaf]: https://www.overleaf.com/                                     (Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview)
