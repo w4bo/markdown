@@ -51,7 +51,10 @@ For further information, consult:
    [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
    (`latexmk markdown.dtx`) after installing the Markdown package.
    [LaTeXMK][LaTeXMK] should be included in your TeX distribution. The typeset
-   documentation will reside in the file `markdown.pdf`.
+   documentation will reside in the file `markdown.pdf`, and
+3. [tutorials and example documents][tutor] by Lian Tze Lim at [Overleaf][].
 
- [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  (A Markdown Interpreter for TeX)
- [manual]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual)
+ [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  (A Markdown Interpreter for TeX)
+ [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual)
+ [tutor]:    https://www.overleaf.com/blog?search=Markdown                 (Blog - News and Articles from Overleaf)
+ [overleaf]: https://www.overleaf.com/                                     (Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview)
