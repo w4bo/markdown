@@ -1,4 +1,5 @@
 \documentclass{minimal}
+\csname UseRawInputEncoding\endcsname
 % Load the package.
 \usepackage{markdown}
 % Load the support files.
