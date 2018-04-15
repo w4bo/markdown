@@ -7404,7 +7404,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.pack(name)
-    return [[\input"]] .. name .. [["\relax{}]]
+    return [[\input ]] .. name .. [[\relax{}]]
   end
 %    \end{macrocode}
 % \par
@@ -9573,7 +9573,7 @@ end
 \def\markdownRendererBlockQuoteBeginPrototype{\par\begingroup\it}%
 \def\markdownRendererBlockQuoteEndPrototype{\endgroup\par}%
 \def\markdownRendererInputVerbatimPrototype#1{%
-  \par{\tt\input"#1"\relax{}}\par}%
+  \par{\tt\input#1\relax{}}\par}%
 \def\markdownRendererInputFencedCodePrototype#1#2{%
   \markdownRendererInputVerbatimPrototype{#1}}%
 \def\markdownRendererHeadingOnePrototype#1{#1}%
