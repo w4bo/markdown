@@ -18,6 +18,8 @@ READMES=README.md LICENSE examples/README.md tests/README.md \
   tests/support/README.md tests/templates/README.md tests/testfiles/README.md \
   tests/templates/*/README.md tests/testfiles/*/README.md
 DTXARCHIVE=markdown.dtx
+VERSION=$(shell sed -rn '/^\\def\\markdownVersion\{/s/[^{]*\{(.*)\}.*/\1/p' <$(DTXARCHIVE))
+LASTMODIFIED=$(shell sed -rn '/^\\def\\markdownLastModified\{/s/[^{]*\{(.*)\}.*/\1/p' <$(DTXARCHIVE))
 INSTALLER=markdown.ins docstrip.cfg
 TECHNICAL_DOCUMENTATION=markdown.pdf
 MARKDOWN_USER_MANUAL=markdown.md markdown.css
@@ -52,7 +54,9 @@ examples/example.tex: $(INSTALLABLES)
 
 # This target converts the markdown user manual to an HTML page.
 %.html: %.md %.css
-	pandoc -f markdown -t html -N -s --toc --toc-depth=5 --css=$(word 2, $^) <$< >$@
+	sed -e 's#/markdownVersion#$(VERSION)#g' \
+	    -e 's#/markdownLastModified#$(LASTMODIFIED)#g' <$< | \
+	  pandoc -f markdown -t html -N -s --toc --toc-depth=5 --css=$(word 2, $^) >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
 test:

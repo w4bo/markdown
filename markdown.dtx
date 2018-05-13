@@ -4902,12 +4902,47 @@ The plain TeX macro package provides TeX commands for typesetting markdown
 documents that invoke the Lua parser in the background. Beside TeX commands
 that correspond to the Lua options, the macro package also provides commands
 corresponding to additional plain TeX-specific options, and so-called *token
-renderer* commands that define how the individual markdown elements will be
-typeset.
+renderer* commands that define how the individual markdown elements look.
 
-### Interfaces
+### Package version
 
-<!-- TODO -->
+The plain TeX interface provides the `\markdownLastModified`, and
+`\markdownVersion` commands that you can use to check whether the Markdown
+package has been loaded and which version of it. Using a text editor, create a
+text document named `document.tex` with the following content:
+``` tex
+\input lmfonts
+\input example
+\input markdown
+\input example
+\bye
+```````
+Using a text editor, create a text document named `example.tex` with the
+following content:
+``` tex
+The Markdown package
+\ifx\markdownVersion\undefined
+  has not been loaded yet.
+\else
+  version \markdownVersion{} from \markdownLastModified{} has been loaded.
+\fi
+\par
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The Markdown package has not been loaded yet.
+>
+> The Markdown package version /markdownVersion from /markdownLastModified has been loaded.
+
+Invoking pdfTeX should have the same effect:
+``` sh
+pdftex document.tex
+``````
 
 %</manual>
 %<*tex>
