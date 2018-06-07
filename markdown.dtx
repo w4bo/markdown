@@ -10442,10 +10442,17 @@ local convert = md.new(\markdownLuaOptions)
 % Basic implementation
 \def\markdownLaTeXBasicCitations#1#2#3#4{%
   \advance\markdownLaTeXCitationsCounter by 1\relax
-  \ifx\relax#2\relax\else#2~\fi\cite[#3]{#4}%
+  \ifx\relax#2\relax\else
+    \ifnum\markdownLaTeXCitationsCounter>1\relax
+      \space  % Insert a space before #2 in later citations.
+    \fi
+    #2~%
+  \fi
+  \cite[#3]{#4}%
   \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
     \expandafter\@gobble
-  \fi\markdownLaTeXBasicCitations}
+  \fi
+  \markdownLaTeXBasicCitations}
 \let\markdownLaTeXBasicTextCitations\markdownLaTeXBasicCitations
 
 % BibLaTeX implementation
