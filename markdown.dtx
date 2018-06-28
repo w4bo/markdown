@@ -845,6 +845,17 @@ local md5 = require("md5")
 %  \begin{macrocode}
 \RequirePackage{csvsimple}
 %    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% \pkg{gobble}
+%
+%:    A package that provides the \m{\@gobblethree} \TeX{} command.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\RequirePackage{gobble}
+%    \end{macrocode}
 % \iffalse
 %</latex>
 %<*context>
@@ -8319,9 +8330,8 @@ parsers.citation_body_postnote
 parsers.citation_body_chunk
                     = parsers.citation_body_prenote
                     * parsers.spnl * parsers.citation_name
-                    * ((parsers.internal_punctuation - parsers.semicolon)
-                      * parsers.spnl)^-1
-                    * parsers.citation_body_postnote
+                    * (parsers.internal_punctuation - parsers.semicolon)^-1
+                    * parsers.spnl * parsers.citation_body_postnote
 
 parsers.citation_body
                     = parsers.citation_body_chunk
@@ -10431,29 +10441,159 @@ local convert = md.new(\markdownLuaOptions)
 % \begin{markdown}
 %
 % There is a basic implementation for citations that uses the \LaTeX{} \m{cite}
-% macro. There is also a more advanced implementation that uses the Bib\LaTeX{}
-% \m{autocites} and \m{textcites} macros. This implementation will be used, when
-% Bib\LaTeX{} is loaded.
+% macro. There are also implementations that use the \pkg{natbib} \m{citep},
+% and \m{citet} macros, and the Bib\LaTeX{} \m{autocites}, and \m{textcites}
+% macros. These implementations will be used, when the respective packages are
+% loaded.
 %
 % \end{markdown}
 %  \begin{macrocode}
 \newcount\markdownLaTeXCitationsCounter
 
 % Basic implementation
-\def\markdownLaTeXBasicCitations#1#2#3#4{%
+\def\markdownLaTeXBasicCitations#1#2#3#4#5#6{%
   \advance\markdownLaTeXCitationsCounter by 1\relax
-  \ifx\relax#2\relax\else
-    \ifnum\markdownLaTeXCitationsCounter>1\relax
-      \space  % Insert a space before #2 in later citations.
+  \ifx\relax#4\relax
+    \ifx\relax#5\relax
+      \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+        \cite{#1#2#6}%  Without prenotes and postnotes, just accumulate cites
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \@gobblethree
+      \fi
+    \else%  After a prenote or a postnote, dump the accumulator
+      \ifx\relax#1\relax\else
+        \cite{#1}%
+      \fi
+      \ifx\relax#4\relax\else
+        \ifnum\markdownLaTeXCitationsCounter>1\relax
+          \space  % Insert a space before #4 in later citations.
+        \fi
+        #4~%
+      \fi
+      \expandafter\cite\ifx\relax#5\relax{#6}\else[#5]{#6}\fi
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter
+      \markdownLaTeXBasicCitations
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter{%
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter}%
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter{%
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter}%
+      \expandafter\expandafter\expandafter
+      \@gobblethree
     \fi
-    #2~%
-  \fi
-  \cite[#3]{#4}%
-  \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
-    \expandafter\@gobble
-  \fi
-  \markdownLaTeXBasicCitations}
+  \else%  After a prenote or a postnote, dump the accumulator
+    \ifx\relax#1\relax\relax\else
+      \cite{#1}%
+    \fi
+    \ifnum\markdownLaTeXCitationsCounter>1\relax
+      \space  % Insert a space before #4 in later citations.
+    \fi
+    #4~\expandafter\cite\ifx\relax#5\relax{#6}\else[#5]{#6}\fi
+    \expandafter\expandafter\expandafter
+    \markdownLaTeXBasicCitations
+    \expandafter\expandafter\expandafter{%
+    \expandafter\expandafter\expandafter}%
+    \expandafter\expandafter\expandafter{%
+    \expandafter\expandafter\expandafter}%
+    \expandafter
+    \@gobblethree
+  \fi\markdownLaTeXBasicCitations{#1#2#6},}
 \let\markdownLaTeXBasicTextCitations\markdownLaTeXBasicCitations
+
+% Natbib implementation
+\def\markdownLaTeXNatbibCitations#1#2#3#4#5{%
+  \advance\markdownLaTeXCitationsCounter by 1\relax
+  \ifx\relax#3\relax
+    \ifx\relax#4\relax
+      \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+        \citep{#1,#5}%  Without prenotes and postnotes, just accumulate cites
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \@gobbletwo
+      \fi
+    \else%  After a prenote or a postnote, dump the accumulator
+      \ifx\relax#1\relax\else
+        \citep{#1}%
+      \fi
+      \citep[#3][#4]{#5}%
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter
+      \markdownLaTeXNatbibCitations
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter{%
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter}%
+      \expandafter\expandafter\expandafter
+      \@gobbletwo
+    \fi
+  \else%  After a prenote or a postnote, dump the accumulator
+    \ifx\relax#1\relax\relax\else
+      \citep{#1}%
+    \fi
+    \citep[#3][#4]{#5}%
+    \expandafter\expandafter\expandafter
+    \markdownLaTeXNatbibCitations
+    \expandafter\expandafter\expandafter{%
+    \expandafter\expandafter\expandafter}%
+    \expandafter
+    \@gobbletwo
+  \fi\markdownLaTeXNatbibCitations{#1,#5}}
+\def\markdownLaTeXNatbibTextCitations#1#2#3#4#5{%
+  \advance\markdownLaTeXCitationsCounter by 1\relax
+  \ifx\relax#3\relax
+    \ifx\relax#4\relax
+      \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+        \citet{#1,#5}%  Without prenotes and postnotes, just accumulate cites
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \@gobbletwo
+      \fi
+    \else%  After a prenote or a postnote, dump the accumulator
+      \ifx\relax#1\relax\else
+        \citet{#1}%
+      \fi
+      , \citet[#3][#4]{#5}%
+      \ifnum\markdownLaTeXCitationsCounter<\markdownLaTeXCitationsTotal\relax
+        ,
+      \else
+        \ifnum\markdownLaTeXCitationsCounter=\markdownLaTeXCitationsTotal\relax
+          ,
+        \fi
+      \fi
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter
+      \markdownLaTeXNatbibTextCitations
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter{%
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter}%
+      \expandafter\expandafter\expandafter
+      \@gobbletwo
+    \fi
+  \else%  After a prenote or a postnote, dump the accumulator
+    \ifx\relax#1\relax\relax\else
+      \citet{#1}%
+    \fi
+    , \citet[#3][#4]{#5}%
+    \ifnum\markdownLaTeXCitationsCounter<\markdownLaTeXCitationsTotal\relax
+      ,
+    \else
+      \ifnum\markdownLaTeXCitationsCounter=\markdownLaTeXCitationsTotal\relax
+        ,
+      \fi
+    \fi
+    \expandafter\expandafter\expandafter
+    \markdownLaTeXNatbibTextCitations
+    \expandafter\expandafter\expandafter{%
+    \expandafter\expandafter\expandafter}%
+    \expandafter
+    \@gobbletwo
+  \fi\markdownLaTeXNatbibTextCitations{#1,#5}}
 
 % BibLaTeX implementation
 \def\markdownLaTeXBibLaTeXCitations#1#2#3#4#5{%
@@ -10474,8 +10614,19 @@ local convert = md.new(\markdownLuaOptions)
     \markdownLaTeXCitationsCounter=1%
     \def\markdownLaTeXCitationsTotal{#1}%
     \ifx\autocites\undefined
-      \expandafter
-      \markdownLaTeXBasicCitations
+      \ifx\citep\undefined
+        \expandafter\expandafter\expandafter
+        \markdownLaTeXBasicCitations
+        \expandafter\expandafter\expandafter{%
+        \expandafter\expandafter\expandafter}%
+        \expandafter\expandafter\expandafter{%
+        \expandafter\expandafter\expandafter}%
+      \else
+        \expandafter\expandafter\expandafter
+        \markdownLaTeXNatbibCitations
+        \expandafter\expandafter\expandafter{%
+        \expandafter\expandafter\expandafter}%
+      \fi
     \else
       \expandafter\expandafter\expandafter
       \markdownLaTeXBibLaTeXCitations
@@ -10484,9 +10635,20 @@ local convert = md.new(\markdownLuaOptions)
   textCite = {%
     \markdownLaTeXCitationsCounter=1%
     \def\markdownLaTeXCitationsTotal{#1}%
-    \ifx\textcites\undefined
-      \expandafter
-      \markdownLaTeXBasicTextCitations
+    \ifx\autocites\undefined
+      \ifx\citep\undefined
+        \expandafter\expandafter\expandafter
+        \markdownLaTeXBasicTextCitations
+        \expandafter\expandafter\expandafter{%
+        \expandafter\expandafter\expandafter}%
+        \expandafter\expandafter\expandafter{%
+        \expandafter\expandafter\expandafter}%
+      \else
+        \expandafter\expandafter\expandafter
+        \markdownLaTeXNatbibTextCitations
+        \expandafter\expandafter\expandafter{%
+        \expandafter\expandafter\expandafter}%
+      \fi
     \else
       \expandafter\expandafter\expandafter
       \markdownLaTeXBibLaTeXTextCitations

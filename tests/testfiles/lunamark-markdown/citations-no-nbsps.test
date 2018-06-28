@@ -49,7 +49,7 @@ END cite
 BEGIN cite
 - suppressAuthor: false
 - prenote: 
-- postnote:  postnote
+- postnote: postnote
 - name: smith04
 END cite
 BEGIN cite
