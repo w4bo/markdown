@@ -493,7 +493,7 @@ author: Vít Novotný
 Introduction
 ============
 The [Markdown package][pkg] converts [markdown][] markup to TeX commands. The
-functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
+functionality is provided both as a Lua module and as plain TeX, LaTeX, and
 ConTeXt macro packages that can be used to directly typeset TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
 makes it easy to redefine how each and every markdown element is rendered.
@@ -571,7 +571,7 @@ modules['markdown'] = metadata
 % sources including the source code of \Hologo{LaTeX2e}, the \pkg{minted}
 % package by Geoffrey M. Poore -- which likewise tackles the issue of
 % interfacing with an external interpreter from \TeX{}, the \pkg{filecontents}
-% package by Scott Pakin, and others.
+% package by Scott Pakin and others.
 %
 % \end{markdown}
 % \iffalse
@@ -4912,12 +4912,12 @@ Plain TeX
 The plain TeX macro package provides TeX commands for typesetting markdown
 documents that invoke the Lua parser in the background. Beside TeX commands
 that correspond to the Lua options, the macro package also provides commands
-corresponding to additional plain TeX-specific options, and so-called *token
+corresponding to additional plain TeX-specific options and so-called *token
 renderer* commands that define how the individual markdown elements look.
 
 ### Package version
 
-The plain TeX interface provides the `\markdownLastModified`, and
+The plain TeX interface provides the `\markdownLastModified` and
 `\markdownVersion` commands that you can use to check whether the Markdown
 package has been loaded and which version of it. Using a text editor, create a
 text document named `document.tex` with the following content:
@@ -4962,7 +4962,7 @@ pdftex document.tex
 % The plain \TeX{} interface provides macros for the typesetting of markdown
 % input from within plain \TeX{}, for setting the Lua interface options (see
 % Section \ref{sec:luaoptions}) used during the conversion from markdown to
-% plain \TeX{}, and for changing the way markdown the tokens are rendered.
+% plain \TeX{} and for changing the way markdown the tokens are rendered.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -5215,7 +5215,7 @@ pdftex document.tex
 % Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
 % enables the use of markdown when writing \TeX{} package documentation using
 % the \pkg{Doc} \LaTeX{}~package~[@mittelbach17] or similar. The recognized
-% values of the macro are `true` (discard), and `false` (retain).
+% values of the macro are `true` (discard) and `false` (retain).
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -10442,7 +10442,7 @@ local convert = md.new(\markdownLuaOptions)
 %
 % There is a basic implementation for citations that uses the \LaTeX{} \m{cite}
 % macro. There are also implementations that use the \pkg{natbib} \m{citep},
-% and \m{citet} macros, and the Bib\LaTeX{} \m{autocites}, and \m{textcites}
+% and \m{citet} macros, and the Bib\LaTeX{} \m{autocites} and \m{textcites}
 % macros. These implementations will be used, when the respective packages are
 % loaded.
 %
