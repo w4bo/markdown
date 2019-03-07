@@ -5219,9 +5219,9 @@ named `output-directory` and contain the following text:
 > Hello \*world\*!
 
 A folder named `output-directory/cache-directory` should also be produced and
-contain fragments of the input Markdown document.  LuaTeX does not need other
-temporary files to perform the conversion from Markdown to TeX. To produce
-these, invoke pdfTeX from the terminal:
+contain fragments of the converted Markdown document. LuaTeX does not need
+other temporary files to perform the conversion from Markdown to TeX. To
+produce the remaining temporary files, invoke pdfTeX from the terminal:
 ``` sh
 pdftex -output-directory output-directory -shell-escape document.tex
 ``````
