@@ -5063,28 +5063,34 @@ pdftex document.tex
 % \markdownInput{hello.md}
 % \bye
 % ```````
-%
-%### Options
-% \label{sec:texoptions}
-%
 % \iffalse
 %</tex>
 %<*manual>
+% \fi
 
 ### Options
+% \label{sec:texoptions}
+%
+% \iffalse
 
-<!-- TODO -->
+The plain TeX options are represented by TeX commands. Some of them map
+directly to the options recognized by the Lua interface, while some of them are
+specific to the plain TeX interface.
 
+% \fi
+%
+% The plain \TeX{} options are represented by \TeX{} commands. Some of them map
+% directly to the options recognized by the Lua interface (see
+% Section~\ref{sec:luaoptions}), while some of them are specific to the plain
+% \TeX{} interface.
+
+#### File and Directory Names
+%
+% \iffalse
 %</manual>
 %<*tex>
 % \fi
 %
-% The plain \TeX{} options are represented by \TeX{} macros. Some of them map
-% directly to the options recognized by the Lua interface (see
-% Section~\ref{sec:luaoptions}), while some of them are specific to the plain
-% \TeX{} interface.
-%
-%#### File and Directory names
 % The \mdef{markdownOptionHelperScriptFileName} macro sets the filename of the
 % helper Lua script file that is created during the conversion from markdown to
 % plain \TeX{} in \TeX{} engines without the \m{directlua} primitive. It
@@ -5142,20 +5148,6 @@ pdftex document.tex
 % \par
 % \begin{markdown}
 %
-% The \mdef{markdownOptionCacheDir} macro corresponds to the Lua interface
-% \Opt{cacheDir} option that sets the path to the directory that will contain
-% the produced cache files. The option defaults to `_markdown_`\m{jobname},
-% which is a similar naming scheme to the one used by the \pkg{minted} \LaTeX{}
-% package. The same limitations apply here as in the case of the
-% \m{markdownOptionHelperScriptFileName} macro.
-%
-% \end{markdown}
-%  \begin{macrocode}
-\def\markdownOptionCacheDir{\markdownOptionOutputDir/_markdown_\jobname}%
-%    \end{macrocode}
-% \par
-% \begin{markdown}
-%
 % The \mdef{markdownOptionOutputDir} macro sets the path to the directory that
 % will contain the cache files produced by the Lua implementation and also the
 % auxiliary files produced by the plain TeX implementation. The option defaults
@@ -5171,6 +5163,82 @@ pdftex document.tex
 %  \begin{macrocode}
 \def\markdownOptionOutputDir{.}%
 %    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% The \mdef{markdownOptionCacheDir} macro corresponds to the Lua interface
+% \Opt{cacheDir} option that sets the path to the directory that will contain
+% the produced cache files. The option defaults to `_markdown_`\m{jobname},
+% which is a similar naming scheme to the one used by the \pkg{minted} \LaTeX{}
+% package. The same limitations apply here as in the case of the
+% \m{markdownOptionHelperScriptFileName} macro.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\def\markdownOptionCacheDir{\markdownOptionOutputDir/_markdown_\jobname}%
+%    \end{macrocode}
+%
+% \iffalse
+%</tex>
+%<*manual>
+
+The plain TeX interface provides the following commands that you can use to
+specify the location of temporary files produced during the conversion from
+Markdown to TeX:
+
+- `\markdownOptionHelperScriptFileName`,
+- `\markdownOptionInputTempFileName`,
+- `\markdownOptionOutputTempFileName`,
+- `\markdownOptionErrorTempFileName`,
+- `\markdownOptionOutputDir`, and
+- `\markdownOptionCacheDir`.
+
+Using a text editor, create a folder named `output-directory` and a text
+document named `document.tex` with the following content:
+``` tex
+\input lmfonts
+\input markdown
+\def\markdownOptionHelperScriptFileName{helper-script.lua}
+\def\markdownOptionInputTempFileName{temporary-input.md}
+\def\markdownOptionOutputTempFileName{temporary-output.tex}
+\def\markdownOptionErrorTempFileName{error-output.txt}
+\def\markdownOptionOutputDir{output-directory}
+\def\markdownOptionCacheDir{output-directory/cache-directory}
+\markdownBegin
+Hello *world*!
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex -output-directory output-directory document.tex
+``````
+A text document named `temporary-input.md` should be produced in the folder
+named `output-directory` and contain the following text:
+
+> Hello \*world\*!
+
+A folder named `output-directory/cache-directory` should also be produced and
+contain fragments of the input Markdown document.  LuaTeX does not need other
+temporary files to perform the conversion from Markdown to TeX. To produce
+these, invoke pdfTeX from the terminal:
+``` sh
+pdftex -output-directory output-directory -shell-escape document.tex
+``````
+Text documents named `helper-script.lua`, and `temporary-output.md` should be
+produced in the folder named `output-directory`.  The document named
+`helper-script.lua` will contain Lua code that was executed to convert Markdown
+to plain TeX.  The document named `temporary-output.tex` will contain the input
+Markdown document converted to TeX.
+
+No document named `error-output.txt` should be produced in the folder named
+`output-directory`. This document would only be produced if an error had occured
+while executing the Lua code. If this happens, please [file a
+bug](https://github.com/witiko/markdown/issues).
+
+%</manual>
+%<*tex>
+% \fi
 % \par
 % \begin{markdown}
 %
