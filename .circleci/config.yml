@@ -11,25 +11,30 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.6.0-tl2018_pretest-{{ .Branch }}
-        - markdown-v2.6.0-tl2018_pretest-master
-        - markdown-v2.6.0-tl2018_pretest-
+        - markdown-v2.6.0-tl2018-{{ .Branch }}
+        - markdown-v2.6.0-tl2018-master
+        - markdown-v2.6.0-tl2018-
     # Install TeX Live
-    - run: |
-        set -e
-        if [[ ! -e ~/texlive-cache ]]; then
-          wget -O- 'ftp://ftp.math.utah.edu/pub/tlpretest/install-tl-unx.tar.gz' | tar xzvC /tmp
-          sudo /tmp/install-tl*/install-tl -repository ftp://ftp.math.utah.edu/pub/tlpretest/ <<<I
-          sudo mv /usr/local/texlive ~/texlive-cache
-        fi
-    # Install additional packages
     - run: |
         set -e
         mkdir -p ~/apt-cache/partial
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
+        if [[ ! -e ~/texlive-cache ]]; then
+          cd /tmp
+          sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install p7zip-full
+          wget http://mirrors.concertpass.com/tex-archive/systems/texlive/Images/texlive2018.iso
+          7z x texlive2018.iso
+          chmod +x install-tl
+          sudo ./install-tl <<<I
+          sudo mv /usr/local/texlive ~/texlive-cache
+          cd -
+        fi
+    # Install additional packages
+    - run: |
+        set -e
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.6.0-tl2018_pretest-{{ .Branch }}
+        key: markdown-v2.6.0-tl2018-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
