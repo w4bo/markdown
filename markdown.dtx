@@ -10142,7 +10142,9 @@ local convert = md.new(\markdownLuaOptions)
     |closein|markdownInputFileStream
     |markdownLuaExecute{%
       |markdownPrepare
-      local input = assert(io.open("#1", "r"):read("*a"))
+      local input = assert(io.open("%
+        |markdownOptionOutputDir
+        /#1", "r"):read("*a"))
 %    \end{macrocode}
 % \begin{markdown}
 % Since the Lua converter expects \acro{unix} line endings, normalize the
