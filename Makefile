@@ -43,7 +43,7 @@ $(INSTALLABLES) $(MARKDOWN_USER_MANUAL): $(INSTALLER) $(DTXARCHIVE)
 
 # This target typesets the manual.
 $(TECHNICAL_DOCUMENTATION): $(DTXARCHIVE) $(INSTALLABLES)
-	latexmk $<
+	latexmk -interaction=nonstopmode $<
 
 # These targets typeset the examples.
 $(EXAMPLES): $(EXAMPLE_SOURCES) examples/example.tex $(INSTALLABLES)
