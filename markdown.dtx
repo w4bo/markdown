@@ -2735,7 +2735,7 @@ defaultOptions.codeSpans = true
      :   Enable the
 %        iA\,Writer content blocks syntax extension~[@sotkov17]:
 %        \iffalse
-         iA Writer content blocks syntax extension:
+         iA\,Writer content blocks syntax extension:
 %        \fi
 
         ``` md
@@ -2750,10 +2750,7 @@ defaultOptions.codeSpans = true
 :    false
 
      :   Disable the
-%        iA\,Writer content blocks syntax extension.
-%        \iffalse
-         iA Writer content blocks syntax extension.
-%        \fi
+         iA\,Writer content blocks syntax extension.
 
 % \end{markdown}
 % \iffalse
@@ -2898,7 +2895,7 @@ defaultOptions.contentBlocks = false
 % \Valitem[markdown-languages.json]{contentBlocksLanguageMap}{filename}
 %
 :    The filename of the JSON file that maps filename extensions to
-     programming language names in the iA Writer content blocks.
+     programming language names in the iA\,Writer content blocks.
 %    See Section~\ref{sec:texcontentblockrenderers} for more information.
 
 % \end{markdown}
@@ -5298,19 +5295,21 @@ bug](https://github.com/witiko/markdown/issues).
 % \par
 % \begin{markdown}
 %
-%### Token Renderers
-% \label{sec:texrenderersuser}
-%
-% \iffalse
 %</tex>
 %<*manual>
 
-### Token renderers
+### Token Renderers
+% \label{sec:texrenderersuser}
 
-<!-- TODO -->
+% \iffalse
 
-%</manual>
-%<*tex>
+A key feature of the Markdown package is the support for user-defined \TeX{}
+macros, further referred to as *token renderers*, which render Markdown tokens
+such as headings, emphasized text, links, and lists. By default, token
+renderers point to package-defined \TeX{} macros, further referred to as
+*prototypes*, which provide useful default definitions.  Token renderers will
+be introduced in this section.
+
 % \fi
 %
 % The following \TeX{} macros may occur inside the output of the
@@ -5319,11 +5318,13 @@ bug](https://github.com/witiko/markdown/issues).
 % macros are intended to be redefined by the user who is typesetting a
 % document. By default, they point to the corresponding prototypes (see Section
 % \ref{sec:texrendererprototypes}).
-%
-%#### Interblock Separator Renderer
-% The \mdef{markdownRendererInterblockSeparator} macro represents a separator
-% between two markdown block elements. The macro receives no arguments.
-%
+
+#### Interblock Separator Renderer
+The \mdef{markdownRendererInterblockSeparator} macro represents a separator
+between two markdown block elements. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererInterblockSeparator{%
@@ -5331,11 +5332,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Line Break Renderer
-% The \mdef{markdownRendererLineBreak} macro represents a forced line break.
-% The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Line Break Renderer
+The \mdef{markdownRendererLineBreak} macro represents a forced line break.
+The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererLineBreak{%
@@ -5343,12 +5348,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Ellipsis Renderer
-% The \mdef{markdownRendererEllipsis} macro replaces any occurance of ASCII
-% ellipses in the input text. This macro will only be produced, when the
-% \Opt{smartEllipses} option is `true`.  The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Ellipsis Renderer
+ The \mdef{markdownRendererEllipsis} macro replaces any occurance of ASCII
+ ellipses in the input text. This macro will only be produced, when the
+ \Opt{smartEllipses} option is `true`.  The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererEllipsis{%
@@ -5356,10 +5365,14 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Non-Breaking Space Renderer
-% The \mdef{markdownRendererNbsp} macro represents a non-breaking space.
-%
+%</tex>
+%<*manual>
+
+#### Non-Breaking Space Renderer
+The \mdef{markdownRendererNbsp} macro represents a non-breaking space.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererNbsp{%
@@ -5367,13 +5380,17 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Special Character Renderers
-% The following macros replace any special plain \TeX{} characters (including
-% the active pipe character (`|`) of \Hologo{ConTeXt}) in the input text.
-% These macros will only be produced, when the \Opt{hybrid} option is
-% `false`.
-%
+%</tex>
+%<*manual>
+
+#### Special Character Renderers
+The following macros replace any special plain \TeX{} characters (including
+the active pipe character (`|`) of \Hologo{ConTeXt}) in the input text.
+These macros will only be produced, when the \Opt{hybrid} option is
+`false`.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererLeftBrace{%
@@ -5401,12 +5418,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Code Span Renderer
-% The \mdef{markdownRendererCodeSpan} macro represents inlined code span in the
-% input text. It receives a single argument that corresponds to the inlined
-% code span.
-%
+%</tex>
+%<*manual>
+
+#### Code Span Renderer
+The \mdef{markdownRendererCodeSpan} macro represents inlined code span in the
+input text. It receives a single argument that corresponds to the inlined
+code span.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererCodeSpan{%
@@ -5414,13 +5435,17 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Link Renderer
-% The \mdef{markdownRendererLink} macro represents a hyperlink. It receives
-% four arguments: the label, the fully escaped \acro{uri} that can be directly
-% typeset, the raw \acro{uri} that can be used outside typesetting, and the
-% title of the link.
-%
+%</tex>
+%<*manual>
+
+#### Link Renderer
+The \mdef{markdownRendererLink} macro represents a hyperlink. It receives
+four arguments: the label, the fully escaped \acro{uri} that can be directly
+typeset, the raw \acro{uri} that can be used outside typesetting, and the
+title of the link.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererLink{%
@@ -5428,13 +5453,17 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Image Renderer
-% The \mdef{markdownRendererImage} macro represents an image. It receives
-% four arguments: the label, the fully escaped \acro{uri} that can be directly
-% typeset, the raw \acro{uri} that can be used outside typesetting, and the
-% title of the link.
-%
+%</tex>
+%<*manual>
+
+#### Image Renderer
+The \mdef{markdownRendererImage} macro represents an image. It receives
+four arguments: the label, the fully escaped \acro{uri} that can be directly
+typeset, the raw \acro{uri} that can be used outside typesetting, and the
+title of the link.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererImage{%
@@ -5442,15 +5471,19 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Content Block Renderers
-% \label{sec:texcontentblockrenderers}
-% The \mdef{markdownRendererContentBlock} macro represents an iA\,Writer content
-% block. It receives four arguments: the local file or online image filename
-% extension cast to the lower case, the fully escaped \acro{uri} that can be
-% directly typeset, the raw \acro{uri} that can be used outside typesetting,
-% and the title of the content block.
-%
+%</tex>
+%<*manual>
+
+#### Content Block Renderers
+\label{sec:texcontentblockrenderers}
+The \mdef{markdownRendererContentBlock} macro represents an iA\,Writer content
+block. It receives four arguments: the local file or online image filename
+extension cast to the lower case, the fully escaped \acro{uri} that can be
+directly typeset, the raw \acro{uri} that can be used outside typesetting,
+and the title of the content block.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererContentBlock{%
@@ -5458,11 +5491,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererContentBlockOnlineImage} macro represents an
-% iA\,Writer online image content block. The macro receives the same arguments
-% as \m{markdownRendererContentBlock}.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererContentBlockOnlineImage} macro represents an
+iA\,Writer online image content block. The macro receives the same arguments
+as \m{markdownRendererContentBlock}.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererContentBlockOnlineImage{%
@@ -5470,27 +5507,38 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
-% content block that was recognized as a file in a known programming language
-% by its filename extension $s$. If any `markdown-languages.json` file found
-% by \pkg{kpathsea}\footnote{Local files take precedence. Filenames other
-% than `markdown-languages.json` may be specified using the
-% `contentBlocksLanguageMap` Lua option.} contains a record $(k, v)$, then a
-% non-online-image content block with the filename extension $s,
-% s$`:lower()`${}=k$ is considered to be in a known programming language $v$.
-% The macro receives five arguments: the local file name extension $s$ cast to
-% the lower case, the language $v$, the fully escaped \acro{uri} that can be
-% directly typeset, the raw \acro{uri} that can be used outside typesetting,
-% and the title of the content block.
-%
-% Note that you will need to place place a `markdown-languages.json` file
-% inside your working directory or inside your local \TeX{} directory
-% structure.  In this file, you will define a mapping between filename
-% extensions and the language names recognized by your favorite syntax
-% highlighter; there may exist other creative uses beside syntax highlighting.
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
+content block that was recognized as a file in a known programming language
+by its filename extension $s$. If any `markdown-languages.json` file found
+by \pkg{kpathsea}\footnote{Local files take precedence. Filenames other
+than `markdown-languages.json` may be specified using the
+`contentBlocksLanguageMap` Lua option.} contains a record $(k, v)$, then a
+non-online-image content block with the filename extension $s,
+s$`:lower()`${}=k$ is considered to be in a known programming language $v$.
+The macro receives five arguments: the local file name extension $s$ cast to
+the lower case, the language $v$, the fully escaped \acro{uri} that can be
+directly typeset, the raw \acro{uri} that can be used outside typesetting,
+and the title of the content block.
+
+Note that you will need to place place a `markdown-languages.json` file
+inside your working directory or inside your local \TeX{} directory
+structure.  In this file, you will define a mapping between filename
+extensions and the language names recognized by your favorite syntax
+highlighter; there may exist other creative uses beside syntax highlighting.
 % The `Languages.json` file provided by @sotkov17 is a good starting point.
-%
+% \iffalse
+[The `Languages.json` file provided by Anton Sotkov][sotkov17] is a good
+starting point.
+
+ [sotkov17]: https://github.com/iainc/Markdown-Content-Blocks
+             (File transclusion syntax for Markdown)
+% \fi
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererContentBlockCode{%
@@ -5498,12 +5546,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Bullet List Renderers
-% The \mdef{markdownRendererUlBegin} macro represents the beginning of a
-% bulleted list that contains an item with several paragraphs of text (the
-% list is not tight). The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Bullet List Renderers
+The \mdef{markdownRendererUlBegin} macro represents the beginning of a
+bulleted list that contains an item with several paragraphs of text (the
+list is not tight). The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererUlBegin{%
@@ -5511,12 +5563,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererUlBeginTight} macro represents the beginning of a
-% bulleted list that contains no item with several paragraphs of text (the list
-% is tight). This macro will only be produced, when the \Opt{tightLists} option
-% is `false`. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererUlBeginTight} macro represents the beginning of a
+bulleted list that contains no item with several paragraphs of text (the list
+is tight). This macro will only be produced, when the \Opt{tightLists} option
+is `false`. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererUlBeginTight{%
@@ -5524,10 +5580,14 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererUlItem} macro represents an item in a bulleted
-% list. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererUlItem} macro represents an item in a bulleted
+list. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererUlItem{%
@@ -5535,10 +5595,14 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererUlItemEnd} macro represents the end of an item in a
-% bulleted list. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererUlItemEnd} macro represents the end of an item in a
+bulleted list. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererUlItemEnd{%
@@ -5546,11 +5610,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererUlEnd} macro represents the end of a bulleted list
-% that contains an item with several paragraphs of text (the list is not
-% tight). The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererUlEnd} macro represents the end of a bulleted list
+that contains an item with several paragraphs of text (the list is not
+tight). The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererUlEnd{%
@@ -5558,12 +5626,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererUlEndTight} macro represents the end of a bulleted
-% list that contains no item with several paragraphs of text (the list is
-% tight). This macro will only be produced, when the \Opt{tightLists} option is
-% `false`. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererUlEndTight} macro represents the end of a bulleted
+list that contains no item with several paragraphs of text (the list is
+tight). This macro will only be produced, when the \Opt{tightLists} option is
+`false`. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererUlEndTight{%
@@ -5571,12 +5643,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Ordered List Renderers
-% The \mdef{markdownRendererOlBegin} macro represents the beginning of an
-% ordered list that contains an item with several paragraphs of text (the
-% list is not tight). The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Ordered List Renderers
+The \mdef{markdownRendererOlBegin} macro represents the beginning of an
+ordered list that contains an item with several paragraphs of text (the
+list is not tight). The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlBegin{%
@@ -5584,12 +5660,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererOlBeginTight} macro represents the beginning of an
-% ordered list that contains no item with several paragraphs of text (the
-% list is tight). This macro will only be produced, when the \Opt{tightLists}
-% option is `false`. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererOlBeginTight} macro represents the beginning of an
+ordered list that contains no item with several paragraphs of text (the
+list is tight). This macro will only be produced, when the \Opt{tightLists}
+option is `false`. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlBeginTight{%
@@ -5597,11 +5677,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererOlItem} macro represents an item in an ordered list.
-% This macro will only be produced, when the \Opt{startNumber} option is
-% `false`.  The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererOlItem} macro represents an item in an ordered list.
+This macro will only be produced, when the \Opt{startNumber} option is
+`false`.  The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlItem{%
@@ -5609,10 +5693,14 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererOlItemEnd} macro represents the end of an item in
-% an ordered list. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererOlItemEnd} macro represents the end of an item in
+an ordered list. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlItemEnd{%
@@ -5620,11 +5708,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererOlItemWithNumber} macro represents an item in an
-% ordered list.  This macro will only be produced, when the \Opt{startNumber}
-% option is `true`.  The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererOlItemWithNumber} macro represents an item in an
+ordered list.  This macro will only be produced, when the \Opt{startNumber}
+option is `true`.  The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlItemWithNumber{%
@@ -5632,11 +5724,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererOlEnd} macro represents the end of an ordered list
-% that contains an item with several paragraphs of text (the list is not
-% tight). The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererOlEnd} macro represents the end of an ordered list
+that contains an item with several paragraphs of text (the list is not
+tight). The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlEnd{%
@@ -5644,12 +5740,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererOlEndTight} macro represents the end of an ordered
-% list that contains no item with several paragraphs of text (the list is
-% tight). This macro will only be produced, when the \Opt{tightLists} option is
-% `false`. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererOlEndTight} macro represents the end of an ordered
+list that contains no item with several paragraphs of text (the list is
+tight). This macro will only be produced, when the \Opt{tightLists} option is
+`false`. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererOlEndTight{%
@@ -5657,15 +5757,19 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Definition List Renderers
-% The following macros are only produces, when the \Opt{definitionLists} option
-% is `true`.
-%
-% The \mdef{markdownRendererDlBegin} macro represents the beginning of a
-% definition list that contains an item with several paragraphs of text (the
-% list is not tight). The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Definition List Renderers
+The following macros are only produces, when the \Opt{definitionLists} option
+is `true`.
+
+The \mdef{markdownRendererDlBegin} macro represents the beginning of a
+definition list that contains an item with several paragraphs of text (the
+list is not tight). The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlBegin{%
@@ -5673,12 +5777,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlBeginTight} macro represents the beginning of a
-% definition list that contains an item with several paragraphs of text (the
-% list is not tight). This macro will only be produced, when the
-% \Opt{tightLists} option is `false`. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlBeginTight} macro represents the beginning of a
+definition list that contains an item with several paragraphs of text (the
+list is not tight). This macro will only be produced, when the
+\Opt{tightLists} option is `false`. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlBeginTight{%
@@ -5686,11 +5794,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlItem} macro represents a term in a definition
-% list. The macro receives a single argument that corresponds to the term
-% being defined.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlItem} macro represents a term in a definition
+list. The macro receives a single argument that corresponds to the term
+being defined.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlItem{%
@@ -5698,10 +5810,14 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlItemEnd} macro represents the end of a list of
-% definitions for a single term.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlItemEnd} macro represents the end of a list of
+definitions for a single term.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlItemEnd{%
@@ -5709,11 +5825,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlDefinitionBegin} macro represents the beginning
-% of a definition in a definition list. There can be several definitions for
-% a single term.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlDefinitionBegin} macro represents the beginning
+of a definition in a definition list. There can be several definitions for
+a single term.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlDefinitionBegin{%
@@ -5721,11 +5841,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlDefinitionEnd} macro represents the end of a
-% definition in a definition list. There can be several definitions for a
-% single term.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlDefinitionEnd} macro represents the end of a
+definition in a definition list. There can be several definitions for a
+single term.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlDefinitionEnd{%
@@ -5733,11 +5857,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlEnd} macro represents the end of a definition
-% list that contains an item with several paragraphs of text (the list is not
-% tight). The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlEnd} macro represents the end of a definition
+list that contains an item with several paragraphs of text (the list is not
+tight). The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlEnd{%
@@ -5745,12 +5873,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererDlEndTight} macro represents the end of a
-% definition list that contains no item with several paragraphs of text (the
-% list is tight). This macro will only be produced, when the \Opt{tightLists}
-% option is `false`. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererDlEndTight} macro represents the end of a
+definition list that contains no item with several paragraphs of text (the
+list is tight). This macro will only be produced, when the \Opt{tightLists}
+option is `false`. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererDlEndTight{%
@@ -5758,12 +5890,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Emphasis Renderers
-% The \mdef{markdownRendererEmphasis} macro represents an emphasized span of
-% text. The macro receives a single argument that corresponds to the emphasized
-% span of text.
-%
+%</tex>
+%<*manual>
+
+#### Emphasis Renderers
+The \mdef{markdownRendererEmphasis} macro represents an emphasized span of
+text. The macro receives a single argument that corresponds to the emphasized
+span of text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererEmphasis{%
@@ -5771,11 +5907,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererStrongEmphasis} macro represents a strongly
-% emphasized span of text. The macro receives a single argument that
-% corresponds to the emphasized span of text.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererStrongEmphasis} macro represents a strongly
+emphasized span of text. The macro receives a single argument that
+corresponds to the emphasized span of text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererStrongEmphasis{%
@@ -5783,11 +5923,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Block Quote Renderers
-% The \mdef{markdownRendererBlockQuoteBegin} macro represents the beginning of
-% a block quote. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Block Quote Renderers
+The \mdef{markdownRendererBlockQuoteBegin} macro represents the beginning of
+a block quote. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererBlockQuoteBegin{%
@@ -5795,10 +5939,14 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererBlockQuoteEnd} macro represents the end of a block
-% quote. The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererBlockQuoteEnd} macro represents the end of a block
+quote. The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererBlockQuoteEnd{%
@@ -5806,12 +5954,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Code Block Renderers
-% The \mdef{markdownRendererInputVerbatim} macro represents a code
-% block. The macro receives a single argument that corresponds to the
-% filename of a file contaning the code block contents.
-%
+%</tex>
+%<*manual>
+
+#### Code Block Renderers
+The \mdef{markdownRendererInputVerbatim} macro represents a code
+block. The macro receives a single argument that corresponds to the
+filename of a file contaning the code block contents.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererInputVerbatim{%
@@ -5819,12 +5971,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererInputFencedCode} macro represents a fenced code
-% block. This macro will only be produced, when the \Opt{fencedCode} option is
-% `true`. The macro receives two arguments that correspond to the filename of
-% a file contaning the code block contents and to the code fence infostring.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererInputFencedCode} macro represents a fenced code
+block. This macro will only be produced, when the \Opt{fencedCode} option is
+`true`. The macro receives two arguments that correspond to the filename of
+a file contaning the code block contents and to the code fence infostring.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererInputFencedCode{%
@@ -5832,11 +5988,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Heading Renderers
-% The \mdef{markdownRendererHeadingOne} macro represents a first level heading.
-% The macro receives a single argument that corresponds to the heading text.
-%
+%</tex>
+%<*manual>
+
+#### Heading Renderers
+The \mdef{markdownRendererHeadingOne} macro represents a first level heading.
+The macro receives a single argument that corresponds to the heading text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHeadingOne{%
@@ -5844,11 +6004,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererHeadingTwo} macro represents a second level
-% heading. The macro receives a single argument that corresponds to the heading
-% text.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererHeadingTwo} macro represents a second level
+heading. The macro receives a single argument that corresponds to the heading
+text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHeadingTwo{%
@@ -5856,11 +6020,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererHeadingThree} macro represents a third level
-% heading. The macro receives a single argument that corresponds to the heading
-% text.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererHeadingThree} macro represents a third level
+heading. The macro receives a single argument that corresponds to the heading
+text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHeadingThree{%
@@ -5868,11 +6036,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererHeadingFour} macro represents a fourth level
-% heading. The macro receives a single argument that corresponds to the heading
-% text.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererHeadingFour} macro represents a fourth level
+heading. The macro receives a single argument that corresponds to the heading
+text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHeadingFour{%
@@ -5880,11 +6052,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererHeadingFive} macro represents a fifth level
-% heading. The macro receives a single argument that corresponds to the heading
-% text.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererHeadingFive} macro represents a fifth level
+heading. The macro receives a single argument that corresponds to the heading
+text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHeadingFive{%
@@ -5892,11 +6068,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \mdef{markdownRendererHeadingSix} macro represents a sixth level
-% heading. The macro receives a single argument that corresponds to the heading
-% text.
-%
+%</tex>
+%<*manual>
+
+The \mdef{markdownRendererHeadingSix} macro represents a sixth level
+heading. The macro receives a single argument that corresponds to the heading
+text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHeadingSix{%
@@ -5904,11 +6084,15 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Horizontal Rule Renderer
-% The \mdef{markdownRendererHorizontalRule} macro represents a horizontal rule.
-% The macro receives no arguments.
-%
+%</tex>
+%<*manual>
+
+#### Horizontal Rule Renderer
+The \mdef{markdownRendererHorizontalRule} macro represents a horizontal rule.
+The macro receives no arguments.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererHorizontalRule{%
@@ -5916,12 +6100,16 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Footnote Renderer
-% The \mdef{markdownRendererFootnote} macro represents a footnote. This macro
-% will only be produced, when the \Opt{footnotes} option is `true`.  The
-% macro receives a single argument that corresponds to the footnote text.
-%
+%</tex>
+%<*manual>
+
+#### Footnote Renderer
+The \mdef{markdownRendererFootnote} macro represents a footnote. This macro
+will only be produced, when the \Opt{footnotes} option is `true`.  The
+macro receives a single argument that corresponds to the footnote text.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererFootnote{%
@@ -5929,17 +6117,21 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Parenthesized Citations Renderer
-% The \mdef{markdownRendererCite} macro represents a string of one or more
-% parenthetical citations. This macro will only be produced, when the
-% \Opt{citations} option is `true`. The macro receives the parameter
-% `{`\meta{number of citations}`}` followed by \meta{suppress
-% author}`{`\meta{prenote}`}{`\meta{postnote}`}{`\meta{name}`}` repeated
-% \meta{number of citations} times. The \meta{suppress author} parameter is
-% either the token `-`, when the author's name is to be suppressed, or `+`
-% otherwise.
-%
+%</tex>
+%<*manual>
+
+#### Parenthesized Citations Renderer
+The \mdef{markdownRendererCite} macro represents a string of one or more
+parenthetical citations. This macro will only be produced, when the
+\Opt{citations} option is `true`. The macro receives the parameter
+`{`\meta{number of citations}`}` followed by \meta{suppress
+author}`{`\meta{prenote}`}{`\meta{postnote}`}{`\meta{name}`}` repeated
+\meta{number of citations} times. The \meta{suppress author} parameter is
+either the token `-`, when the author's name is to be suppressed, or `+`
+otherwise.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererCite{%
@@ -5947,13 +6139,17 @@ bug](https://github.com/witiko/markdown/issues).
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-%#### Text Citations Renderer
-% The \mdef{markdownRendererTextCite} macro represents a string of one or more
-% text citations. This macro will only be produced, when the
-% \Opt{citations} option is `true`. The macro receives parameters in the same 
-% format as the \m{markdownRendererCite} macro.
-%
+%</tex>
+%<*manual>
+
+#### Text Citations Renderer
+The \mdef{markdownRendererTextCite} macro represents a string of one or more
+text citations. This macro will only be produced, when the
+\Opt{citations} option is `true`. The macro receives parameters in the same 
+format as the \m{markdownRendererCite} macro.
+
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownRendererTextCite{%
