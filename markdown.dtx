@@ -5083,7 +5083,6 @@ specific to the plain \TeX{} interface.
 %</manual>
 %<*tex>
 % \fi
-%
 % The \mdef{markdownOptionHelperScriptFileName} macro sets the filename of the
 % helper Lua script file that is created during the conversion from markdown to
 % plain \TeX{} in \TeX{} engines without the \m{directlua} primitive. It
@@ -6239,14 +6238,16 @@ format as the \m{markdownRendererCite} macro.
 \def\markdownRendererTextCitePrototype#1{}%
 %    \end{macrocode}
 % \par
+%</tex>
+%<*manual>
 % \begin{markdown}
-%
-%### Logging Facilities
-% The \mdef{markdownInfo}, \mdef{markdownWarning}, and
-% \mdef{markdownError} macros provide access to logging to the rest of
-% the macros. Their first argument specifies the text of the info, warning, or
-% error message.
-%
+
+### Logging Facilities
+The \mdef{markdownInfo}, \mdef{markdownWarning}, and \mdef{markdownError}
+macros perform logging for the Markdown package. Their first argument
+specifies the text of the info, warning, or error message.
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownInfo#1{}%
@@ -6254,20 +6255,64 @@ format as the \m{markdownRendererCite} macro.
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% The \m{markdownError} macro receives a second argument that provides a help
-% text suggesting a remedy to the error.
-%
+%</tex>
+%<*manual>
+The \m{markdownError} macro receives a second argument that provides a help
+text.
+%</manual>
+%<*tex>
 % \end{markdown}
 %  \begin{macrocode}
 \def\markdownError#1#2{}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
-%
-% You may redefine these macros to redirect and process the info, warning, and
-% error messages.
-%
+%</tex>
+%<*manual>
+You may redefine these macros to redirect and process the info, warning, and
+error messages.
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input lmfonts
+\input markdown
+
+\def\markdownInfo#1{An info message: #1.\par}
+\def\markdownWarning#1{A warning message: #1.\par}
+\def\markdownError#1#2{An error message: #1 (#2).\par}
+
+\markdownBegin
+A paragraph.
+> A quote.
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> An info message: Buffering markdown input into the temporary input file
+> ”tex.markdown.in” and scanning for the closing token sequence
+> ”`\markdownEnd`”.
+>
+> An info message: The ending token sequence was found.
+>
+> An info message: Including markdown document ”tex.markdown.in”.
+>
+> A paragraph.
+>
+> > A quote.
+
+No paragraph starting with the text “An error message” should be produced. If
+this happens, please [file a bug](https://github.com/witiko/markdown/issues).
+
+%</manual>
+%<*tex>
 %### Miscellanea
 % The \mdef{markdownMakeOther} macro is used by the package, when a \TeX{}
 % engine that does not support direct Lua access is starting to buffer a text.
@@ -6353,7 +6398,6 @@ format as the \m{markdownRendererCite} macro.
 %    \end{macrocode}
 % \iffalse
 %</tex>
-%<*latex>
 % \fi
 % \par
 % \begin{markdown}
@@ -6363,7 +6407,6 @@ format as the \m{markdownRendererCite} macro.
 % \label{sec:latexinterface}
 %
 % \iffalse
-%</latex>
 %<*manual>
 
 \LaTeX{}
@@ -10061,7 +10104,7 @@ local convert = md.new(\markdownLuaOptions)
 % \end{markdown}
 %  \begin{macrocode}
     |immediate|openout|markdownOutputFileStream@
-      |markdownOptionInputTempFileName@
+      |markdownOptionInputTempFileName|relax@
     |markdownInfo{Buffering markdown input into the temporary @
       input file "|markdownOptionInputTempFileName" and scanning @
       for the closing token sequence "#1"}@
