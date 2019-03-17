@@ -616,7 +616,7 @@ This should produce the following files:
  * `markdown.sty` – the \LaTeX{} package, and
  * `t-markdown.tex` – the \Hologo{ConTeXt} module.
 
-### Local installation
+### Local Installation
 
 To perform a local installation, place the above files into your \TeX{}
 directory structure. This is generally where the individual files should be
@@ -633,7 +633,7 @@ where `<TEXMF>` corresponds to a root of your \TeX{} distribution, such as
 `C:\Users\<YOUR␣USERNAME>\texmf` on Windows systems. When in doubt,
 consult the manual of your \TeX{} distribution.
 
-### Portable installation ###
+### Portable Installation
 
 Alternatively, you can also store the above files in the same folder as your
 \TeX{} document and distribute them together. This way your document can be
@@ -864,7 +864,7 @@ local md5 = require("md5")
 % \par
 % \begin{markdown}
 %
-%### \Hologo{ConTeXt} prerequisites
+%### \Hologo{ConTeXt} Prerequisites
 % The \Hologo{ConTeXt} part of the package requires that either the Mark II or
 % the Mark IV format is loaded, all the plain \TeX{} prerequisites (see
 % Section \ref{sec:texprerequisites}), and the following \Hologo{ConTeXt}
@@ -893,7 +893,7 @@ local md5 = require("md5")
 %</context>
 %<*manual>
 
-First document
+First Document
 --------------
 
 In this section, we will take the necessary steps to typeset our first markdown
@@ -910,7 +910,7 @@ following content:
 \bye
 ```````
 
-#### Using the Lua module
+#### Using the Lua Module
 
 Using a text editor, create a text document named `hello.lua` with the
 following content:
@@ -961,7 +961,7 @@ texlua <CLI␣PATHNAME> -- hello.md hello.tex
 pdftex document.tex
 ``````
 
-### Using plain \TeX{}
+### Using Plain \TeX{}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1136,7 +1136,7 @@ local M = {metadata = metadata}
 The Lua part of the package exposes two interfaces – the `markdown` Lua module,
 and the Lua command-line interface (CLI).
 
-#### The Lua module
+#### The Lua Module
 
 The `markdown` Lua module exposes the `new(options)` method, which creates a
 converter function from markdown to \TeX{}. The properties of the converter
@@ -1323,7 +1323,7 @@ local defaultOptions = {}
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1345,7 +1345,7 @@ A PDF document named `document.pdf` should be produced and contain the text
 “Hello *world*!” Several cache files of the Markdown package will also be
 produced in the `cache` directory as we requested using the `cacheDir` option.
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1375,7 +1375,7 @@ A PDF document named `document.pdf` should be produced and contain the text
 the Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1396,7 +1396,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1418,7 +1418,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1479,7 +1479,7 @@ defaultOptions.cacheDir = "."
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1515,7 +1515,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1553,7 +1553,7 @@ following text:
 >
 > A paragraph. > A quote?
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1586,7 +1586,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1620,7 +1620,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1687,7 +1687,7 @@ defaultOptions.blankBeforeBlockquote = false
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1730,7 +1730,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1772,7 +1772,7 @@ following text:
 >
 > A paragraph. ``` A code fence? ```
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1812,7 +1812,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1852,7 +1852,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1925,7 +1925,7 @@ defaultOptions.blankBeforeCodeFence = false
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1965,7 +1965,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2005,7 +2005,7 @@ following text:
 >
 > A paragraph. A heading? ==========
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2041,7 +2041,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2078,7 +2078,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2146,7 +2146,7 @@ defaultOptions.blankBeforeHeading = false
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2183,7 +2183,7 @@ following text:
 >
 > > Another block quote.
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2222,7 +2222,7 @@ following text:
 >
 > > or two block quotes?
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2257,7 +2257,7 @@ following text:
 >
 > > Another block quote.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2293,7 +2293,7 @@ following text:
 >
 > > Another block quote.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2364,7 +2364,7 @@ defaultOptions.breakableBlockquotes = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.bib` with the
 following content:
@@ -2459,7 +2459,7 @@ defaultOptions.citationNbsps = true
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.bib` with the
 following content:
@@ -2544,7 +2544,7 @@ defaultOptions.citations = false
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2579,7 +2579,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2615,7 +2615,7 @@ following text:
 >
 > ``Is this a code span?'' ``Or a quote?''
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2646,7 +2646,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2678,7 +2678,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2758,7 +2758,7 @@ defaultOptions.codeSpans = true
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2817,7 +2817,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2904,7 +2904,7 @@ defaultOptions.contentBlocks = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2966,7 +2966,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -3072,7 +3072,7 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3114,7 +3114,7 @@ following text:
 > 
 >     Third paragraph of definition 2.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3206,7 +3206,7 @@ defaultOptions.definitionLists = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3259,7 +3259,7 @@ following text:
 > </pre>
 > ```
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3365,7 +3365,7 @@ defaultOptions.fencedCode = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3419,7 +3419,7 @@ following text:
 > This paragraph won't be part of the note, because it
 > isn't indented.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3512,7 +3512,7 @@ defaultOptions.footnotes = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3553,7 +3553,7 @@ following text:
 > #. McHale
 > #. Parish
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3637,7 +3637,7 @@ See [the corresponding issue][issue-38] in the package repository.
              (HTML entities with the `html` Lua option enabled produce a Lua
               parser error)
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3680,7 +3680,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3724,7 +3724,7 @@ following text:
 >
 > Is there support? Is there support? Is there support?
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3767,7 +3767,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3810,7 +3810,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3891,7 +3891,7 @@ defaultOptions.html = false
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3916,7 +3916,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3950,7 +3950,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3976,7 +3976,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4002,7 +4002,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4065,7 +4065,7 @@ defaultOptions.hybrid = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4091,7 +4091,7 @@ following text:
 > write, since you don't have to pick an identifier and
 > move down to type the note.]
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4188,7 +4188,7 @@ defaultOptions.preserveTabs = false
 % \end{markdown}
 % \iffalse
 
-###### Lua module example {.unnumbered}
+###### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4220,7 +4220,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### Lua CLI example {.unnumbered}
+###### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4257,7 +4257,7 @@ following text:
 >
 > Are these just three regular dots, a victorian ellipsis, or . . . ?
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4287,7 +4287,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4320,7 +4320,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4385,7 +4385,7 @@ defaultOptions.smartEllipses = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4432,7 +4432,7 @@ following text:
 > 2. fourth item
 > 3. fifth item
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4514,7 +4514,7 @@ defaultOptions.startNumber = true
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4619,7 +4619,7 @@ defaultOptions.tightLists = true
 % \end{markdown}
 % \iffalse
 
-###### Plain \TeX{} example {.unnumbered}
+###### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4649,7 +4649,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-###### \LaTeX{} example {.unnumbered}
+###### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4679,7 +4679,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-###### \Hologo{ConTeXt} example {.unnumbered}
+###### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4901,7 +4901,7 @@ provides commands corresponding to additional plain \TeX{}-specific options
 and so-called *token renderer* commands that define how the individual
 markdown elements look.
 
-### Package version
+### Package Version
 
 The plain \TeX{} interface provides the `\markdownLastModified` and
 `\markdownVersion` commands that you can use to check whether the Markdown
@@ -5263,7 +5263,7 @@ bug](https://github.com/witiko/markdown/issues).
 % \par
 % \begin{markdown}
 %
-%#### Miscellaneous options
+%#### Miscellaneous Options
 % The \mdef{markdownOptionStripPercentSigns} macro controls whether a percent
 % sign (`%`) at the beginning of a line will be discarded when buffering
 % Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
@@ -5357,7 +5357,7 @@ bug](https://github.com/witiko/markdown/issues).
 % \par
 % \begin{markdown}
 %
-%#### Non-breaking Space Renderer
+%#### Non-Breaking Space Renderer
 % The \mdef{markdownRendererNbsp} macro represents a non-breaking space.
 %
 % \end{markdown}
@@ -6383,7 +6383,7 @@ renderers.
 %</latex>
 %<*manual>
 
-### Token renderers
+### Token Renderers
 
 <!-- TODO -->
 
@@ -6698,7 +6698,7 @@ the token renderers.
 
 <!-- TODO -->
 
-### Token renderers
+### Token Renderers
 
 <!-- TODO -->
 
@@ -8537,7 +8537,7 @@ parsers.inlinehtml  = parsers.emptyelt_any
 % \par
 % \begin{markdown}
 %
-%#### Parsers Used for \textsc{html} entities
+%#### Parsers Used for \textsc{html} Entities
 %
 % \end{markdown}
 %  \begin{macrocode}
