@@ -9496,6 +9496,9 @@ function M.reader.new(writer, options)
   local function ordered_list(items,tight,startNumber)
     if options.startNumber then
       startNumber = tonumber(startNumber) or 1  -- fallback for '#'
+      if startNumber ~= nil then
+        startNumber = math.floor(startNumber)
+      end
     else
       startNumber = nil
     end
