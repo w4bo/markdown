@@ -56,11 +56,21 @@
   hybrid,
   html,
   stripPercentSigns,
-  underscores=false]{markdown}
+  underscores=false,
+]{markdown}
 \markdownSetup{
   renderers = {
     codeSpan = {\inline{#1}},
-    link = {#1\footnote{See \url{#3}.}}}}
+    link = {#1\footnote{See \url{#3}.}},
+    headingFour = {%
+      \paragraph{#1}\leavevmode
+      \def\markdownRendererInterblockSeparator{%
+        \let\markdownRendererInterblockSeparator\par
+      }%
+      \noindent
+    },
+  },
+}
 
 % Set up the catcodes.
 \catcode`\_=12 % We won't be typesetting math and Lua contains lots of `_`.
