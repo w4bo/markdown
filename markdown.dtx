@@ -7883,29 +7883,29 @@ function M.writer.new(options)
 %
 % \end{markdown}
 %  \begin{macrocode}
-local languages_json = (function()
-  local kpse = require("kpse")
-  kpse.set_program_name("luatex")
-  local base, prev, curr
-  for _, file in ipairs{kpse.lookup(options.contentBlocksLanguageMap,
-                                    { all=true })} do
-    json = io.open(file, "r"):read("*all")
-                             :gsub('("[^\n]-"):','[%1]=')
-    curr = (function()
-      local _ENV={ json=json, load=load } -- run in sandbox
-      return load("return "..json)()
-    end)()
-    if type(curr) == "table" then
-      if base == nil then
-        base = curr
-      else
-        setmetatable(prev, { __index = curr })
+  local languages_json = (function()
+    local kpse = require("kpse")
+    kpse.set_program_name("luatex")
+    local base, prev, curr
+    for _, file in ipairs{kpse.lookup(options.contentBlocksLanguageMap,
+                                      { all=true })} do
+      json = io.open(file, "r"):read("*all")
+                               :gsub('("[^\n]-"):','[%1]=')
+      curr = (function()
+        local _ENV={ json=json, load=load } -- run in sandbox
+        return load("return "..json)()
+      end)()
+      if type(curr) == "table" then
+        if base == nil then
+          base = curr
+        else
+          setmetatable(prev, { __index = curr })
+        end
+        prev = curr
       end
-      prev = curr
     end
-  end
-  return base or {}
-end)()
+    return base or {}
+  end)()
 %    \end{macrocode}
 % \par
 % \begin{markdown}
