@@ -492,9 +492,9 @@ author: Vít Novotný
 
 Introduction
 ============
-The [Markdown package][pkg] converts [markdown][] markup to TeX commands. The
-functionality is provided both as a Lua module and as plain TeX, LaTeX, and
-ConTeXt macro packages that can be used to directly typeset TeX documents
+The [Markdown package][pkg] converts [markdown][] markup to \TeX{} commands. The
+functionality is provided both as a Lua module and as plain \TeX, \LaTeX{}, and
+\Hologo{ConTeXt} macro packages that can be used to directly typeset \TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
 makes it easy to redefine how each and every markdown element is rendered.
 Creative abuse of the markdown syntax is encouraged. <i class="em em-wink"></i>
@@ -523,7 +523,7 @@ package requirements, interfaces, and implementation, please refer to the
 [technical documentation][techdoc].
 
  [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf
-            (A Markdown Interpreter for TeX)
+            (A Markdown Interpreter for \TeX{})
 
 %</manual>
 %<*lua,lua-cli>
@@ -581,12 +581,12 @@ modules['markdown'] = metadata
 Requirements
 ------------
 
-The package requires a working TeX distribution. [TeX Live][] ≥ 2013 is known to
-work and so are recent installation of [MikTeX][]. If you are using a minimal
-installation of a TeX distribution, please consult the
+The package requires a working \TeX{} distribution. [TeX Live][] ≥ 2013 is
+known to work and so are recent installation of [MikTeX][]. If you are using a
+minimal installation of a \TeX{} distribution, please consult the
 [technical documentation][techdoc] for a detailed list of required packages.
 
- [TeX Live]: https://www.tug.org/texlive/ (TeX Live - TeX Users Group)
+ [TeX Live]: https://www.tug.org/texlive/ (TeX Live - \TeX{} Users Group)
  [MikTeX]: https://miktex.org/ (Home - MiKTeXorg)
 
 Installation
@@ -602,7 +602,7 @@ using Git:
 git clone https://github.com/witiko/markdown
 ``````
 Next, enter the directory named `markdown` and interpret the file named
-`markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX or
+`markdown.ins` file using a Unicode-aware \TeX{} engine, such as XeTeX or
 LuaTeX:
 ``` sh
 cd markdown
@@ -612,14 +612,15 @@ This should produce the following files:
 
  * `markdown.lua` – the Lua module,
  * `markdown-cli.lua` – the Lua command-line interface,
- * `markdown.tex` – the plain TeX macro package,
- * `markdown.sty` – the LaTeX package, and
- * `t-markdown.tex` – the ConTeXt module.
+ * `markdown.tex` – the plain \TeX{} macro package,
+ * `markdown.sty` – the \LaTeX{} package, and
+ * `t-markdown.tex` – the \Hologo{ConTeXt} module.
 
 ### Local installation
 
-To perform a local installation, place the above files into your TeX directory
-structure. This is generally where the individual files should be placed:
+To perform a local installation, place the above files into your \TeX{}
+directory structure. This is generally where the individual files should be
+placed:
 
  * `<TEXMF>/tex/luatex/markdown/markdown.lua`
  * `<TEXMF>/scripts/markdown/markdown-cli.lua`
@@ -627,16 +628,16 @@ structure. This is generally where the individual files should be placed:
  * `<TEXMF>/tex/latex/markdown/markdown.sty`
  * `<TEXMF>/tex/context/third/markdown/t-markdown.tex`
 
-where `<TEXMF>` corresponds to a root of your TeX distribution, such as
+where `<TEXMF>` corresponds to a root of your \TeX{} distribution, such as
 `/usr/share/texmf` and `~/texmf` on UN\*X systems or
 `C:\Users\<YOUR␣USERNAME>\texmf` on Windows systems. When in doubt,
-consult the manual of your TeX distribution.
+consult the manual of your \TeX{} distribution.
 
 ### Portable installation ###
 
 Alternatively, you can also store the above files in the same folder as your
-TeX document and distribute them together. This way your document can be
-portably typeset on legacy TeX distributions.
+\TeX{} document and distribute them together. This way your document can be
+portably typeset on legacy \TeX{} distributions.
 
 %</manual>
 %<*lua>
@@ -896,7 +897,7 @@ First document
 --------------
 
 In this section, we will take the necessary steps to typeset our first markdown
-document in TeX. This will serve as our first hands-on experience with the
+document in \TeX{}. This will serve as our first hands-on experience with the
 package and also as a reassurance that the package has been correctly installed.
 
 ### Using Lua
@@ -951,7 +952,7 @@ such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
- [Kpathsea]: https://tug.org/kpathsea/ (Kpathsea - TeX Users Group)
+ [Kpathsea]: https://tug.org/kpathsea/ (Kpathsea - \TeX{} Users Group)
 
 A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
@@ -960,7 +961,7 @@ texlua <CLI␣PATHNAME> -- hello.md hello.tex
 pdftex document.tex
 ``````
 
-### Using plain TeX
+### Using plain \TeX{}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -981,7 +982,7 @@ A PDF document named `document.pdf` should be produced and contain the text
 pdftex --shell-escape document.tex
 ```````
 
-### Using LaTeX
+### Using \LaTeX{}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1021,7 +1022,7 @@ lualatex latex.tex
 ``````
 to see the effect of your changes.
 
-### Using ConTeXt
+### Using \Hologo{ConTeXt}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1083,11 +1084,11 @@ Lua
 ---
 
 The Lua part of the package makes it possible to convert a markdown document
-into TeX commands and typeset it later when convenient. Although the typical
-user will not find this terribly useful and will instead use the plain TeX,
-LaTeX, and ConTeXt macro packages to convert and typeset the markdown documents
-in a single step, they will still benefit from learning the options that
-control the behavior of the Lua parser.
+into \TeX{} commands and typeset it later when convenient. Although the typical
+user will not find this terribly useful and will instead use the plain \TeX{},
+\LaTeX{}, and \Hologo{ConTeXt} macro packages to convert and typeset the
+markdown documents in a single step, they will still benefit from learning the
+options that control the behavior of the Lua parser.
 
 %</manual>
 %<*lua>
@@ -1138,7 +1139,7 @@ and the Lua command-line interface (CLI).
 #### The Lua module
 
 The `markdown` Lua module exposes the `new(options)` method, which creates a
-converter function from markdown to TeX. The properties of the converter
+converter function from markdown to \TeX{}. The properties of the converter
 function are specified by the Lua table `options`. The parameter is optional;
 when unspecified, the behaviour will be the same as if `options` were an empty
 table.
@@ -1198,7 +1199,7 @@ luatex document.tex
 ```````
 A PDF document named `document.pdf` should be produced and contain the text
 “\$\\sqrt {-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” In this case, we cannot
-use pdfTeX, because pdfTeX does not define the `\directlua` TeX command.
+use pdfTeX, because pdfTeX does not define the `\directlua` \TeX{} command.
 
 #### The Lua CLI
 
@@ -1257,8 +1258,8 @@ pdftex document.tex
 ### Options
 
 This section will cover the options recognized by the Lua interface. The
-interfaces of the plain TeX, LaTeX, and ConTeXt macro packages recognize these
-options as well, in addition to their own options.
+interfaces of the plain \TeX{}, \LaTeX{}, and \Hologo{ConTeXt} macro packages
+recognize these options as well, in addition to their own options.
 
 %</manual>
 %<*lua,lua-cli>
@@ -1311,8 +1312,8 @@ local defaultOptions = {}
 %
 :    A path to the directory containing auxiliary cache files. If the last
      segment of the path does not exist, it will be created by the Lua
-     command-line and plain TeX implementations. The Lua implementation expects
-     that the entire path already exists.
+     command-line and plain \TeX{} implementations. The Lua implementation
+     expects that the entire path already exists.
 
      When iteratively writing and typesetting a markdown document, the cache
      files are going to accumulate over time. You are advised to clean the
@@ -1374,7 +1375,7 @@ A PDF document named `document.pdf` should be produced and contain the text
 the Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1395,7 +1396,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1417,7 +1418,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1552,7 +1553,7 @@ following text:
 >
 > A paragraph. > A quote?
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1585,7 +1586,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1619,7 +1620,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1771,7 +1772,7 @@ following text:
 >
 > A paragraph. ``` A code fence? ```
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1811,7 +1812,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1851,7 +1852,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2004,7 +2005,7 @@ following text:
 >
 > A paragraph. A heading? ==========
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2040,7 +2041,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2077,7 +2078,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2221,7 +2222,7 @@ following text:
 >
 > > or two block quotes?
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2256,7 +2257,7 @@ following text:
 >
 > > Another block quote.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2292,7 +2293,7 @@ following text:
 >
 > > Another block quote.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2363,7 +2364,7 @@ defaultOptions.breakableBlockquotes = false
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.bib` with the
 following content:
@@ -2458,7 +2459,7 @@ defaultOptions.citationNbsps = true
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.bib` with the
 following content:
@@ -2498,7 +2499,7 @@ following text:
 > The TeXbook [1, p.·123 and 130] was written by Knuth [1].
 >
 > ### References
-> [1] Donald Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
+> [1] Donald Ervin Knuth. _The \TeX{}book, volume A of Computers and typesetting._
 >     Addison-Wesley, 1984.
 
 %</manual>
@@ -2614,7 +2615,7 @@ following text:
 >
 > ``Is this a code span?'' ``Or a quote?''
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2645,7 +2646,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2677,7 +2678,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2757,7 +2758,7 @@ defaultOptions.codeSpans = true
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2816,7 +2817,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2903,7 +2904,7 @@ defaultOptions.contentBlocks = false
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2965,7 +2966,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -3071,7 +3072,7 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3113,7 +3114,7 @@ following text:
 > 
 >     Third paragraph of definition 2.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3205,7 +3206,7 @@ defaultOptions.definitionLists = false
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3258,7 +3259,7 @@ following text:
 > </pre>
 > ```
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3364,7 +3365,7 @@ defaultOptions.fencedCode = false
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3418,7 +3419,7 @@ following text:
 > This paragraph won't be part of the note, because it
 > isn't indented.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3511,7 +3512,7 @@ defaultOptions.footnotes = false
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3552,7 +3553,7 @@ following text:
 > #. McHale
 > #. Parish
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3723,7 +3724,7 @@ following text:
 >
 > Is there support? Is there support? Is there support?
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3766,7 +3767,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3809,7 +3810,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3874,16 +3875,16 @@ defaultOptions.html = false
 %
 :    true
 
-     :  Disable the escaping of special plain TeX characters, which makes it
-        possible to intersperse your markdown markup with TeX code.  The
+     :  Disable the escaping of special plain \TeX{} characters, which makes it
+        possible to intersperse your markdown markup with \TeX{} code.  The
         intended usage is in documents prepared manually by a human author.
-        In such documents, it can often be desirable to mix TeX and markdown
+        In such documents, it can often be desirable to mix \TeX{} and markdown
         markup freely.
 
 :    false
 
-     :  Enable the escaping of special plain TeX characters outside verbatim
-        environments, so that they are not interpretted by TeX.  This is
+     :  Enable the escaping of special plain \TeX{} characters outside verbatim
+        environments, so that they are not interpretted by \TeX{}. This is
         encouraged when typesetting automatically generated content or
         markdown documents that were not prepared with this package in mind.
 
@@ -3949,7 +3950,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3975,7 +3976,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4001,7 +4002,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4064,7 +4065,7 @@ defaultOptions.hybrid = false
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4090,7 +4091,7 @@ following text:
 > write, since you don't have to pick an identifier and
 > move down to type the note.]
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4178,10 +4179,7 @@ defaultOptions.preserveTabs = false
 :    true
 
      :   Convert any ellipses in the input to the
-%        \m{markdownRendererEllipsis} \TeX{} macro.
-%        \iffalse
-         `\markdownRendererEllipsis` TeX macro.
-%        \fi
+         \m{markdownRendererEllipsis} \TeX{} macro.
 
 :    false
 
@@ -4259,7 +4257,7 @@ following text:
 >
 > Are these just three regular dots, a victorian ellipsis, or . . . ?
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4289,7 +4287,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4322,7 +4320,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4377,24 +4375,17 @@ defaultOptions.smartEllipses = false
 
      :   Make the number in the first item of an ordered lists significant. The
          item numbers will be passed to the
-%        \m{markdownRendererOlItemWithNumber} \TeX{} macro.
-%        \iffalse
-         `\markdownRendererOlItemWithNumber` TeX macro.
-%        \fi
+         \m{markdownRendererOlItemWithNumber} \TeX{} macro.
 
 :    false
 
      :   Ignore the numbers in the ordered list items. Each item will only
-         produce a
-%        \m{markdownRendererOlItem} \TeX{} macro.
-%        \iffalse
-         `\markdownRendererOlItem` TeX macro.
-%        \fi
+         produce a \m{markdownRendererOlItem} \TeX{} macro.
 
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4441,7 +4432,7 @@ following text:
 > 2. fourth item
 > 3. fifth item
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4510,16 +4501,10 @@ defaultOptions.startNumber = true
 
      :   Lists whose bullets do not consist of multiple paragraphs will be
          passed to the
-%        \m{markdownRendererOlBeginTight}, \m{markdownRendererOlEndTight},
-%        \m{markdownRendererUlBeginTight}, \m{markdownRendererUlEndTight},
-%        \m{markdownRendererDlBeginTight}, and
-%        \m{markdownRendererDlEndTight} \TeX{} macros.
-%        \iffalse
-         `\markdownRendererOlBeginTight`, `\markdownRendererOlEndTight`,
-         `\markdownRendererUlBeginTight`, `\markdownRendererUlEndTight`,
-         `\markdownRendererDlBeginTight`, and
-         `\markdownRendererDlEndTight` TeX macros.
-%        \fi
+         \m{markdownRendererOlBeginTight}, \m{markdownRendererOlEndTight},
+         \m{markdownRendererUlBeginTight}, \m{markdownRendererUlEndTight},
+         \m{markdownRendererDlBeginTight}, and
+         \m{markdownRendererDlEndTight} \TeX{} macros.
 
 :    false
 
@@ -4529,7 +4514,7 @@ defaultOptions.startNumber = true
 % \end{markdown}
 % \iffalse
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4634,7 +4619,7 @@ defaultOptions.tightLists = true
 % \end{markdown}
 % \iffalse
 
-###### Plain TeX example {.unnumbered}
+###### Plain \TeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4664,7 +4649,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-###### LaTeX example {.unnumbered}
+###### \LaTeX{} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4694,7 +4679,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-###### ConTeXt example {.unnumbered}
+###### \Hologo{ConTeXt} example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4906,18 +4891,19 @@ end
 %</tex>
 %<*manual>
 
-Plain TeX
----------
+Plain \TeX{}
+------------
 
-The plain TeX macro package provides TeX commands for typesetting markdown
-documents that invoke the Lua parser in the background. Beside TeX commands
-that correspond to the Lua options, the macro package also provides commands
-corresponding to additional plain TeX-specific options and so-called *token
-renderer* commands that define how the individual markdown elements look.
+The plain \TeX{} macro package provides \TeX{} commands for typesetting
+markdown documents that invoke the Lua parser in the background. Beside
+\TeX{} commands that correspond to the Lua options, the macro package also
+provides commands corresponding to additional plain \TeX{}-specific options
+and so-called *token renderer* commands that define how the individual
+markdown elements look.
 
 ### Package version
 
-The plain TeX interface provides the `\markdownLastModified` and
+The plain \TeX{} interface provides the `\markdownLastModified` and
 `\markdownVersion` commands that you can use to check whether the Markdown
 package has been loaded and which version of it. Using a text editor, create a
 text document named `document.tex` with the following content:
@@ -4935,7 +4921,7 @@ The Markdown package
 \ifx\markdownVersion\undefined
   has not been loaded yet.
 \else
-  version \markdownVersion{} from \markdownLastModified{} has been loaded.
+  version \markdownVersion\ from \markdownLastModified\ has been loaded.
 \fi
 \par
 ```````
@@ -4948,7 +4934,7 @@ following text:
 
 > The Markdown package has not been loaded yet.
 >
-> The Markdown package version /markdownVersion from /markdownLastModified has been loaded.
+> The Markdown package version \markdownVersion{} from \markdownLastModified{} has been loaded.
 
 Invoking pdfTeX should have the same effect:
 ``` sh
@@ -5073,9 +5059,9 @@ pdftex document.tex
 %
 % \iffalse
 
-The plain TeX options are represented by TeX commands. Some of them map
+The plain \TeX{} options are represented by \TeX{} commands. Some of them map
 directly to the options recognized by the Lua interface, while some of them are
-specific to the plain TeX interface.
+specific to the plain \TeX{} interface.
 
 % \fi
 %
@@ -5150,12 +5136,12 @@ specific to the plain TeX interface.
 %
 % The \mdef{markdownOptionOutputDir} macro sets the path to the directory that
 % will contain the cache files produced by the Lua implementation and also the
-% auxiliary files produced by the plain TeX implementation. The option defaults
-% to `.`.
+% auxiliary files produced by the plain \TeX{} implementation. The option
+% defaults to `.`.
 %
 % The path must be set to the same value as the `-output-directory` option of
-% your TeX engine for the package to function correctly. We need this macro to
-% make the Lua implementation aware where it should store the helper files.
+% your \TeX{} engine for the package to function correctly. We need this macro
+% to make the Lua implementation aware where it should store the helper files.
 % The same limitations apply here as in the case of the
 % \m{markdownOptionHelperScriptFileName} macro.
 %
@@ -5182,9 +5168,9 @@ specific to the plain TeX interface.
 %</tex>
 %<*manual>
 
-The plain TeX interface provides the following commands that you can use to
+The plain \TeX{} interface provides the following commands that you can use to
 specify the location of temporary files produced during the conversion from
-Markdown to TeX:
+Markdown to \TeX{}:
 
 - `\markdownOptionHelperScriptFileName`,
 - `\markdownOptionInputTempFileName`,
@@ -5220,7 +5206,7 @@ named `output-directory` and contain the following text:
 
 A folder named `output-directory/cache-directory` should also be produced and
 contain fragments of the converted Markdown document. LuaTeX does not need
-other temporary files to perform the conversion from Markdown to TeX. To
+other temporary files to perform the conversion from Markdown to \TeX{}. To
 produce the remaining temporary files, invoke pdfTeX from the terminal:
 ``` sh
 pdftex -output-directory output-directory -shell-escape document.tex
@@ -5228,8 +5214,8 @@ pdftex -output-directory output-directory -shell-escape document.tex
 Text documents named `helper-script.lua`, and `temporary-output.md` should be
 produced in the folder named `output-directory`.  The document named
 `helper-script.lua` will contain Lua code that was executed to convert Markdown
-to plain TeX.  The document named `temporary-output.tex` will contain the input
-Markdown document converted to TeX.
+to plain \TeX{}.  The document named `temporary-output.tex` will contain the
+input Markdown document converted to \TeX{}.
 
 No document named `error-output.txt` should be produced in the folder named
 `output-directory`. This document would only be produced if an error had occured
@@ -5499,11 +5485,11 @@ bug](https://github.com/witiko/markdown/issues).
 % and the title of the content block.
 %
 % Note that you will need to place place a `markdown-languages.json` file
-% inside your working directory or inside your local TeX directory structure.
-% In this file, you will define a mapping between filename extensions and the
-% language names recognized by your favorite syntax highlighter; there may
-% exist other creative uses beside syntax highlighting. The `Languages.json`
-% file provided by @sotkov17 is a good starting point.
+% inside your working directory or inside your local \TeX{} directory
+% structure.  In this file, you will define a mapping between filename
+% extensions and the language names recognized by your favorite syntax
+% highlighter; there may exist other creative uses beside syntax highlighting.
+% The `Languages.json` file provided by @sotkov17 is a good starting point.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -6174,11 +6160,12 @@ bug](https://github.com/witiko/markdown/issues).
 %</latex>
 %<*manual>
 
-LaTeX
------
+\LaTeX{}
+--------
 
-The LaTeX macro package provides additional syntactic sugar on top of the plain
-TeX macro package and provides sane default definitions of the token renderers.
+The \LaTeX{} macro package provides additional syntactic sugar on top of the
+plain \TeX{} macro package and provides sane default definitions of the token
+renderers.
 
 <!-- TODO -->
 
@@ -6696,12 +6683,12 @@ TeX macro package and provides sane default definitions of the token renderers.
 %</context>
 %<*manual>
 
-ConTeXt
--------
+\Hologo{ConTeXt}
+----------------
 
-The ConTeXt macro package provides additional syntactic sugar on top of the
-plain TeX macro package and provides sane default definitions of the token
-renderers.
+The \Hologo{ConTeXt} macro package provides additional syntactic sugar on top
+of the plain \TeX{} macro package and provides sane default definitions of
+the token renderers.
 
 ### Interfaces
 
@@ -9991,7 +9978,7 @@ local convert = md.new(\markdownLuaOptions)
 % \ref{sec:directlua} are meant to be indistinguishable to the remaining code.
 %
 % The package assumes that although the user is not using the Lua\TeX{} engine,
-% their TeX distribution contains it, and uses shell access to produce and
+% their \TeX{} distribution contains it, and uses shell access to produce and
 % execute Lua scripts using the \TeX{}Lua interpreter~[@luatex17, Section
 % 3.1.1].
 %
@@ -10791,7 +10778,8 @@ local convert = md.new(\markdownLuaOptions)
 % When buffering user input, we should disable the bytes with the high bit set,
 % since these are made active by the \m{enableregime} macro. We will do this
 % by redefining the \m{markdownMakeOther} macro accordingly. The code is
-% courtesy of Scott Pakin, the creator of the \pkg{filecontents} LaTeX package.
+% courtesy of Scott Pakin, the creator of the \pkg{filecontents} \LaTeX{}
+% package.
 %
 % \end{markdown}
 %  \begin{macrocode}

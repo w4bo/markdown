@@ -54,8 +54,10 @@ examples/example.tex: $(INSTALLABLES)
 
 # This target converts the markdown user manual to an HTML page.
 %.html: %.md %.css
-	sed -e 's#/markdownVersion#$(VERSION)#g' \
-	    -e 's#/markdownLastModified#$(LASTMODIFIED)#g' <$< | \
+	sed -e 's#\\markdownVersion{}#$(VERSION)#g' \
+	    -e 's#\\markdownLastModified{}#$(LASTMODIFIED)#g' \
+	    -e 's#\\TeX{}#TeX#g' -e 's#\\LaTeX{}#LaTeX#g' -e 's#\\Hologo{ConTeXt}#ConTeXt#g' \
+	    -e 's#\\m{\([^}]*\)}#`\\\1`#g' -e 's#\\mdef{\([^}]*\)}#`\\\1`#g' <$< | \
 	  pandoc -f markdown -t html -N -s --toc --toc-depth=5 --css=$(word 2, $^) >$@
 
 # This pseudo-target runs all the tests in the `tests/` directory.
