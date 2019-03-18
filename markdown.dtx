@@ -486,12 +486,34 @@ table td {
   }
 }
 
+.tex sub, .latex sub, .latex sup {
+  text-transform: uppercase;
+}
+
+.tex sub, .latex sub {
+  vertical-align: -0.1ex;
+  margin-left: -0.1667em;
+  margin-right: -0.125em;
+}
+
+.tex, .latex, .tex sub, .latex sub {
+  font-size: 1em;
+}
+
+.latex sup {
+  font-size: 0.85em;
+  vertical-align: -0.35em;
+  margin-left: -0.36em;
+  margin-right: -0.15em;
+}
+
 %</manual-css>
 %<*manual>
 
 ---
 title:  Markdown Package User Manual
 author: Vít Novotný
+date:   March 18, 2019
 ---
 
 % \fi
@@ -640,7 +662,7 @@ placed:
 
 where `<TEXMF>` corresponds to a root of your \TeX{} distribution, such as
 `/usr/share/texmf` and `~/texmf` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf` on Windows systems. When in doubt,
+`C:\Users\`\meta{Your username}`\texmf` on Windows systems. When in doubt,
 consult the manual of your \TeX{} distribution.
 
 ### Portable Installation
@@ -944,7 +966,7 @@ texlua hello.lua > hello.tex
 pdftex document.tex
 ``````
 
-#### Using the Lua CLI
+#### Using the Lua Command-Line Interface
 
 Using a text editor, create a text document named `hello.md` with the
 following content:
@@ -953,12 +975,12 @@ Hello *world*!
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- hello.md hello.tex
+texlua ⟨CLI pathname⟩ -- hello.md hello.tex
 luatex document.tex
 ``````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -967,7 +989,7 @@ script file using [Kpathsea][].
 A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
 ``` sh
-texlua <CLI␣PATHNAME> -- hello.md hello.tex
+texlua ⟨CLI pathname⟩ -- hello.md hello.tex
 pdftex document.tex
 ``````
 
@@ -1074,7 +1096,14 @@ to see the effect of your changes.
 Examples
 ========
 
-This section will show how to use the package by example.
+In this section, I will describe the individual parts of the Markdown package.
+Each part will be shown by example, leaving the implementation details to the
+technical documentation.
+
+/markdown-interfaces.md
+/markdown-options.md
+/markdown-tokens.md
+/markdown-miscellanea.md
 
 %</manual>
 %<*lua>
@@ -1088,19 +1117,27 @@ This section will show how to use the package by example.
 %
 % \iffalse
 %</lua>
-%<*manual>
+%<*manual-interfaces>
 
-Lua
----
+Interfaces
+----------
 
-The Lua part of the package makes it possible to convert a markdown document
-into \TeX{} commands and typeset it later when convenient. Although the typical
-user will not find this terribly useful and will instead use the plain \TeX{},
-\LaTeX{}, and \Hologo{ConTeXt} macro packages to convert and typeset the
-markdown documents in a single step, they will still benefit from learning the
-options that control the behavior of the Lua parser.
+In this section, I will describe the individual interfaces exposed by the
+Markdown package starting with the low-level Lua interfaces all the way up to
+the \LaTeX{} and \Hologo{ConTeXt} interfaces intended for the ordinary user.
 
-%</manual>
+### Lua
+
+The Lua programming language is what drives the conversion from markdown to
+\TeX{} in the Markdown package. Based on the [Lunamark][] Lua library by John
+MacFarlane, the Lua implementation is largely independent on \TeX{}, and can be
+used separately from typesetting a document. Lua provides two interfaces: a Lua
+module and a command-line interface (CLI).
+
+ [Lunamark]: https://github.com/jgm/lunamark
+             (Lua library for conversion between markup formats)
+
+%</manual-interfaces>
 %<*lua>
 % \fi
 %
@@ -1139,20 +1176,19 @@ local M = {metadata = metadata}
 % \end{markdown}
 % \iffalse
 %</lua>
-%<*manual>
+%<*manual-interfaces>
 
-### Interfaces
+#### Lua Module
 
-The Lua part of the package exposes two interfaces – the `markdown` Lua module,
-and the Lua command-line interface (CLI).
+A Lua module is a software library that can be used from in other programs.
+The `markdown` Lua module makes it possible to convert markdown to \TeX{} from
+within Lua\TeX{} documents and Lua scripts.
 
-#### The Lua Module
-
-The `markdown` Lua module exposes the `new(options)` method, which creates a
-converter function from markdown to \TeX{}. The properties of the converter
-function are specified by the Lua table `options`. The parameter is optional;
-when unspecified, the behaviour will be the same as if `options` were an empty
-table.
+The `markdown` Lua module exposes the `new(`\meta{options}`)` method, which
+creates a converter function from markdown to \TeX{}. The properties of the
+converter function are specified by the Lua table `options`. The parameter is
+optional; when unspecified, the behaviour will be the same as if \meta{options}
+were an empty table.
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1172,16 +1208,21 @@ local markdown = require("markdown")
 local convert_safe = markdown.new()
 local convert_unsafe = markdown.new({hybrid = true})
 local input = [[$\sqrt{-1}$ *equals* $i$.]]
-print(convert_safe(input) .. " " .. convert_unsafe(input))
+print(convert_safe(input) .. [[\par]] .. convert_unsafe(input))
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
 texlua example.lua > example.tex
 luatex document.tex
 ``````
-A PDF document named `document.pdf` should be produced and contain the text
-“\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
-the same effect:
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+
+Invoking pdfTeX should have the same effect:
 ``` sh
 texlua example.lua > example.tex
 pdftex document.tex
@@ -1199,22 +1240,37 @@ named `document.tex` with the following content:
   local markdown = require("markdown")
   local convert_safe = markdown.new()
   local convert_unsafe = markdown.new({hybrid = true})
-  local input = [[$\noexpand\sqrt{-1}$ *equals* $i$.]]
-  tex.sprint(convert_safe(input) .. " " .. convert_unsafe(input)) }
+  local input = [[$\string\sqrt{-1}$ *equals* $i$.]]
+  tex.sprint(
+    convert_safe(input) .. [[\string\par]] ..
+    convert_unsafe(input)
+  )
+}
 \bye
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
 luatex document.tex
 ```````
-A PDF document named `document.pdf` should be produced and contain the text
-“\$\\sqrt {-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” In this case, we cannot
-use pdfTeX, because pdfTeX does not define the `\directlua` \TeX{} command.
+A PDF document named `document.pdf` should be produced and contain the
+following text:
 
-#### The Lua CLI
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
 
-The Lua command-line interface (CLI) accepts the same options as the `markdown`
-Lua module, but now the options are specified as command-line parameters.
+In this case, we cannot use pdfTeX, because pdfTeX does not define the
+`\directlua` \TeX{} command.
+
+#### Lua Command-Line Interface
+
+The Lua command-line interface (CLI) of the Markdown package makes the
+functionality of the Lua module accessible from the command line.  This makes
+it possible to convert documents from markdown to \TeX{} manually without any
+knowledge of the Lua programming language.
+
+The Lua command-line interface accepts the same options as the `markdown` Lua
+module, but now the options are specified as command-line parameters.
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1231,26 +1287,31 @@ $\sqrt{-1}$ *equals* $i$.
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- example.md safe.tex
-texlua <CLI␣PATHNAME> hybrid=true -- example.md unsafe.tex
+texlua ⟨CLI pathname⟩ -- example.md safe.tex
+texlua ⟨CLI pathname⟩ hybrid=true -- example.md unsafe.tex
 luatex document.tex
 ``````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
-A PDF document named `document.pdf` should be produced and contain the text
-“\$\\sqrt{-1}\$ *equals* \$i\$. √-̅1̅ *equals* $i$.” Invoking pdfTeX should have
-the same effect:
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+
+Invoking pdfTeX should have the same effect:
 ``` sh
-texlua <CLI␣PATHNAME> -- example.md safe.tex
-texlua <CLI␣PATHNAME> hybrid=true -- example.md unsafe.tex
+texlua ⟨CLI pathname⟩ -- example.md safe.tex
+texlua ⟨CLI pathname⟩ hybrid=true -- example.md unsafe.tex
 pdftex document.tex
 ``````
 
-%</manual>
+%</manual-interfaces>
 %<*lua>
 % \fi
 % \begin{markdown}
@@ -1263,15 +1324,13 @@ pdftex document.tex
 % \end{markdown}
 % \iffalse
 %</lua>
-%<*manual>
+%<*manual-options>
 
-### Options
+## Options
 
-This section will cover the options recognized by the Lua interface. The
-interfaces of the plain \TeX{}, \LaTeX{}, and \Hologo{ConTeXt} macro packages
-recognize these options as well, in addition to their own options.
+This section will cover the options recognized by the Markdown package.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -1301,17 +1360,17 @@ local defaultOptions = {}
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 % \fi
 % \begin{markdown}
 
-#### File and Directory Names
+### File and Directory Names
 
 % \end{markdown}
 % \par
 % \iffalse
 
-##### Option `cacheDir`
+#### Option `cacheDir`
 
 `cacheDir` (default value: `"."`)
 
@@ -1333,7 +1392,7 @@ local defaultOptions = {}
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1355,7 +1414,7 @@ A PDF document named `document.pdf` should be produced and contain the text
 “Hello *world*!” Several cache files of the Markdown package will also be
 produced in the `cache` directory as we requested using the `cacheDir` option.
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1371,12 +1430,12 @@ Hello *world*!
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> cacheDir=cache -- hello.md hello.tex
+texlua ⟨CLI pathname⟩ cacheDir=cache -- hello.md hello.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -1385,7 +1444,7 @@ A PDF document named `document.pdf` should be produced and contain the text
 the Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1406,7 +1465,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1428,7 +1487,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1450,7 +1509,7 @@ A PDF document named `document.pdf` should be produced and contain the text “H
 Markdown package will also be produced as we requested using the `cacheDir`
 option.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -1459,17 +1518,17 @@ defaultOptions.cacheDir = "."
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 % \fi
 % \begin{markdown}
 
-#### Parser Options
+### Parser Options
 
 % \end{markdown}
 % \par
 % \iffalse
 
-##### Option `blankBeforeBlockquote`
+#### Option `blankBeforeBlockquote`
 
 `blankBeforeBlockquote` (default value: `false`)
 
@@ -1489,7 +1548,7 @@ defaultOptions.cacheDir = "."
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1525,7 +1584,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1544,13 +1603,13 @@ A paragraph.
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> blankBeforeBlockquote=true -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ blankBeforeBlockquote=true -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -1563,7 +1622,7 @@ following text:
 >
 > A paragraph. > A quote?
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1596,7 +1655,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1630,7 +1689,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1664,7 +1723,7 @@ following text:
 >
 > A paragraph > Not a quote.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -1673,9 +1732,9 @@ defaultOptions.blankBeforeBlockquote = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `blankBeforeCodeFence`
+#### Option `blankBeforeCodeFence`
 
 `blankBeforeCodeFence` (default value: `false`)
 
@@ -1697,7 +1756,7 @@ defaultOptions.blankBeforeBlockquote = false
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1740,7 +1799,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1761,13 +1820,13 @@ A code fence?
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> fencedCode=true -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> fencedCode=true blankBeforeCodeFence=true  -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ fencedCode=true -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ fencedCode=true blankBeforeCodeFence=true  -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -1782,7 +1841,7 @@ following text:
 >
 > A paragraph. ``` A code fence? ```
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1822,7 +1881,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1862,7 +1921,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1903,7 +1962,7 @@ following text:
 >
 > A paragraph. ``` Not a code fence. ```
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -1912,9 +1971,9 @@ defaultOptions.blankBeforeCodeFence = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `blankBeforeHeading`
+#### Option `blankBeforeHeading`
 
 `blankBeforeHeading` (default value: `false`)
 
@@ -1935,7 +1994,7 @@ defaultOptions.blankBeforeCodeFence = false
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1975,7 +2034,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -1995,13 +2054,13 @@ A heading?
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> blankBeforeHeading=true  -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ blankBeforeHeading=true  -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -2015,7 +2074,7 @@ following text:
 >
 > A paragraph. A heading? ==========
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2051,7 +2110,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2088,7 +2147,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2125,7 +2184,7 @@ following text:
 >
 > A paragraph. Not a heading. ==============
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -2134,9 +2193,9 @@ defaultOptions.blankBeforeHeading = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `breakableBlockquotes`
+#### Option `breakableBlockquotes`
 
 `breakableBlockquotes` (default value: `false`)
 
@@ -2156,7 +2215,7 @@ defaultOptions.blankBeforeHeading = false
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2193,7 +2252,7 @@ following text:
 >
 > > Another block quote.
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2213,13 +2272,13 @@ following content:
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> breakableBlockquotes=true  -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ breakableBlockquotes=true  -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -2232,7 +2291,7 @@ following text:
 >
 > > or two block quotes?
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2267,7 +2326,7 @@ following text:
 >
 > > Another block quote.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2303,7 +2362,7 @@ following text:
 >
 > > Another block quote.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2339,7 +2398,7 @@ following text:
 >
 > > Another block quote.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -2348,9 +2407,9 @@ defaultOptions.breakableBlockquotes = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `citationNbsps`
+#### Option `citationNbsps`
 
 `citationNbsps` (default value: `true`)
 
@@ -2374,7 +2433,7 @@ defaultOptions.breakableBlockquotes = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.bib` with the
 following content:
@@ -2422,7 +2481,7 @@ following text, where the middot (`·`) denotes a non-breakable space:
 > [1] Donald·Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
 >     Addison-Wesley, 1984.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -2431,9 +2490,9 @@ defaultOptions.citationNbsps = true
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `citations`
+#### Option `citations`
 
 `citations` (default value: `false`)
 
@@ -2469,7 +2528,7 @@ defaultOptions.citationNbsps = true
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.bib` with the
 following content:
@@ -2512,7 +2571,7 @@ following text:
 > [1] Donald Ervin Knuth. _The \TeX{}book, volume A of Computers and typesetting._
 >     Addison-Wesley, 1984.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -2521,9 +2580,9 @@ defaultOptions.citations = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `codeSpans`
+#### Option `codeSpans`
 
 `codeSpans` (default value: `true`)
 
@@ -2554,7 +2613,7 @@ defaultOptions.citations = false
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2589,7 +2648,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2608,13 +2667,13 @@ following content:
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> codeSpans=false -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ codeSpans=false -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -2625,7 +2684,7 @@ following text:
 >
 > ``Is this a code span?'' ``Or a quote?''
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2656,7 +2715,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2688,7 +2747,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2720,7 +2779,7 @@ following text:
 >
 > “This is a quote.” “This is another quote.”
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -2729,9 +2788,9 @@ defaultOptions.codeSpans = true
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `contentBlocks`
+#### Option `contentBlocks`
 
 `contentBlocks` (default value: `false`)
 
@@ -2765,7 +2824,7 @@ defaultOptions.codeSpans = true
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2824,7 +2883,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2884,7 +2943,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -2893,9 +2952,9 @@ defaultOptions.contentBlocks = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `contentBlocksLanguageMap`
+#### Option `contentBlocksLanguageMap`
 
 `contentBlocksLanguageMap` (default value: `"markdown-languages.json"`)
 
@@ -2911,7 +2970,7 @@ defaultOptions.contentBlocks = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -2973,7 +3032,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `table.csv` with the
 following content:
@@ -3034,7 +3093,7 @@ following text:
 >
 > This is a *transcluded markdown document*.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -3043,9 +3102,9 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `definitionLists`
+#### Option `definitionLists`
 
 `definitionLists` (default value: `false`)
 
@@ -3079,7 +3138,7 @@ defaultOptions.contentBlocksLanguageMap = "markdown-languages.json"
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3121,7 +3180,7 @@ following text:
 > 
 >     Third paragraph of definition 2.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3163,7 +3222,7 @@ following text:
 > 
 >     Third paragraph of definition 2.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -3172,9 +3231,9 @@ defaultOptions.definitionLists = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `fencedCode`
+#### Option `fencedCode`
 
 `fencedCode` (default value: `false`)
 
@@ -3213,7 +3272,7 @@ defaultOptions.definitionLists = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3266,7 +3325,7 @@ following text:
 > </pre>
 > ```
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3321,7 +3380,7 @@ following text:
 > </pre>
 > ```
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -3330,9 +3389,9 @@ defaultOptions.fencedCode = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `footnotes`
+#### Option `footnotes`
 
 `footnotes` (default value: `false`)
 
@@ -3372,7 +3431,7 @@ defaultOptions.fencedCode = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3426,7 +3485,7 @@ following text:
 > This paragraph won't be part of the note, because it
 > isn't indented.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3480,7 +3539,7 @@ following text:
 > This paragraph won't be part of the note, because it
 > isn't indented.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -3489,9 +3548,9 @@ defaultOptions.footnotes = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `hashEnumerators`
+#### Option `hashEnumerators`
 
 `hashEnumerators` (default value: `false`)
 
@@ -3519,7 +3578,7 @@ defaultOptions.footnotes = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3529,15 +3588,15 @@ following content:
 \begin{document}
 
 \begin{markdown}
-#. Bird
-#. McHale
-#. Parish
+. Bird
+. McHale
+. Parish
 \end{markdown}
 
 \begin{markdown*}{hashEnumerators}
-#. Bird
-#. McHale
-#. Parish
+. Bird
+. McHale
+. Parish
 \end{markdown*}
 
 \end{document}
@@ -3560,7 +3619,7 @@ following text:
 > #. McHale
 > #. Parish
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3569,16 +3628,16 @@ following content:
 \starttext
 
 \startmarkdown
-#. Bird
-#. McHale
-#. Parish
+. Bird
+. McHale
+. Parish
 \stopmarkdown
 
 \def\markdownOptionHashEnumerators{true}
 \startmarkdown
-#. Bird
-#. McHale
-#. Parish
+. Bird
+. McHale
+. Parish
 \stopmarkdown
 
 \stoptext
@@ -3601,7 +3660,7 @@ following text:
 > #. McHale
 > #. Parish
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -3610,9 +3669,9 @@ defaultOptions.hashEnumerators = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `html`
+#### Option `html`
 
 `html` (default value: `false`)
 
@@ -3644,7 +3703,7 @@ See [the corresponding issue][issue-38] in the package repository.
              (HTML entities with the `html` Lua option enabled produce a Lua
               parser error)
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3687,7 +3746,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3711,13 +3770,13 @@ _Is there <? HTML instruction ?> support?_
 ````````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> html=true -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ html=true -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -3731,7 +3790,7 @@ following text:
 >
 > Is there support? Is there support? Is there support?
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3774,7 +3833,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3817,7 +3876,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3860,7 +3919,7 @@ following text:
 >
 > There is support. There is support. There is support.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -3869,9 +3928,9 @@ defaultOptions.html = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `hybrid`
+#### Option `hybrid`
 
 `hybrid` (default value: `true`)
 
@@ -3898,7 +3957,7 @@ defaultOptions.html = false
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3909,8 +3968,12 @@ following content:
   local markdown = require("markdown")
   local convert_safe = markdown.new()
   local convert_unsafe = markdown.new({hybrid = true})
-  local input = [[$\noexpand\sqrt{-1}$ *equals* $i$.]]
-  tex.sprint(convert_safe(input) .. " " .. convert_unsafe(input)) }
+  local input = [[$\string\sqrt{-1}$ *equals* $i$.]]
+  tex.sprint(
+    convert_safe(input) .. [[\string\par]] ..
+    convert_unsafe(input)
+  )
+}
 \bye
 ```````
 Then, invoke LuaTeX from the terminal:
@@ -3923,7 +3986,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3941,13 +4004,13 @@ $\sqrt{-1}$ *equals* $i$.
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> hybrid=true -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ hybrid=true -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -3957,7 +4020,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3983,7 +4046,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4009,7 +4072,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4035,7 +4098,7 @@ following text:
 > \$\\sqrt {-1}\$ *equals* \$i\$.
 > √-̅1̅ *equals* $i$.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4044,9 +4107,9 @@ defaultOptions.hybrid = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `inlineFootnotes`
+#### Option `inlineFootnotes`
 
 `inlineFootnotes` (default value: `false`)
 
@@ -4072,7 +4135,7 @@ defaultOptions.hybrid = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4098,7 +4161,7 @@ following text:
 > write, since you don't have to pick an identifier and
 > move down to type the note.]
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4125,7 +4188,7 @@ following text:
 > write, since you don't have to pick an identifier and
 > move down to type the note.]
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4134,9 +4197,9 @@ defaultOptions.inlineFootnotes = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `preserveTabs`
+#### Option `preserveTabs`
 
 `preserveTabs` (default value: `false`)
 
@@ -4163,7 +4226,7 @@ issue][issue-38] in the package repository.
              (Tabs are stripped even with the `preserveTabs=true`
               Lua option enabled)
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4172,9 +4235,9 @@ defaultOptions.preserveTabs = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `smartEllipses`
+#### Option `smartEllipses`
 
 `smartEllipses` (default value: `false`)
 
@@ -4195,7 +4258,7 @@ defaultOptions.preserveTabs = false
 % \end{markdown}
 % \iffalse
 
-###### Lua Module Example {.unnumbered}
+##### Lua Module Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4227,7 +4290,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### Lua CLI Example {.unnumbered}
+##### Lua CLI Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4247,13 +4310,13 @@ Are these just three regular dots, a victorian ellipsis, or ... ?
 ``````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-texlua <CLI␣PATHNAME> -- content.md optionfalse.tex
-texlua <CLI␣PATHNAME> smartEllipses=true -- content.md optiontrue.tex
+texlua ⟨CLI pathname⟩ -- content.md optionfalse.tex
+texlua ⟨CLI pathname⟩ smartEllipses=true -- content.md optiontrue.tex
 luatex document.tex
 ```````
-where `<CLI␣PATHNAME>` corresponds to the location of the Lua CLI script file,
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
 such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
-`C:\Users\<YOUR␣USERNAME>\texmf\scripts\markdown\markdown-cli.lua` on Windows
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
@@ -4264,7 +4327,7 @@ following text:
 >
 > Are these just three regular dots, a victorian ellipsis, or . . . ?
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4294,7 +4357,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4327,7 +4390,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4358,7 +4421,7 @@ following text:
 >
 > . . . and this is a victorian ellipsis.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4367,9 +4430,9 @@ defaultOptions.smartEllipses = false
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `startNumber`
+#### Option `startNumber`
 
 `startNumber` (default value: `true`)
 
@@ -4392,7 +4455,7 @@ defaultOptions.smartEllipses = false
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4439,7 +4502,7 @@ following text:
 > 2. fourth item
 > 3. fifth item
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4484,7 +4547,7 @@ following text:
 > 2. fourth item
 > 3. fifth item
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4493,9 +4556,9 @@ defaultOptions.startNumber = true
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `tightLists`
+#### Option `tightLists`
 
 `tightLists` (default value: `true`)
 
@@ -4521,7 +4584,7 @@ defaultOptions.startNumber = true
 % \end{markdown}
 % \iffalse
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4585,7 +4648,7 @@ following text:
 >
 >   - third item
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4594,9 +4657,9 @@ defaultOptions.tightLists = true
 % \par
 % \iffalse
 %</lua,lua-cli>
-%<*manual>
+%<*manual-options>
 
-##### Option `underscores`
+#### Option `underscores`
 
 `underscores` (default value: `true`)
 
@@ -4626,7 +4689,7 @@ defaultOptions.tightLists = true
 % \end{markdown}
 % \iffalse
 
-###### Plain \TeX{} Example {.unnumbered}
+##### Plain \TeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4656,7 +4719,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-###### \LaTeX{} Example {.unnumbered}
+##### \LaTeX{} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4686,7 +4749,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-###### \Hologo{ConTeXt} Example {.unnumbered}
+##### \Hologo{ConTeXt} Example {.unnumbered}
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -4717,7 +4780,7 @@ following text:
 >
 > This is _emphasized text_ and this is a math subscript: *mₙ*.
 
-%</manual>
+%</manual-options>
 %<*lua,lua-cli>
 % \fi
 %  \begin{macrocode}
@@ -4896,17 +4959,55 @@ end
 %
 % \iffalse
 %</tex>
-%<*manual>
+%<*manual-interfaces>
 
-Plain \TeX{}
-------------
+### Plain \TeX{}
 
-The plain \TeX{} macro package provides \TeX{} commands for typesetting
-markdown documents that invoke the Lua parser in the background. Beside
-\TeX{} commands that correspond to the Lua options, the macro package also
-provides commands corresponding to additional plain \TeX{}-specific options
-and so-called *token renderer* commands that define how the individual
-markdown elements look.
+The plain \TeX{} interface provides \TeX{} commands that typeset markdown
+documents by using the Lua interface behind the scenes. Unlike the Lua
+interface, the plain TeX interface does not provide low-level tools for
+converting markdown to \TeX{}. Instead, its goal is to provide high-level
+typesetting capabilities.
+
+The plain \TeX{} interface accepts the same options as the `markdown` Lua
+module, in addition to its own options, but now the options are specified as
+\TeX{} commands.
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+
+\markdownBegin
+$\sqrt{-1}$ *equals* $i$.
+\markdownEnd
+
+\def\markdownOptionHybrid{true}
+\markdownBegin
+$\sqrt{-1}$ *equals* $i$.
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+  
+Invoking pdfTeX should have the same effect:
+``` sh
+pdftex --shell-escape document.tex
+``````
+
+%</manual-interfaces>
+%<*manual-miscellanea>
 
 ### Package Version
 
@@ -4948,7 +5049,7 @@ Invoking pdfTeX should have the same effect:
 pdftex document.tex
 ``````
 
-%</manual>
+%</manual-miscellanea>
 %<*tex>
 % \fi
 %
@@ -5056,31 +5157,24 @@ pdftex document.tex
 % \markdownInput{hello.md}
 % \bye
 % ```````
-% \iffalse
-%</tex>
-%<*manual>
-% \fi
-
-### Options
-% \label{sec:texoptions}
 %
-% \iffalse
-
-The plain \TeX{} options are represented by \TeX{} commands. Some of them map
-directly to the options recognized by the Lua interface, while some of them are
-specific to the plain \TeX{} interface.
-
-% \fi
+%### Options
+% \label{sec:texoptions}
 %
 % The plain \TeX{} options are represented by \TeX{} commands. Some of them map
 % directly to the options recognized by the Lua interface (see
 % Section~\ref{sec:luaoptions}), while some of them are specific to the plain
 % \TeX{} interface.
-
-#### File and Directory Names
 %
 % \iffalse
-%</manual>
+%</tex>
+%<*manual-options>
+% \fi
+
+### File and Directory Names
+%
+% \iffalse
+%</manual-options>
 %<*tex>
 % \fi
 % The \mdef{markdownOptionHelperScriptFileName} macro sets the filename of the
@@ -5172,7 +5266,7 @@ specific to the plain \TeX{} interface.
 %
 % \iffalse
 %</tex>
-%<*manual>
+%<*manual-options>
 
 The plain \TeX{} interface provides the following commands that you can use to
 specify the location of temporary files produced during the conversion from
@@ -5203,7 +5297,7 @@ Hello *world*!
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
-luatex -output-directory output-directory document.tex
+luatex --output-directory output-directory document.tex
 ``````
 A text document named `temporary-input.md` should be produced in the folder
 named `output-directory` and contain the following text:
@@ -5211,24 +5305,24 @@ named `output-directory` and contain the following text:
 > Hello \*world\*!
 
 A folder named `output-directory/cache-directory` should also be produced and
-contain fragments of the converted Markdown document. LuaTeX does not need
-other temporary files to perform the conversion from Markdown to \TeX{}. To
+contain fragments of the converted markdown document. LuaTeX does not need
+other temporary files to perform the conversion from markdown to \TeX{}. To
 produce the remaining temporary files, invoke pdfTeX from the terminal:
 ``` sh
-pdftex -output-directory output-directory -shell-escape document.tex
+pdftex --output-directory output-directory --shell-escape document.tex
 ``````
 Text documents named `helper-script.lua`, and `temporary-output.md` should be
 produced in the folder named `output-directory`.  The document named
-`helper-script.lua` will contain Lua code that was executed to convert Markdown
+`helper-script.lua` will contain Lua code that was executed to convert markdown
 to plain \TeX{}.  The document named `temporary-output.tex` will contain the
-input Markdown document converted to \TeX{}.
+input markdown document converted to \TeX{}.
 
 No document named `error-output.txt` should be produced in the folder named
 `output-directory`. This document would only be produced if an error had occured
 while executing the Lua code. If this happens, please [file a
 bug](https://github.com/witiko/markdown/issues).
 
-%</manual>
+%</manual-options>
 %<*tex>
 % \fi
 % \par
@@ -5302,10 +5396,13 @@ bug](https://github.com/witiko/markdown/issues).
     \csname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
 %    \end{macrocode}
 % \par
-% \begin{markdown}
 %
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+% 
+% \begin{markdown}
 
 ### Token Renderers
 % \label{sec:texrenderersuser}
@@ -5313,7 +5410,7 @@ bug](https://github.com/witiko/markdown/issues).
 % \iffalse
 
 A key feature of the Markdown package is the support for user-defined \TeX{}
-macros, further referred to as *token renderers*, which render Markdown tokens
+macros, further referred to as *token renderers*, which render markdown tokens
 such as headings, emphasized text, links, and lists. By default, token
 renderers point to package-defined \TeX{} macros, further referred to as
 *prototypes*, which provide useful default definitions.  Token renderers will
@@ -5332,65 +5429,97 @@ be introduced in this section.
 The \mdef{markdownRendererInterblockSeparator} macro represents a separator
 between two markdown block elements. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererInterblockSeparator{%
   \markdownRendererInterblockSeparatorPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Line Break Renderer
 The \mdef{markdownRendererLineBreak} macro represents a forced line break.
 The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererLineBreak{%
   \markdownRendererLineBreakPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Ellipsis Renderer
  The \mdef{markdownRendererEllipsis} macro replaces any occurance of ASCII
  ellipses in the input text. This macro will only be produced, when the
  \Opt{smartEllipses} option is `true`.  The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererEllipsis{%
   \markdownRendererEllipsisPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Non-Breaking Space Renderer
 The \mdef{markdownRendererNbsp} macro represents a non-breaking space.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererNbsp{%
   \markdownRendererNbspPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Special Character Renderers
 The following macros replace any special plain \TeX{} characters (including
@@ -5398,9 +5527,13 @@ the active pipe character (`|`) of \Hologo{ConTeXt}) in the input text.
 These macros will only be produced, when the \Opt{hybrid} option is
 `false`.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererLeftBrace{%
   \markdownRendererLeftBracePrototype}%
@@ -5426,26 +5559,38 @@ These macros will only be produced, when the \Opt{hybrid} option is
   \markdownRendererPipePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Code Span Renderer
 The \mdef{markdownRendererCodeSpan} macro represents inlined code span in the
 input text. It receives a single argument that corresponds to the inlined
 code span.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererCodeSpan{%
   \markdownRendererCodeSpanPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Link Renderer
 The \mdef{markdownRendererLink} macro represents a hyperlink. It receives
@@ -5453,17 +5598,25 @@ four arguments: the label, the fully escaped \acro{uri} that can be directly
 typeset, the raw \acro{uri} that can be used outside typesetting, and the
 title of the link.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererLink{%
   \markdownRendererLinkPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Image Renderer
 The \mdef{markdownRendererImage} macro represents an image. It receives
@@ -5471,17 +5624,25 @@ four arguments: the label, the fully escaped \acro{uri} that can be directly
 typeset, the raw \acro{uri} that can be used outside typesetting, and the
 title of the link.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererImage{%
   \markdownRendererImagePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Content Block Renderers
 \label{sec:texcontentblockrenderers}
@@ -5491,33 +5652,49 @@ extension cast to the lower case, the fully escaped \acro{uri} that can be
 directly typeset, the raw \acro{uri} that can be used outside typesetting,
 and the title of the content block.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererContentBlock{%
   \markdownRendererContentBlockPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererContentBlockOnlineImage} macro represents an
 iA\,Writer online image content block. The macro receives the same arguments
 as \m{markdownRendererContentBlock}.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererContentBlockOnlineImage{%
   \markdownRendererContentBlockOnlineImagePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererContentBlockCode} macro represents an iA\,Writer
 content block that was recognized as a file in a known programming language
@@ -5546,228 +5723,340 @@ starting point.
              (File transclusion syntax for Markdown)
 % \fi
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererContentBlockCode{%
   \markdownRendererContentBlockCodePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Bullet List Renderers
 The \mdef{markdownRendererUlBegin} macro represents the beginning of a
 bulleted list that contains an item with several paragraphs of text (the
 list is not tight). The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererUlBegin{%
   \markdownRendererUlBeginPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererUlBeginTight} macro represents the beginning of a
 bulleted list that contains no item with several paragraphs of text (the list
 is tight). This macro will only be produced, when the \Opt{tightLists} option
 is `false`. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererUlBeginTight{%
   \markdownRendererUlBeginTightPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererUlItem} macro represents an item in a bulleted
 list. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererUlItem{%
   \markdownRendererUlItemPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererUlItemEnd} macro represents the end of an item in a
 bulleted list. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererUlItemEnd{%
   \markdownRendererUlItemEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererUlEnd} macro represents the end of a bulleted list
 that contains an item with several paragraphs of text (the list is not
 tight). The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererUlEnd{%
   \markdownRendererUlEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererUlEndTight} macro represents the end of a bulleted
 list that contains no item with several paragraphs of text (the list is
 tight). This macro will only be produced, when the \Opt{tightLists} option is
 `false`. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererUlEndTight{%
   \markdownRendererUlEndTightPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Ordered List Renderers
 The \mdef{markdownRendererOlBegin} macro represents the beginning of an
 ordered list that contains an item with several paragraphs of text (the
 list is not tight). The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlBegin{%
   \markdownRendererOlBeginPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererOlBeginTight} macro represents the beginning of an
 ordered list that contains no item with several paragraphs of text (the
 list is tight). This macro will only be produced, when the \Opt{tightLists}
 option is `false`. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlBeginTight{%
   \markdownRendererOlBeginTightPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererOlItem} macro represents an item in an ordered list.
 This macro will only be produced, when the \Opt{startNumber} option is
 `false`.  The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlItem{%
   \markdownRendererOlItemPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererOlItemEnd} macro represents the end of an item in
 an ordered list. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlItemEnd{%
   \markdownRendererOlItemEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererOlItemWithNumber} macro represents an item in an
 ordered list.  This macro will only be produced, when the \Opt{startNumber}
 option is `true`.  The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlItemWithNumber{%
   \markdownRendererOlItemWithNumberPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererOlEnd} macro represents the end of an ordered list
 that contains an item with several paragraphs of text (the list is not
 tight). The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlEnd{%
   \markdownRendererOlEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererOlEndTight} macro represents the end of an ordered
 list that contains no item with several paragraphs of text (the list is
 tight). This macro will only be produced, when the \Opt{tightLists} option is
 `false`. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererOlEndTight{%
   \markdownRendererOlEndTightPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Definition List Renderers
 The following macros are only produces, when the \Opt{definitionLists} option
@@ -5777,357 +6066,533 @@ The \mdef{markdownRendererDlBegin} macro represents the beginning of a
 definition list that contains an item with several paragraphs of text (the
 list is not tight). The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlBegin{%
   \markdownRendererDlBeginPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlBeginTight} macro represents the beginning of a
 definition list that contains an item with several paragraphs of text (the
 list is not tight). This macro will only be produced, when the
 \Opt{tightLists} option is `false`. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlBeginTight{%
   \markdownRendererDlBeginTightPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlItem} macro represents a term in a definition
 list. The macro receives a single argument that corresponds to the term
 being defined.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlItem{%
   \markdownRendererDlItemPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlItemEnd} macro represents the end of a list of
 definitions for a single term.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlItemEnd{%
   \markdownRendererDlItemEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlDefinitionBegin} macro represents the beginning
 of a definition in a definition list. There can be several definitions for
 a single term.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlDefinitionBegin{%
   \markdownRendererDlDefinitionBeginPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlDefinitionEnd} macro represents the end of a
 definition in a definition list. There can be several definitions for a
 single term.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlDefinitionEnd{%
   \markdownRendererDlDefinitionEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlEnd} macro represents the end of a definition
 list that contains an item with several paragraphs of text (the list is not
 tight). The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlEnd{%
   \markdownRendererDlEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererDlEndTight} macro represents the end of a
 definition list that contains no item with several paragraphs of text (the
 list is tight). This macro will only be produced, when the \Opt{tightLists}
 option is `false`. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererDlEndTight{%
   \markdownRendererDlEndTightPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Emphasis Renderers
 The \mdef{markdownRendererEmphasis} macro represents an emphasized span of
 text. The macro receives a single argument that corresponds to the emphasized
 span of text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererEmphasis{%
   \markdownRendererEmphasisPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererStrongEmphasis} macro represents a strongly
 emphasized span of text. The macro receives a single argument that
 corresponds to the emphasized span of text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererStrongEmphasis{%
   \markdownRendererStrongEmphasisPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Block Quote Renderers
 The \mdef{markdownRendererBlockQuoteBegin} macro represents the beginning of
 a block quote. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererBlockQuoteBegin{%
   \markdownRendererBlockQuoteBeginPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererBlockQuoteEnd} macro represents the end of a block
 quote. The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererBlockQuoteEnd{%
   \markdownRendererBlockQuoteEndPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Code Block Renderers
 The \mdef{markdownRendererInputVerbatim} macro represents a code
 block. The macro receives a single argument that corresponds to the
 filename of a file contaning the code block contents.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererInputVerbatim{%
   \markdownRendererInputVerbatimPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererInputFencedCode} macro represents a fenced code
 block. This macro will only be produced, when the \Opt{fencedCode} option is
 `true`. The macro receives two arguments that correspond to the filename of
 a file contaning the code block contents and to the code fence infostring.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererInputFencedCode{%
   \markdownRendererInputFencedCodePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Heading Renderers
 The \mdef{markdownRendererHeadingOne} macro represents a first level heading.
 The macro receives a single argument that corresponds to the heading text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHeadingOne{%
   \markdownRendererHeadingOnePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererHeadingTwo} macro represents a second level
 heading. The macro receives a single argument that corresponds to the heading
 text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHeadingTwo{%
   \markdownRendererHeadingTwoPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererHeadingThree} macro represents a third level
 heading. The macro receives a single argument that corresponds to the heading
 text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHeadingThree{%
   \markdownRendererHeadingThreePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererHeadingFour} macro represents a fourth level
 heading. The macro receives a single argument that corresponds to the heading
 text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHeadingFour{%
   \markdownRendererHeadingFourPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererHeadingFive} macro represents a fifth level
 heading. The macro receives a single argument that corresponds to the heading
 text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHeadingFive{%
   \markdownRendererHeadingFivePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 The \mdef{markdownRendererHeadingSix} macro represents a sixth level
 heading. The macro receives a single argument that corresponds to the heading
 text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHeadingSix{%
   \markdownRendererHeadingSixPrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Horizontal Rule Renderer
 The \mdef{markdownRendererHorizontalRule} macro represents a horizontal rule.
 The macro receives no arguments.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererHorizontalRule{%
   \markdownRendererHorizontalRulePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Footnote Renderer
 The \mdef{markdownRendererFootnote} macro represents a footnote. This macro
 will only be produced, when the \Opt{footnotes} option is `true`.  The
 macro receives a single argument that corresponds to the footnote text.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererFootnote{%
   \markdownRendererFootnotePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Parenthesized Citations Renderer
 The \mdef{markdownRendererCite} macro represents a string of one or more
@@ -6139,17 +6604,25 @@ author}`{`\meta{prenote}`}{`\meta{postnote}`}{`\meta{name}`}` repeated
 either the token `-`, when the author's name is to be suppressed, or `+`
 otherwise.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererCite{%
   \markdownRendererCitePrototype}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
 
 #### Text Citations Renderer
 The \mdef{markdownRendererTextCite} macro represents a string of one or more
@@ -6157,9 +6630,13 @@ text citations. This macro will only be produced, when the
 \Opt{citations} option is `true`. The macro receives parameters in the same 
 format as the \m{markdownRendererCite} macro.
 
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownRendererTextCite{%
   \markdownRendererTextCitePrototype}%
@@ -6238,39 +6715,62 @@ format as the \m{markdownRendererCite} macro.
 \def\markdownRendererTextCitePrototype#1{}%
 %    \end{macrocode}
 % \par
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-miscellanea>
+% \fi
+%
 % \begin{markdown}
 
 ### Logging Facilities
 The \mdef{markdownInfo}, \mdef{markdownWarning}, and \mdef{markdownError}
 macros perform logging for the Markdown package. Their first argument
 specifies the text of the info, warning, or error message.
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-miscellanea>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownInfo#1{}%
 \def\markdownWarning#1{}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-miscellanea>
+% \fi
+%
+% \begin{markdown}
 The \m{markdownError} macro receives a second argument that provides a help
 text.
-%</manual>
-%<*tex>
 % \end{markdown}
+%
+% \iffalse
+%</manual-miscellanea>
+%<*tex>
+% \fi
+%
 %  \begin{macrocode}
 \def\markdownError#1#2{}%
 %    \end{macrocode}
 % \par
-% \begin{markdown}
+%
+% \iffalse
 %</tex>
-%<*manual>
+%<*manual-miscellanea>
+% \fi
+%
+% \begin{markdown}
 You may redefine these macros to redirect and process the info, warning, and
 error messages.
+
+% \end{markdown}
+% \iffalse
 
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -6311,8 +6811,12 @@ following text:
 No paragraph starting with the text “An error message” should be produced. If
 this happens, please [file a bug](https://github.com/witiko/markdown/issues).
 
-%</manual>
+%</manual-miscellanea>
 %<*tex>
+% \fi
+%
+% \begin{markdown}
+%
 %### Miscellanea
 % The \mdef{markdownMakeOther} macro is used by the package, when a \TeX{}
 % engine that does not support direct Lua access is starting to buffer a text.
@@ -6406,25 +6910,59 @@ this happens, please [file a bug](https://github.com/witiko/markdown/issues).
 %-------------------
 % \label{sec:latexinterface}
 %
+% \end{markdown}
 % \iffalse
-%<*manual>
+%<*manual-interfaces>
 
-\LaTeX{}
---------
+### \LaTeX{}
 
-The \LaTeX{} macro package provides additional syntactic sugar on top of the
-plain \TeX{} macro package and provides sane default definitions of the token
-renderers.
+The \LaTeX{} interface provides the same level of functionality as the plain
+\TeX{} interface by using the plain \TeX{} interface behind the scenes. Unlike
+the plain \TeX{} interface, the \LaTeX{} interface uses familiar \LaTeX{}
+idioms, such as package options and environments.
 
-<!-- TODO -->
+The \LaTeX{} interface accepts the same options as the plain \TeX{} interface,
+but now the options are specified as \meta{key}${}={}$\meta{value} pairs and
+they are passed either as package options, in the \m{markdownSetup} command, or
+as parameters for the \envm{markdown*} \LaTeX{} environment.
 
-### Interfaces
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begin{document}
 
-<!-- TODO -->
+\begin{markdown}
+$\sqrt{-1}$ *equals* $i$
+\end{markdown}
 
-%</manual>
+\begin{markdown*}{hybrid}
+$\sqrt{-1}$ *equals* $i$
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+
+Invoking pdfTeX should have the same effect:
+``` sh
+pdflatex --shell-escape document.tex
+``````
+
+%</manual-interfaces>
 %<*latex>
 % \fi
+% \begin{markdown}
 %
 % The \LaTeX{} interface provides \LaTeX{} environments for the typesetting of
 % markdown input from within \LaTeX{}, facilities for setting Lua interface
@@ -6436,7 +6974,7 @@ renderers.
 % The \LaTeX{} interface is implemented by the `markdown.sty` file, which
 % can be loaded from the \LaTeX{} document preamble as follows:
 % \end{markdown}
-% \begin{Verbatim}[commandchars=\\\{\}]
+% \begin{Verbatim}[commandchars=\\\{\},gobble=2]
 % \textbackslash{}usepackage[\textrm{\meta{options}}]\{markdown\}
 % \end{Verbatim}
 % \begin{markdown}
@@ -6516,13 +7054,13 @@ renderers.
 %
 % \iffalse
 %</latex>
-%<*manual>
+%<*manual-options>
 
 ### Options
 
 <!-- TODO -->
 
-%</manual>
+%</manual-options>
 %<*latex>
 % \fi
 %
@@ -6627,18 +7165,6 @@ renderers.
 %
 %#### Plain \TeX{} Markdown Token Renderers
 % \label{sec:latexrenderers}
-%
-% \iffalse
-%</latex>
-%<*manual>
-
-### Token Renderers
-
-<!-- TODO -->
-
-%</manual>
-%<*latex>
-% \fi
 %
 % The \LaTeX{} interface recognizes an option with the `renderers` key,
 % whose value must be a list of options that map directly to the markdown token
@@ -6930,28 +7456,59 @@ renderers.
 %
 % \iffalse
 %</context>
-%<*manual>
+%<*manual-interfaces>
 
-\Hologo{ConTeXt}
-----------------
+### \Hologo{ConTeXt}
 
-The \Hologo{ConTeXt} macro package provides additional syntactic sugar on top
-of the plain \TeX{} macro package and provides sane default definitions of
-the token renderers.
+The \Hologo{ConTeXt} interface provides the same level of functionality as the
+plain \TeX{} interface by using the plain \TeX{} interface behind the scenes.
+Unlike the plain \TeX{} interface, the \Hologo{ConTeXt} interface uses familiar
+\Hologo{ConTeXt} idioms, such as environments.
 
-### Interfaces
+The \Hologo{ConTeXt} interface accepts the same options as the plain \TeX{}
+interface.
 
-<!-- TODO -->
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\startmarkdown
+$\sqrt{-1}$ *equals* $i$.
+\stopmarkdown
+
+\def\markdownOptionHybrid{true}
+\startmarkdown
+$\sqrt{-1}$ *equals* $i$.
+\stopmarkdown
+
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+  
+Invoking pdfTeX should have the same effect:
+``` sh
+texexec --passon=--shell-escape document.tex
+``````
+
+%</manual-interfaces>
+%<*manual-options>
 
 ### Options
 
 <!-- TODO -->
 
-### Token Renderers
-
-<!-- TODO -->
-
-%</manual>
+%</manual-options>
 %<*context>
 % \fi
 %
