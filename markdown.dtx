@@ -11289,20 +11289,19 @@ local convert = md.new(\markdownLuaOptions)
         \expandafter\expandafter\expandafter\expandafter
         \@gobblethree
       \fi
-    \else%  After a prenote or a postnote, dump the accumulator
+    \else%  Before a postnote (#5), dump the accumulator
       \ifx\relax#1\relax\else
         \cite{#1}%
       \fi
-      \ifx\relax#4\relax\else
-        \ifnum\markdownLaTeXCitationsCounter>1\relax
-          \space  % Insert a space before #4 in later citations.
-        \fi
-        #4~%
+      \cite[#5]{#6}%
+      \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+      \else
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \markdownLaTeXBasicCitations
       \fi
-      \expandafter\cite\ifx\relax#5\relax{#6}\else[#5]{#6}\fi
-      \expandafter\expandafter\expandafter
-      \expandafter\expandafter\expandafter\expandafter
-      \markdownLaTeXBasicCitations
       \expandafter\expandafter\expandafter
       \expandafter\expandafter\expandafter\expandafter{%
       \expandafter\expandafter\expandafter
@@ -11314,16 +11313,20 @@ local convert = md.new(\markdownLuaOptions)
       \expandafter\expandafter\expandafter
       \@gobblethree
     \fi
-  \else%  After a prenote or a postnote, dump the accumulator
-    \ifx\relax#1\relax\relax\else
+  \else%  Before a prenote (#4), dump the accumulator
+    \ifx\relax#1\relax\else
       \cite{#1}%
     \fi
     \ifnum\markdownLaTeXCitationsCounter>1\relax
-      \space  % Insert a space before #4 in later citations.
+      \space  % Insert a space before the prenote in later citations
     \fi
     #4~\expandafter\cite\ifx\relax#5\relax{#6}\else[#5]{#6}\fi
-    \expandafter\expandafter\expandafter
-    \markdownLaTeXBasicCitations
+    \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+    \else
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter
+      \markdownLaTeXBasicCitations
+    \fi
     \expandafter\expandafter\expandafter{%
     \expandafter\expandafter\expandafter}%
     \expandafter\expandafter\expandafter{%
@@ -11344,14 +11347,19 @@ local convert = md.new(\markdownLuaOptions)
         \expandafter\expandafter\expandafter\expandafter
         \@gobbletwo
       \fi
-    \else%  After a prenote or a postnote, dump the accumulator
+    \else%  Before a postnote (#4), dump the accumulator
       \ifx\relax#1\relax\else
         \citep{#1}%
       \fi
-      \citep[#3][#4]{#5}%
-      \expandafter\expandafter\expandafter
-      \expandafter\expandafter\expandafter\expandafter
-      \markdownLaTeXNatbibCitations
+      \citep[][#4]{#5}%
+      \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+      \else
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter
+        \expandafter\expandafter\expandafter\expandafter
+        \markdownLaTeXNatbibCitations
+      \fi
       \expandafter\expandafter\expandafter
       \expandafter\expandafter\expandafter\expandafter{%
       \expandafter\expandafter\expandafter
@@ -11359,13 +11367,17 @@ local convert = md.new(\markdownLuaOptions)
       \expandafter\expandafter\expandafter
       \@gobbletwo
     \fi
-  \else%  After a prenote or a postnote, dump the accumulator
+  \else%  Before a prenote (#3), dump the accumulator
     \ifx\relax#1\relax\relax\else
       \citep{#1}%
     \fi
     \citep[#3][#4]{#5}%
-    \expandafter\expandafter\expandafter
-    \markdownLaTeXNatbibCitations
+    \ifnum\markdownLaTeXCitationsCounter>\markdownLaTeXCitationsTotal\relax
+    \else
+      \expandafter\expandafter\expandafter
+      \expandafter\expandafter\expandafter\expandafter
+      \markdownLaTeXNatbibCitations
+    \fi
     \expandafter\expandafter\expandafter{%
     \expandafter\expandafter\expandafter}%
     \expandafter
