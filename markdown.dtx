@@ -555,7 +555,7 @@ package requirements, interfaces, and implementation, please refer to the
 [technical documentation][techdoc].
 
  [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf
-            (A Markdown Interpreter for \TeX{})
+            (A Markdown Interpreter for TeX)
 
 %</manual>
 %<*lua,lua-cli>
@@ -618,7 +618,7 @@ known to work and so are recent installation of [MikTeX][]. If you are using a
 minimal installation of a \TeX{} distribution, please consult the
 [technical documentation][techdoc] for a detailed list of required packages.
 
- [TeX Live]: https://www.tug.org/texlive/ (TeX Live - \TeX{} Users Group)
+ [TeX Live]: https://www.tug.org/texlive/ (TeX Live - TeX Users Group)
  [MikTeX]: https://miktex.org/ (Home - MiKTeXorg)
 
 Installation
@@ -984,7 +984,7 @@ such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
 systems. Use the command `kpsewhich markdown-cli.lua` to locate the Lua CLI
 script file using [Kpathsea][].
 
- [Kpathsea]: https://tug.org/kpathsea/ (Kpathsea - \TeX{} Users Group)
+ [Kpathsea]: https://tug.org/kpathsea/ (Kpathsea - TeX Users Group)
 
 A PDF document named `document.pdf` should be produced and contain the text “Hello
 *world*!” Invoking pdfTeX should have the same effect:
@@ -1098,12 +1098,14 @@ Examples
 
 In this section, I will describe the individual parts of the Markdown package.
 Each part will be shown by example, leaving the implementation details to the
-technical documentation.
+[technical documentation][techdoc].
+
+ [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf
+            (A Markdown Interpreter for \TeX{})
 
 /markdown-interfaces.md
 /markdown-options.md
 /markdown-tokens.md
-/markdown-miscellanea.md
 
 %</manual>
 %<*lua>
@@ -1123,8 +1125,9 @@ Interfaces
 ----------
 
 In this section, I will describe the individual interfaces exposed by the
-Markdown package starting with the low-level Lua interfaces all the way up to
-the \LaTeX{} and \Hologo{ConTeXt} interfaces intended for the ordinary user.
+Markdown package starting with the low-level Lua interfaces and all the way up
+to the \LaTeX{} and \Hologo{ConTeXt} interfaces intended for the ordinary
+user.
 
 ### Lua
 
@@ -1328,7 +1331,8 @@ pdftex document.tex
 
 ## Options
 
-This section will cover the options recognized by the Markdown package.
+In this section, I will describe all the options recognized by the Markdown
+package.
 
 %</manual-options>
 %<*lua,lua-cli>
@@ -1361,11 +1365,18 @@ local defaultOptions = {}
 % \iffalse
 %</lua,lua-cli>
 %<*manual-options>
+
+### Lua
+
+Lua options control the conversion from markdown to \TeX{}. They are supported
+by all interfaces of the Markdown package starting with the low-level Lua
+interfaces and all the way up to the \LaTeX{} and \Hologo{ConTeXt} interfaces.
+
 % \fi
 % \begin{markdown}
-
-### File and Directory Names
-
+% 
+%### File and Directory Names
+% 
 % \end{markdown}
 % \par
 % \iffalse
@@ -1521,9 +1532,9 @@ defaultOptions.cacheDir = "."
 %<*manual-options>
 % \fi
 % \begin{markdown}
-
-### Parser Options
-
+% 
+%### Parser Options
+% 
 % \end{markdown}
 % \par
 % \iffalse
@@ -5007,49 +5018,6 @@ pdftex --shell-escape document.tex
 ``````
 
 %</manual-interfaces>
-%<*manual-miscellanea>
-
-### Package Version
-
-The plain \TeX{} interface provides the `\markdownLastModified` and
-`\markdownVersion` commands that you can use to check whether the Markdown
-package has been loaded and which version of it. Using a text editor, create a
-text document named `document.tex` with the following content:
-``` tex
-\input lmfonts
-\input example
-\input markdown
-\input example
-\bye
-```````
-Using a text editor, create a text document named `example.tex` with the
-following content:
-``` tex
-The Markdown package
-\ifx\markdownVersion\undefined
-  has not been loaded yet.
-\else
-  version \markdownVersion\ from \markdownLastModified\ has been loaded.
-\fi
-\par
-```````
-Next, invoke LuaTeX from the terminal:
-``` sh
-luatex document.tex
-``````
-A PDF document named `document.pdf` should be produced and contain the
-following text:
-
-> The Markdown package has not been loaded yet.
->
-> The Markdown package version \markdownVersion{} from \markdownLastModified{} has been loaded.
-
-Invoking pdfTeX should have the same effect:
-``` sh
-pdftex document.tex
-``````
-
-%</manual-miscellanea>
 %<*tex>
 % \fi
 %
@@ -5166,17 +5134,30 @@ pdftex document.tex
 % Section~\ref{sec:luaoptions}), while some of them are specific to the plain
 % \TeX{} interface.
 %
+% \end{markdown}
 % \iffalse
 %</tex>
 %<*manual-options>
-% \fi
 
-### File and Directory Names
-%
+### Plain \TeX{}
+
+Plain \TeX{} options control the communication between the \TeX{} interface and
+the `markdown` Lua module. They are supported by all higher-level interfaces of
+the Markdown package, i.e. the plain \TeX{}, \LaTeX{} and \Hologo{ConTeXt}
+interfaces.
+
+% \fi
+% \begin{markdown}
+
+#### File and Directory Names
+
+% \end{markdown}
 % \iffalse
 %</manual-options>
 %<*tex>
 % \fi
+% \begin{markdown}
+%
 % The \mdef{markdownOptionHelperScriptFileName} macro sets the filename of the
 % helper Lua script file that is created during the conversion from markdown to
 % plain \TeX{} in \TeX{} engines without the \m{directlua} primitive. It
@@ -5361,9 +5342,54 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionTightLists\undefined
 %    \end{macrocode}
 % \par
+% \iffalse
+%</tex>
+%<*manual-options>
+
+#### Package Documentation
+
+The \mdef{markdownOptionStripPercentSigns} macro controls whether a percent
+sign (`%`) at the beginning of a line will be discarded when reading Markdown
+input from a \TeX{} document. This enables the use of markdown when writing
+\TeX{} package documentation using the [Doc \LaTeX{} package][doc] by Frank
+Mittelbach.
+
+ [doc]: https://ctan.org/pkg/doc (doc – Format LaTeX documentation)
+
+Using a text editor, create a text document named `document.dtx` with the
+following content:
+
+ ``` tex
+ % \iffalse
+ \documentclass{ltxdoc}
+ \usepackage[stripPercentSigns]{markdown}
+ \begin{document}
+ \DocInput{document.dtx}
+ \end{document}
+ % \fi
+ %
+ % \begin{markdown}
+ % Hello *world*!
+ % \end{markdown}
+ ```````
+
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.dtx
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” Invoking pdfTeX should have the same effect:
+``` sh
+pdflatex --shell-escape document.dtx
+``````
+
+%</manual-options>
+%<*tex>
+% \fi
 % \begin{markdown}
 %
 %#### Miscellaneous Options
+%
 % The \mdef{markdownOptionStripPercentSigns} macro controls whether a percent
 % sign (`%`) at the beginning of a line will be discarded when buffering
 % Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
@@ -5400,23 +5426,28 @@ bug](https://github.com/witiko/markdown/issues).
 % \iffalse
 %</tex>
 %<*manual-tokens>
+
+## Markdown Tokens
+
+A key feature of the Markdown package is the support for manipulating markdown
+tokens, such as headings, emphasized text, links, and lists, in \TeX{}. Instead
+of reducing \TeX{} to a PDF document producer, the Markdown package allows the
+user to specify how every markdown token should be processed and rendered.
+
 % \fi
-% 
 % \begin{markdown}
 
 ### Token Renderers
-% \label{sec:texrenderersuser}
 
+% \label{sec:texrenderersuser}
+% \end{markdown}
 % \iffalse
 
-A key feature of the Markdown package is the support for user-defined \TeX{}
-macros, further referred to as *token renderers*, which render markdown tokens
-such as headings, emphasized text, links, and lists. By default, token
-renderers point to package-defined \TeX{} macros, further referred to as
-*prototypes*, which provide useful default definitions.  Token renderers will
-be introduced in this section.
+Token renderers are user-defined \TeX{} macros, which render markdown tokens.
+In this section, I will describe the individual token renderers.
 
 % \fi
+% \begin{markdown}
 %
 % The following \TeX{} macros may occur inside the output of the
 % converter functions exposed by the Lua interface (see Section
@@ -6642,10 +6673,34 @@ format as the \m{markdownRendererCite} macro.
   \markdownRendererTextCitePrototype}%
 %    \end{macrocode}
 % \par
+%
+% \iffalse
+%</tex>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
+
+### Token Renderer Prototypes
+
+% \label{sec:texrendererprototypes}
+%
+% \end{markdown}
+% \iffalse
+
+By default, token renderers point to package-defined \TeX{} macros, further
+referred to as *prototypes*, which provide useful default definitions.  Token
+renderers will be introduced in this section.
+
+% \fi
+%
+% \iffalse
+%</manual-tokens>
+%<*tex>
+% \fi
+%
 % \begin{markdown}
 %
-%### Token Renderer Prototypes
-% \label{sec:texrendererprototypes}
 % The following \TeX{} macros provide definitions for the token renderers (see
 % Section \ref{sec:texrenderersuser}) that have not been redefined by the
 % user. These macros are intended to be redefined by macro package authors
@@ -6715,107 +6770,33 @@ format as the \m{markdownRendererCite} macro.
 \def\markdownRendererTextCitePrototype#1{}%
 %    \end{macrocode}
 % \par
-%
-% \iffalse
-%</tex>
-%<*manual-miscellanea>
-% \fi
-%
 % \begin{markdown}
-
-### Logging Facilities
-The \mdef{markdownInfo}, \mdef{markdownWarning}, and \mdef{markdownError}
-macros perform logging for the Markdown package. Their first argument
-specifies the text of the info, warning, or error message.
+% 
+%### Logging Facilities
+% The \mdef{markdownInfo}, \mdef{markdownWarning}, and \mdef{markdownError}
+% macros perform logging for the Markdown package. Their first argument
+% specifies the text of the info, warning, or error message.
+%
 % \end{markdown}
-%
-% \iffalse
-%</manual-miscellanea>
-%<*tex>
-% \fi
-%
 %  \begin{macrocode}
 \def\markdownInfo#1{}%
 \def\markdownWarning#1{}%
 %    \end{macrocode}
 % \par
-%
-% \iffalse
-%</tex>
-%<*manual-miscellanea>
-% \fi
-%
 % \begin{markdown}
-The \m{markdownError} macro receives a second argument that provides a help
-text.
+%
+% The \m{markdownError} macro receives a second argument that provides a help
+% text.
+%
 % \end{markdown}
-%
-% \iffalse
-%</manual-miscellanea>
-%<*tex>
-% \fi
-%
 %  \begin{macrocode}
 \def\markdownError#1#2{}%
 %    \end{macrocode}
 % \par
-%
-% \iffalse
-%</tex>
-%<*manual-miscellanea>
-% \fi
-%
 % \begin{markdown}
-You may redefine these macros to redirect and process the info, warning, and
-error messages.
-
-% \end{markdown}
-% \iffalse
-
-Using a text editor, create a text document named `document.tex` with the
-following content:
-``` tex
-\input lmfonts
-\input markdown
-
-\def\markdownInfo#1{An info message: #1.\par}
-\def\markdownWarning#1{A warning message: #1.\par}
-\def\markdownError#1#2{An error message: #1 (#2).\par}
-
-\markdownBegin
-A paragraph.
-> A quote.
-\markdownEnd
-
-\bye
-```````
-Next, invoke LuaTeX from the terminal:
-``` sh
-luatex document.tex
-``````
-A PDF document named `document.pdf` should be produced and contain the
-following text:
-
-> An info message: Buffering markdown input into the temporary input file
-> ”tex.markdown.in” and scanning for the closing token sequence
-> ”`\markdownEnd`”.
->
-> An info message: The ending token sequence was found.
->
-> An info message: Including markdown document ”tex.markdown.in”.
->
-> A paragraph.
->
-> > A quote.
-
-No paragraph starting with the text “An error message” should be produced. If
-this happens, please [file a bug](https://github.com/witiko/markdown/issues).
-
-%</manual-miscellanea>
-%<*tex>
-% \fi
 %
-% \begin{markdown}
+% You may redefine these macros to redirect and process the info, warning, and
+% error messages.
 %
 %### Miscellanea
 % The \mdef{markdownMakeOther} macro is used by the package, when a \TeX{}
@@ -6868,11 +6849,11 @@ this happens, please [file a bug](https://github.com/witiko/markdown/issues).
 % The \mdef{markdownMode} macro specifies how the plain \TeX{} implementation
 % interfaces with the Lua interface. The valid values and their meaning are
 % as follows:
-% \begin{itemize}
-%   \item`0` -- Shell escape via the 18 output file stream
-%   \item`1` -- Shell escape via the Lua \luam{os.execute} method
-%   \item`2` -- Direct Lua access
-% \end{itemize}
+%
+% - `0` -- Shell escape via the 18 output file stream
+% - `1` -- Shell escape via the Lua \luam{os.execute} method
+% - `2` -- Direct Lua access
+%
 % By defining the macro, the user can coerce the package to use a specific mode.
 % If the user does not define the macro prior to loading the plain \TeX{}
 % implementation, the correct value will be automatically detected. The outcome
@@ -7051,18 +7032,6 @@ pdflatex --shell-escape document.tex
 %
 %### Options
 % \label{sec:latexoptions}
-%
-% \iffalse
-%</latex>
-%<*manual-options>
-
-### Options
-
-<!-- TODO -->
-
-%</manual-options>
-%<*latex>
-% \fi
 %
 % The \LaTeX{} options are represented by a comma-delimited list of
 % \meta{key}`=`\meta{value} pairs. For boolean options, the `=`\meta{value}
@@ -7502,13 +7471,6 @@ texexec --passon=--shell-escape document.tex
 ``````
 
 %</manual-interfaces>
-%<*manual-options>
-
-### Options
-
-<!-- TODO -->
-
-%</manual-options>
 %<*context>
 % \fi
 %
