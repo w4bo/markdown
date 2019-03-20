@@ -507,13 +507,17 @@ table td {
   margin-right: -0.15em;
 }
 
+abbr {
+  font-variant: small-caps;
+}
+
 %</manual-css>
 %<*manual>
 
 ---
 title:  Markdown Package User Manual
 author: Vít Novotný
-date:   March 18, 2019
+date:   v\markdownVersion{} (\markdownLastModified{})
 ---
 
 % \fi
@@ -525,11 +529,11 @@ date:   March 18, 2019
 Introduction
 ============
 The [Markdown package][pkg] converts [markdown][] markup to \TeX{} commands. The
-functionality is provided both as a Lua module and as plain \TeX, \LaTeX{}, and
+functionality is provided both as a Lua module and as plain \TeX{}, \LaTeX{}, and
 \Hologo{ConTeXt} macro packages that can be used to directly typeset \TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
 makes it easy to redefine how each and every markdown element is rendered.
-Creative abuse of the markdown syntax is encouraged. <i class="em em-wink"></i>
+Creative abuse of the markdown syntax is encouraged. ;-)
 
  [markdown]: https://daringfireball.net/projects/markdown/basics/
              (Daring Fireball: Markdown Basics)
@@ -601,7 +605,7 @@ modules['markdown'] = metadata
 %
 % The \TeX{} implementation of the package draws inspiration from several
 % sources including the source code of \Hologo{LaTeX2e}, the \pkg{minted}
-% package by Geoffrey M. Poore -- which likewise tackles the issue of
+% package by Geoffrey M. Poore, which likewise tackles the issue of
 % interfacing with an external interpreter from \TeX{}, the \pkg{filecontents}
 % package by Scott Pakin and others.
 %
@@ -642,11 +646,11 @@ luatex markdown.ins
 ``````
 This should produce the following files:
 
- * `markdown.lua` – the Lua module,
- * `markdown-cli.lua` – the Lua command-line interface,
- * `markdown.tex` – the plain \TeX{} macro package,
- * `markdown.sty` – the \LaTeX{} package, and
- * `t-markdown.tex` – the \Hologo{ConTeXt} module.
+ * `markdown.lua`, the Lua module,
+ * `markdown-cli.lua`, the Lua command-line interface,
+ * `markdown.tex`, the plain \TeX{} macro package,
+ * `markdown.sty`, the \LaTeX{} package, and
+ * `t-markdown.tex`, the \Hologo{ConTeXt} module.
 
 ### Local Installation
 
@@ -1208,10 +1212,17 @@ following content:
 local kpse = require("kpse")
 kpse.set_program_name("luatex")
 local markdown = require("markdown")
-local convert_safe = markdown.new()
-local convert_unsafe = markdown.new({hybrid = true})
-local input = [[$\sqrt{-1}$ *equals* $i$.]]
-print(convert_safe(input) .. [[\par]] .. convert_unsafe(input))
+local input, convert_safe, convert_unsafe, paragraph
+
+input = [[$\sqrt{-1}$ *equals* $i$.]]
+convert_safe = markdown.new()
+convert_unsafe = markdown.new({hybrid = true})
+paragraph = [[\par]]
+
+print(
+  convert_safe(input) .. paragraph ..
+  convert_unsafe(input)
+)
 ```````
 Next, invoke LuaTeX from the terminal:
 ``` sh
@@ -1241,11 +1252,15 @@ named `document.tex` with the following content:
 \input lmfonts
 \directlua{
   local markdown = require("markdown")
-  local convert_safe = markdown.new()
-  local convert_unsafe = markdown.new({hybrid = true})
-  local input = [[$\string\sqrt{-1}$ *equals* $i$.]]
+  local input, convert_safe, convert_unsafe, paragraph
+
+  input = [[$\string\sqrt{-1}$ *equals* $i$.]]
+  convert_safe = markdown.new()
+  convert_unsafe = markdown.new({hybrid = true})
+  paragraph = [[\par]]
+
   tex.sprint(
-    convert_safe(input) .. [[\string\par]] ..
+    convert_safe(input) .. paragraph ..
     convert_unsafe(input)
   )
 }
@@ -1280,7 +1295,9 @@ following content:
 ``` tex
 \input markdown
 \input lmfonts
-\input safe\ \input unsafe
+\input safe
+
+\input unsafe
 \bye
 ```````
 Using a text editor, create a text document named `example.md` with the
@@ -2453,7 +2470,8 @@ following content:
   author    = "Knuth, Donald Ervin",
   title     = "The \TeX book, volume A of Computers and typesetting",
   publisher = "Addison-Wesley",
-  year      = "1984" }
+  year      = "1984"
+}
 ```````
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -2548,7 +2566,8 @@ following content:
   author    = "Knuth, Donald Ervin",
   title     = "The \TeX book, volume A of Computers and typesetting",
   publisher = "Addison-Wesley",
-  year      = "1984" }
+  year      = "1984"
+}
 ```````
 Using a text editor, create a text document named `document.tex` with the
 following content:
@@ -3977,11 +3996,15 @@ following content:
 \input lmfonts
 \directlua{
   local markdown = require("markdown")
-  local convert_safe = markdown.new()
-  local convert_unsafe = markdown.new({hybrid = true})
-  local input = [[$\string\sqrt{-1}$ *equals* $i$.]]
+  local input, convert_safe, convert_unsafe, paragraph
+
+  input = [[$\string\sqrt{-1}$ *equals* $i$.]]
+  convert_safe = markdown.new()
+  convert_unsafe = markdown.new({hybrid = true})
+  paragraph = [[\par]]
+
   tex.sprint(
-    convert_safe(input) .. [[\string\par]] ..
+    convert_safe(input) .. paragraph ..
     convert_unsafe(input)
   )
 }
@@ -3995,6 +4018,7 @@ A PDF document named `document.pdf` should be produced and contain the
 following text:
 
 > \$\\sqrt {-1}\$ *equals* \$i\$.
+>
 > √-̅1̅ *equals* $i$.
 
 ##### Lua CLI Example {.unnumbered}
@@ -4005,6 +4029,7 @@ following content:
 \input markdown
 \input lmfonts
 \input optionfalse
+
 \input optiontrue
 \bye
 ```````
@@ -4029,6 +4054,7 @@ A PDF document named `document.pdf` should be produced and contain the
 following text:
 
 > \$\\sqrt {-1}\$ *equals* \$i\$.
+>
 > √-̅1̅ *equals* $i$.
 
 ##### Plain \TeX{} Example {.unnumbered}
@@ -4038,13 +4064,16 @@ following content:
 ``` tex
 \input markdown
 \input lmfonts
+
 \markdownBegin
 $\sqrt{-1}$ *equals* $i$.
 \markdownEnd
+
 \def\markdownOptionHybrid{true}
 \markdownBegin
 $\sqrt{-1}$ *equals* $i$.
 \markdownEnd
+
 \bye
 ```````
 Next, invoke LuaTeX from the terminal:
@@ -4055,6 +4084,7 @@ A PDF document named `document.pdf` should be produced and contain the
 following text:
 
 > \$\\sqrt {-1}\$ *equals* \$i\$.
+>
 > √-̅1̅ *equals* $i$.
 
 ##### \LaTeX{} Example {.unnumbered}
@@ -4065,12 +4095,15 @@ following content:
 \documentclass{article}
 \usepackage{markdown}
 \begin{document}
+
 \begin{markdown}
 $\sqrt{-1}$ *equals* $i$.
 \end{markdown}
+
 \begin{markdown*}{hybrid}
 $\sqrt{-1}$ *equals* $i$.
 \end{markdown*}
+
 \end{document}
 ```````
 Next, invoke LuaTeX from the terminal:
@@ -4081,6 +4114,7 @@ A PDF document named `document.pdf` should be produced and contain the
 following text:
 
 > \$\\sqrt {-1}\$ *equals* \$i\$.
+>
 > √-̅1̅ *equals* $i$.
 
 ##### \Hologo{ConTeXt} Example {.unnumbered}
@@ -4090,13 +4124,16 @@ following content:
 ``` tex
 \usemodule[t][markdown]
 \starttext
+
 \startmarkdown
 $\sqrt{-1}$ *equals* $i$.
 \stopmarkdown
+
 \def\markdownOptionHybrid{true}
 \startmarkdown
 $\sqrt{-1}$ *equals* $i$.
 \stopmarkdown
+
 \stoptext
 ````````
 Next, invoke LuaTeX from the terminal:
@@ -4107,6 +4144,7 @@ A PDF document named `document.pdf` should be produced and contain the
 following text:
 
 > \$\\sqrt {-1}\$ *equals* \$i\$.
+>
 > √-̅1̅ *equals* $i$.
 
 %</manual-options>
@@ -4953,7 +4991,7 @@ end
 % ```````
 %
 % This shows another advantage of using the command-line interface compared to
-% using a higher-level \TeX{} interface -- it is unnecessary to provide shell
+% using a higher-level \TeX{} interface: it is unnecessary to provide shell
 % access for the \TeX{} engine.
 %
 % \end{markdown}
@@ -5378,10 +5416,7 @@ Next, invoke LuaTeX from the terminal:
 lualatex document.dtx
 ``````
 A PDF document named `document.pdf` should be produced and contain the text
-“Hello *world*!” Invoking pdfTeX should have the same effect:
-``` sh
-pdflatex --shell-escape document.dtx
-``````
+“Hello *world*!”
 
 %</manual-options>
 %<*tex>
@@ -5463,6 +5498,107 @@ between two markdown block elements. The macro receives no arguments.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererInterblockSeparator{%
+  \par
+  {\it(The end of a block)}%
+  \par
+}
+\markdownBegin
+Hello *world*!
+
+_Foo_ bar!
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(The end of a block)*
+> 
+> _Foo_ bar!
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    interblockSeparator = {%
+      \par
+      \emph{(The end of a block)}%
+      \par
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+Hello *world*!
+
+_Foo_ bar!
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(The end of a block)*
+> 
+> _Foo_ bar!
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererInterblockSeparator{%
+  \par
+  \emph{(The end of a block)}%
+  \par
+}
+\starttext
+\startmarkdown
+Hello *world*!
+
+_Foo_ bar!
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(The end of a block)*
+> 
+> _Foo_ bar!
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5487,6 +5623,119 @@ The macro receives no arguments.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererLineBreak{%
+  \par
+  {\it(A forced linebreak)}%
+  \par
+}
+\markdownInput{example.md}
+\bye
+```````
+Using a text editor, create a text document named `example.md` with the
+following content.  Note the two spaces at the end of the first line, which
+specify a hard linebreak.  Due to the limitations of the \TeX{} input
+processor, hard linebreaks would be ignored if we typed them directly into the
+`document.tex` document.
+
+<pre><code>Hello world!  <br/>_Foo_ bar!</code></pre>
+
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(A forced linebreak)*
+> 
+> _Foo_ bar!
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    lineBreak = {%
+      \par
+      \emph{(A forced linebreak)}%
+      \par
+    },
+  },
+}
+\begin{document}
+\markdownInput{example.md}
+\end{document}
+```````
+Using a text editor, create a text document named `example.md` with the
+following content.  Note the two spaces at the end of the first line, which
+specify a hard linebreak.  Due to the limitations of the \TeX{} input
+processor, hard linebreaks would be ignored if we typed them directly into the
+`document.tex` document.
+
+<pre><code>Hello world!  <br/>_Foo_ bar!</code></pre>
+
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(A forced linebreak)*
+> 
+> _Foo_ bar!
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererLineBreak{%
+  \par
+  \emph{(A forced linebreak)}%
+  \par
+}
+\starttext
+\markdownInput{example.md}
+\stoptext
+```````
+Using a text editor, create a text document named `example.md` with the
+following content.  Note the two spaces at the end of the first line, which
+specify a hard linebreak.  Due to the limitations of the \TeX{} input
+processor, hard linebreaks would be ignored if we typed them directly into the
+`document.tex` document.
+
+<pre><code>Hello world!  <br/>_Foo_ bar!</code></pre>
+
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(A forced linebreak)*
+> 
+> _Foo_ bar!
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5512,6 +5761,83 @@ The macro receives no arguments.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionSmartEllipses{true}
+\def\markdownRendererEllipsis{{\it SHAZAM}!}
+\markdownBegin
+The secret word is ...
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The secret word is *SHAZAM*!
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[smartEllipses]{markdown}
+\markdownSetup{
+  renderers = {
+    ellipsis = \emph{SHAZAM}!,
+  },
+}
+\begin{document}
+\begin{markdown}
+The secret word is ...
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The secret word is *SHAZAM*!
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionSmartEllipses{true}
+\def\markdownRendererEllipsis{\emph{SHAZAM}!}
+\starttext
+\startmarkdown
+The secret word is ...
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Hello *world*!
+>
+> *(The end of a block)*
+> 
+> _Foo_ bar!
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5535,6 +5861,59 @@ The \mdef{markdownRendererNbsp} macro represents a non-breaking space.
 % \end{markdown}
 %
 % \iffalse
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.bib` with the
+following content:
+``` bib
+@book{knuth:tex,
+  author    = "Knuth, Donald Ervin",
+  title     = "The \TeX book, volume A of Computers and typesetting",
+  publisher = "Addison-Wesley",
+  year      = "1984"
+}
+```````
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[
+  citations,
+  citationNbsps,
+]{markdown}
+\markdownSetup{
+  renderers = {
+    nbsp = {$\cdot$},
+  },
+}
+\begin{document}
+
+\begin{markdown}
+The TeXbook [@knuth:tex, p. 123 and 130] is good.
+\end{markdown}
+
+\bibliographystyle{plain}
+\bibliography{document.bib}
+
+\end{document}
+```````
+Next, invoke LuaTeX and BibTeX from the terminal:
+``` sh
+lualatex document.tex
+bibtex document.aux
+lualatex document.tex
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> The TeXbook [1, p.·123·and·130] is good.
+>
+> ### References
+> [1] Donald Ervin Knuth. _The TeXbook, volume A of Computers and typesetting._
+>     Addison-Wesley, 1984.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5553,14 +5932,104 @@ The \mdef{markdownRendererNbsp} macro represents a non-breaking space.
 % \begin{markdown}
 
 #### Special Character Renderers
-The following macros replace any special plain \TeX{} characters (including
-the active pipe character (`|`) of \Hologo{ConTeXt}) in the input text.
-These macros will only be produced, when the \Opt{hybrid} option is
-`false`.
+The following macros replace any special plain \TeX{} characters, including
+% \iffalse
+the active pipe character (`|`) of \Hologo{ConTeXt}, in the input text:
+
+- \mdef{markdownRendererAmpersand} replaces the ampersand (`&`).
+- \mdef{markdownRendererBackslash} replaces the backslash (`\`).
+- \mdef{markdownRendererCircumflex} replaces the circumflex (`^`).
+- \mdef{markdownRendererDollarSign} replaces the dollar sign (`$`).
+- \mdef{markdownRendererHash} replaces the hash sign (`#`).
+- \mdef{markdownRendererLeftBrace} replaces the left brace (`{`).
+- \mdef{markdownRendererPercentSign} replaces the percent sign (`%`).
+- \mdef{markdownRendererPipe} replaces the pipe character (`|`).
+- \mdef{markdownRendererRightBrace} replaces the right brace (`}`).
+- \mdef{markdownRendererTilde} replaces the tilde (`~`).
+- \mdef{markdownRendererUnderscore} replaces the underscore (`_`).
+
+% \fi
+% the active pipe character (`|`) of \Hologo{ConTeXt}, in the input text.
+% These macros will only be produced, when the \Opt{hybrid} option is
+% `false`.
 
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content. We will make the tilde behave as if it were written in
+\TeX{}, where it represents a non-breaking space.
+``` tex
+\input markdown
+\def\markdownRendererTilde{~}
+\markdownBegin
+Bartel~Leendert van~der~Waerden
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text, where the middot (`·`) denotes a non-breakable space:
+
+> Bartel·Leendert van·der·Waerden
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content. We will make the tilde behave as if it were written in
+\TeX{}, where it represents a non-breaking space.
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    tilde = ~,
+  },
+}
+\begin{document}
+\begin{markdown}
+Bartel~Leendert van~der~Waerden
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text, where the middot (`·`) denotes a non-breakable space:
+
+> Bartel·Leendert van·der·Waerden
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content. We will make the tilde behave as if it were written in
+\TeX{}, where it represents a non-breaking space.
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererTilde{~}
+\starttext
+\startmarkdown
+Bartel~Leendert van~der~Waerden
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text, where the middot (`·`) denotes a non-breakable space:
+
+> Bartel·Leendert van·der·Waerden
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5606,6 +6075,117 @@ code span.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input lmfonts
+
+\def\markdownRendererCodeSpan#1{#1}
+
+\markdownBegin
+`$\sqrt{-1}$ *equals* $i$`
+
+$\sqrt{-1}$ *equals* $i$
+\markdownEnd
+
+\def\markdownOptionHybrid{true}
+\markdownBegin
+$\sqrt{-1}$ *equals* $i$
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ \*equals\* \$i\$.
+> 
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[smartEllipses]{markdown}
+\markdownSetup{
+  renderers = {
+    codeSpan = {#1},
+  },
+}
+\begin{document}
+
+\begin{markdown}
+`$\sqrt{-1}$ *equals* $i$`
+
+$\sqrt{-1}$ *equals* $i$
+\end{markdown}
+
+\begin{markdown*}{hybrid}
+$\sqrt{-1}$ *equals* $i$
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ \*equals\* \$i\$.
+> 
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererCodeSpan#1{#1}
+\starttext
+
+\startmarkdown
+`$\sqrt{-1}$ *equals* $i$`
+
+$\sqrt{-1}$ *equals* $i$
+\stopmarkdown
+
+\def\markdownOptionHybrid{true}
+\startmarkdown
+$\sqrt{-1}$ *equals* $i$
+\stopmarkdown
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> \$\\sqrt{-1}\$ \*equals\* \$i\$.
+> 
+> \$\\sqrt{-1}\$ *equals* \$i\$.
+> 
+> √-̅1̅ *equals* $i$.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5632,6 +6212,95 @@ title of the link.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererLink#1#2#3#4{%
+  #1 {\tt#2} titled {\it#4}%
+}
+\markdownBegin
+Please visit [the link][ctan].
+
+ [ctan]: https://ctan.org/
+         (the Comprehensive TeX Archive Network)
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Please visit the link <https://ctan.org/> titled *the Comprehensive TeX
+> Archive Network*.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    link = {%
+      #1 \texttt{#2} titled \emph{#4}%
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+Please visit [the link][ctan].
+
+ [ctan]: https://ctan.org/
+         (the Comprehensive TeX Archive Network)
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Please visit the link <https://ctan.org/> titled *the Comprehensive TeX
+> Archive Network*.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererLink#1#2#3#4{%
+  #1 {\tt#2} titled \emph{#4}%
+}
+\starttext
+\startmarkdown
+Please visit [the link][ctan].
+
+ [ctan]: https://ctan.org/
+         (the Comprehensive TeX Archive Network)
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Please visit the link <https://ctan.org/> titled *the Comprehensive TeX
+> Archive Network*.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5658,6 +6327,57 @@ title of the link.
 % \end{markdown}
 %
 % \iffalse
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\begingroup
+\catcode`\@=11
+\catcode`\%=12
+\catcode`\^^A=14
+\global\def\markdownRendererImage#1#2#3#4{^^A
+  \immediate\write18{^^A
+    if printf '%s' "#3" | grep -q ^http; then
+      OUTPUT="$(printf '%s' "#3" | md5sum | cut -d' ' -f1).^^A
+              $(printf '%s' "#3" | sed 's/.*[.]//')";
+      if ! [ -e "$OUTPUT" ]; then
+        wget -O "$OUTPUT" '#3' || rm "$OUTPUT";
+        convert "$OUTPUT" png:"$OUTPUT";
+      fi;
+      printf '%s%%' "$OUTPUT" > \jobname.fetched;
+    else
+      printf '%s%%' "#3"      > \jobname.fetched;
+    fi^^A
+  }^^A
+  {^^A
+    \everyeof={\noexpand}^^A
+    \edef\filename{\@@input"\jobname.fetched" }^^A
+    \includegraphics[width=\textwidth]{\filename}^^A
+  }^^A
+}
+\endgroup
+\begin{document}
+\begin{markdown}
+![TUGboat](https://tug.org/tugboat/noword.jpg)
+\end{markdown}
+\end{document}
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex --shell-escape document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following content. This assumes that you use a Unix-like operating system with
+Bourne or Bourne again shell as the default shell of the current user. It also
+assumes that the `md5sum`, `wget`, and `convert` binaries are installed and
+that the \TeX{} engine has shell access.
+
+> ![](https://tug.org/tugboat/noword.jpg "The Communications of the TeX Users Group")
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5746,17 +6466,157 @@ structure.  In this file, you will define a mapping between filename
 extensions and the language names recognized by your favorite syntax
 highlighter; there may exist other creative uses beside syntax highlighting.
 % The `Languages.json` file provided by @sotkov17 is a good starting point.
+% \end{markdown}
+%
 % \iffalse
 [The `Languages.json` file provided by Anton Sotkov][sotkov17] is a good
 starting point.
 
  [sotkov17]: https://github.com/iainc/Markdown-Content-Blocks
              (File transclusion syntax for Markdown)
-% \fi
 
-% \end{markdown}
-%
-% \iffalse
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionContentBlocks{true}
+\def\markdownRendererContentBlock#1#2#3#4{%
+  This is {\tt #2}, #4.
+}
+\def\markdownRendererContentBlockOnlineImage#1#2#3#4{%
+  This is the image {\tt #2}, #4.
+}
+\def\markdownRendererContentBlockCode#1#2#3#4#5{%
+  This is the #2 (\uppercase{#1}) document {\tt #3}, #5.
+}
+\markdownBegin
+/document.tex (the document that we are currently typesetting)
+/markdown-languages.json (the mapping between filename extensions
+                          and programming language names)
+https://tug.org/tugboat/noword.jpg (the logotype of TUGboat)
+\markdownEnd
+\bye
+```````
+Create also a text document named `markdown-languages.json` with the following
+content:
+``` js
+{
+  "json": "JavaScript Object Notation",
+}
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is `document.tex`, the document that we are currently typesetting.
+>
+> This is the JavaScript Object Notation (JSON) document
+> `markdown-languages.json`, the mapping between filename extensions and
+> programming language names.
+>
+> This is the image `https://tug.org/tugboat/noword.jpg`, the logotype of
+> TUGboat.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{filecontents}
+\begin{filecontents*}{markdown-languages.json}
+{
+  "json": "JavaScript Object Notation",
+}
+\end{filecontents*}
+\usepackage[contentBlocks]{markdown}
+\markdownSetup{
+  renderers = {
+    contentBlock = {This is \texttt{#2}, #4.},
+    contentBlockOnlineImage = {This is the image \texttt{#2}, #4.},
+    contentBlockCode = {%
+      This is the #2 (\MakeUppercase{#1}) document \texttt{#3}, #5.
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+/document.tex (the document that we are currently typesetting)
+/markdown-languages.json (the mapping between filename extensions
+                          and programming language names)
+https://tug.org/tugboat/noword.jpg (the logotype of TUGboat)
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is `document.tex`, the document that we are currently typesetting.
+>
+> This is the JavaScript Object Notation (JSON) document
+> `markdown-languages.json`, the mapping between filename extensions and
+> programming language names.
+>
+> This is the image `https://tug.org/tugboat/noword.jpg`, the logotype of
+> TUGboat.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionContentBlocks{true}
+\def\markdownRendererContentBlock#1#2#3#4{%
+  This is {\tt #2}, #4.
+}
+\def\markdownRendererContentBlockOnlineImage#1#2#3#4{%
+  This is the image {\tt #2}, #4.
+}
+\def\markdownRendererContentBlockCode#1#2#3#4#5{%
+  This is the #2 (\uppercase{#1}) document {\tt #3}, #5.
+}
+\starttext
+\startmarkdown
+/document.tex (the document that we are currently typesetting)
+/markdown-languages.json (the mapping between filename extensions
+                          and programming language names)
+https://tug.org/tugboat/noword.jpg (the logotype of TUGboat)
+\stopmarkdown
+\stoptext
+```````
+Create also a text document named `markdown-languages.json` with the following
+content:
+``` js
+{
+  "json": "JavaScript Object Notation",
+}
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is `document.tex`, the document that we are currently typesetting.
+>
+> This is the JavaScript Object Notation (JSON) document
+> `markdown-languages.json`, the mapping between filename extensions and
+> programming language names.
+>
+> This is the image `https://tug.org/tugboat/noword.jpg`, the logotype of
+> TUGboat.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -5902,6 +6762,208 @@ tight). This macro will only be produced, when the \Opt{tightLists} option is
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionTightLists{true}
+
+\def\markdownRendererInterblockSeparator{}
+\def\markdownRendererUlBeginTight{ (}
+\def\markdownRendererUlItem{%
+  \def\markdownRendererUlItem{%
+    ,
+    \def\markdownRendererUlItem{, and }%
+  }%
+}
+\def\markdownRendererUlItemEnd{}
+\def\markdownRendererUlEndTight{).}
+
+\markdownBegin
+This is a tight list
+
+- the first item
+- the second item
+- the third item
+\markdownEnd
+
+\def\markdownRendererInterblockSeparator{%
+  :\par
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererUlBegin{}
+\def\markdownRendererUlItem{--\kern 0.5em}
+\def\markdownRendererUlItemEnd{.\par}
+\def\markdownRendererUlEnd{}
+
+\markdownBegin
+This is a loose list
+
+- This is the first item
+
+- This is the second item
+
+- This is the third item
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight list (the first item, the second item, and the third item).
+>
+> This is a loose list:
+> 
+> - This is the first item.
+> 
+> - This is the second item.
+> 
+> - This is the third item.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[tightLists]{markdown}
+\begin{document}
+
+\begin{markdown*}{
+  renderers = {
+    interblockSeparator = {},
+    ulBeginTight = { (},
+    ulItem = {%
+      \def\markdownRendererUlItem{%
+        ,
+        \def\markdownRendererUlItem{, and }%
+      }%
+    },
+    ulItemEnd = {},
+    ulEndTight = {).},
+  },  
+}
+This is a tight list
+
+- the first item
+- the second item
+- the third item
+\end{markdown*}
+
+\begin{markdown*}{
+  renderers = {
+    interblockSeparator = {%
+      :\par
+      \def\markdownRendererInterblockSeparator{\par}%
+    },
+    ulBeginTight = {\begin{itemize}},
+    ulItem = {\item},
+    ulItemEnd = {.},
+    ulEnd = {\end{itemize}},
+  },  
+}
+This is a loose list
+
+- This is the first item
+
+- This is the second item
+
+- This is the third item
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight list (the first item, the second item, and the third item).
+>
+> This is a loose list:
+> 
+> - This is the first item.
+> 
+> - This is the second item.
+> 
+> - This is the third item.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionTightLists{true}
+\starttext
+
+\def\markdownRendererInterblockSeparator{}
+\def\markdownRendererUlBeginTight{ (}
+\def\markdownRendererUlItem{%
+  \def\markdownRendererUlItem{%
+    ,
+    \def\markdownRendererUlItem{, and }%
+  }%
+}
+\def\markdownRendererUlItemEnd{}
+\def\markdownRendererUlEndTight{).}
+
+\startmarkdown
+This is a tight list
+
+- the first item
+- the second item
+- the third item
+\stopmarkdown
+
+\def\markdownRendererInterblockSeparator{%
+  :\par
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererUlBegin{\startitemize}
+\def\markdownRendererUlItem{\item}
+\def\markdownRendererUlItemEnd{.}
+\def\markdownRendererUlEnd{\stopitemize}
+
+\startmarkdown
+This is a loose list
+
+- This is the first item
+
+- This is the second item
+
+- This is the third item
+\stopmarkdown
+
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight list (the first item, the second item, and the third item).
+>
+> This is a loose list:
+> 
+> - This is the first item.
+> 
+> - This is the second item.
+> 
+> - This is the third item.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -6072,6 +7134,260 @@ tight). This macro will only be produced, when the \Opt{tightLists} option is
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionTightLists{true}
+\def\markdownOptionStartNumber{true}
+
+\def\markdownRendererInterblockSeparator{}
+\def\markdownRendererOlBeginTight{ (}
+\def\markdownRendererOlItemWithNumber#1{%
+  \ifnum #1=1\relax
+    the first
+  \else
+    \ifnum #1=2\relax
+      , the second
+    \else
+      , and the third
+    \fi
+  \fi
+}
+\def\markdownRendererOlItemEnd{}
+\def\markdownRendererOlEndTight{).}
+
+\markdownBegin
+This is a tight list
+
+1. item
+2. item
+3. item
+\markdownEnd
+
+\def\markdownRendererInterblockSeparator{%
+  :\par
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererOlBegin{}
+\def\markdownRendererOlItemWithNumber#1{%
+  #1.\kern 0.5em%
+  This is the
+  \ifnum #1=1\relax
+    first
+  \else
+    \ifnum #1=2\relax
+      second
+    \else
+      third
+    \fi
+  \fi
+}
+\def\markdownRendererOlItemEnd{.\par}
+\def\markdownRendererOlEnd{}
+
+\markdownBegin
+This is a loose list
+
+1. item
+
+2. item
+
+3. item
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight list (the first item, the second item, and the third item).
+>
+> This is a loose list:
+> 
+> 1. This is the first item.
+> 
+> 2. This is the second item.
+> 
+> 3. This is the third item.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[tightLists, startNumber]{markdown}
+\begin{document}
+
+\begin{markdown*}{
+  renderers = {
+    interblockSeparator = {},
+    olBeginTight = { (},
+    olItemWithNumber = {%
+      \ifnum #1=1\relax
+        the first
+      \else
+        \ifnum #1=2\relax
+          , the second
+        \else
+          , and the third
+        \fi
+      \fi
+    },
+    olItemEnd = {},
+    olEndTight = {).},
+  },  
+}
+This is a tight list
+
+1. item
+2. item
+3. item
+\end{markdown*}
+
+\begin{markdown*}{
+  renderers = {
+    interblockSeparator = {%
+      :\par
+      \def\markdownRendererInterblockSeparator{\par}%
+    },
+    olBeginTight = {\begin{enumerate}},
+    olItemWithNumber = {%
+      \item This is the
+      \ifnum #1=1\relax
+        first
+      \else
+        \ifnum #1=2\relax
+          second
+        \else
+          third
+        \fi
+      \fi
+    },
+    olItemEnd = {.},
+    olEnd = {\end{enumerate}},
+  },  
+}
+This is a loose list
+
+1. item
+
+2. item
+
+3. item
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight list (the first item, the second item, and the third item).
+>
+> This is a loose list:
+> 
+> 1. This is the first item.
+> 
+> 2. This is the second item.
+> 
+> 3. This is the third item.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionTightLists{true}
+\def\markdownOptionStartNumber{true}
+\starttext
+
+\def\markdownRendererInterblockSeparator{}
+\def\markdownRendererOlBeginTight{ (}
+\def\markdownRendererOlItemWithNumber#1{%
+  \ifnum #1=1\relax
+    the first
+  \else
+    \ifnum #1=2\relax
+      , the second
+    \else
+      , and the third
+    \fi
+  \fi
+}
+\def\markdownRendererOlItemEnd{}
+\def\markdownRendererOlEndTight{).}
+
+\startmarkdown
+This is a tight list
+
+1. item
+2. item
+3. item
+\stopmarkdown
+
+\def\markdownRendererInterblockSeparator{%
+  :\par
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererOlBegin{\startitemize}
+\def\markdownRendererOlItemWithNumber#1{%
+  \sym{#1.}
+  This is the
+  \ifnum #1=1\relax
+    first
+  \else
+    \ifnum #1=2\relax
+      second
+    \else
+      third
+    \fi
+  \fi
+}
+\def\markdownRendererOlItemEnd{.\par}
+\def\markdownRendererOlEnd{\stopitemize}
+
+\startmarkdown
+This is a loose list
+
+1. item
+
+2. item
+
+3. item
+\stopmarkdown
+
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight list (the first item, the second item, and the third item).
+>
+> This is a loose list:
+> 
+> 1. This is the first item.
+> 
+> 2. This is the second item.
+> 
+> 3. This is the third item.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -6090,7 +7406,7 @@ tight). This macro will only be produced, when the \Opt{tightLists} option is
 % \begin{markdown}
 
 #### Definition List Renderers
-The following macros are only produces, when the \Opt{definitionLists} option
+The following macros are only produced, when the \Opt{definitionLists} option
 is `true`.
 
 The \mdef{markdownRendererDlBegin} macro represents the beginning of a
@@ -6269,6 +7585,338 @@ option is `false`. The macro receives no arguments.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionDefinitionLists{true}
+\def\markdownOptionTightLists{true}
+
+\def\markdownRendererInterblockSeparator{%
+  :%
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererDlBeginTight{%
+  \begingroup
+  \parindent=0pt
+}
+\def\markdownRendererDlItem#1{%
+  \par{\bf#1}%
+  \def\markdownRendererDlDefinitionEnd{%
+    ,
+    \def\markdownRendererDlDefinitionEnd{%
+      , and
+      \def\markdownRendererDlDefinitionEnd{.}%
+    }%
+  }%
+}
+\def\markdownRendererDlItemEnd{}
+\def\markdownRendererDlDefinitionBegin{\par--\kern 0.5em}
+\def\markdownRendererDlEndTight{\endgroup}
+
+\markdownBegin
+This is a tight definition list
+
+Coffee
+:   black hot drink
+:   prepared from roasted coffee beans
+:   one of the most traded agricultural commodities in the world
+
+Milk
+:   white cold drink
+:   nutrient-rich
+:   produced on an industrial scale
+\markdownEnd
+
+\def\markdownRendererInterblockSeparator{%
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererDlBegin{}
+\def\markdownRendererDlItem#1{%
+  . #1 is a
+  \def\markdownRendererDlDefinitionBegin{%
+    \def\markdownRendererDlDefinitionBegin{%
+      ,
+      \def\markdownRendererDlDefinitionBegin{, and }%
+    }%
+  }%
+}
+\def\markdownRendererDlItemEnd{}
+\def\markdownRendererDlDefinitionEnd{}
+\def\markdownRendererDlEnd{.}
+
+\markdownBegin
+This is a loose definition list
+
+Coffee
+
+:   black hot drink
+
+:   prepared from roasted coffee beans
+
+:   one of the most traded agricultural commodities in the world
+
+Milk
+
+:   white cold drink
+
+:   nutrient-rich
+
+:   produced on an industrial scale
+\markdownEnd
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight definition list:
+>
+> **Coffee**
+>
+> - black hot drink,
+> - prepared from roasted coffee beans, and
+> - one of the most traded agricultural commodities in the world.
+>
+> **Milk**
+>
+> - white cold drink,
+> - nutrient-rich, and
+> - produced on an industrial scale.
+>
+> This is a loose definition list. Coffee is a black hot drink, prepared from
+> roasted coffee beans, and one of the most traded agricultural commodities in
+> the world. Milk is a white cold drink, nutrient-rich, and produced on an
+> industrial scale.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[definitionLists, tightLists]{markdown}
+\begin{document}
+
+\begin{markdown*}{
+  renderers = {
+    interblockSeparator = {%
+      :%
+      \def\markdownRendererInterblockSeparator{\par}%
+    },
+    dlBeginTight = {\begin{description}},
+    dlItem = {%
+      \item[#1]
+      \begin{itemize}
+      \def\markdownRendererDlDefinitionEnd{%
+        ,
+        \def\markdownRendererDlDefinitionEnd{%
+          , and
+          \def\markdownRendererDlDefinitionEnd{.}%
+        }%
+      }%
+    },
+    dlItemEnd = {\end{itemize}},
+    dlDefinitionBegin = \item,
+    dlEndTight = {\end{description}},
+  },
+}
+This is a tight definition list
+
+Coffee
+:   black hot drink
+:   prepared from roasted coffee beans
+:   one of the most traded agricultural commodities in the world
+
+Milk
+:   white cold drink
+:   nutrient-rich
+:   produced on an industrial scale
+\end{markdown*}
+
+\begin{markdown*}{
+  renderers = {
+    interblockSeparator = {%
+      \def\markdownRendererInterblockSeparator{\par}%
+    },
+    dlBegin = {},
+    dlItem = {%
+      . #1 is a
+      \def\markdownRendererDlDefinitionBegin{%
+        \def\markdownRendererDlDefinitionBegin{%
+          ,
+          \def\markdownRendererDlDefinitionBegin{, and }%
+        }%
+      }%
+    },
+    dlItemEnd = {},
+    dlDefinitionEnd = {},
+    dlEnd = {.},
+  },
+}
+This is a loose definition list
+
+Coffee
+
+:   black hot drink
+
+:   prepared from roasted coffee beans
+
+:   one of the most traded agricultural commodities in the world
+
+Milk
+
+:   white cold drink
+
+:   nutrient-rich
+
+:   produced on an industrial scale
+\end{markdown*}
+
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight definition list:
+>
+> **Coffee**
+>
+> - black hot drink,
+> - prepared from roasted coffee beans, and
+> - one of the most traded agricultural commodities in the world.
+>
+> **Milk**
+>
+> - white cold drink,
+> - nutrient-rich, and
+> - produced on an industrial scale.
+>
+> This is a loose definition list. Coffee is a black hot drink, prepared from
+> roasted coffee beans, and one of the most traded agricultural commodities in
+> the world. Milk is a white cold drink, nutrient-rich, and produced on an
+> industrial scale.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionDefinitionLists{true}
+\def\markdownOptionTightLists{true}
+\starttext
+
+\def\markdownRendererInterblockSeparator{%
+  :%
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererDlBeginTight{}
+\def\markdownRendererDlItem#1{%
+  \par{\bf#1}%
+  \startitemize
+  \def\markdownRendererDlDefinitionEnd{%
+    ,
+    \def\markdownRendererDlDefinitionEnd{%
+      , and
+      \def\markdownRendererDlDefinitionEnd{.}%
+    }%
+  }%
+}
+\def\markdownRendererDlItemEnd{\stopitemize}
+\def\markdownRendererDlDefinitionBegin{\item}
+\def\markdownRendererDlEndTight{}
+
+\startmarkdown
+This is a tight definition list
+
+Coffee
+:   black hot drink
+:   prepared from roasted coffee beans
+:   one of the most traded agricultural commodities in the world
+
+Milk
+:   white cold drink
+:   nutrient-rich
+:   produced on an industrial scale
+\stopmarkdown
+
+\def\markdownRendererInterblockSeparator{%
+  \def\markdownRendererInterblockSeparator{\par}%
+}
+\def\markdownRendererDlBegin{}
+\def\markdownRendererDlItem#1{%
+  . #1 is a
+  \def\markdownRendererDlDefinitionBegin{%
+    \def\markdownRendererDlDefinitionBegin{%
+      ,
+      \def\markdownRendererDlDefinitionBegin{, and }%
+    }%
+  }%
+}
+\def\markdownRendererDlItemEnd{}
+\def\markdownRendererDlDefinitionEnd{}
+\def\markdownRendererDlEnd{.}
+
+\startmarkdown
+This is a loose definition list
+
+Coffee
+
+:   black hot drink
+
+:   prepared from roasted coffee beans
+
+:   one of the most traded agricultural commodities in the world
+
+Milk
+
+:   white cold drink
+
+:   nutrient-rich
+
+:   produced on an industrial scale
+\stopmarkdown
+
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a tight definition list:
+>
+> **Coffee**
+>
+> - black hot drink,
+> - prepared from roasted coffee beans, and
+> - one of the most traded agricultural commodities in the world.
+>
+> **Milk**
+>
+> - white cold drink,
+> - nutrient-rich, and
+> - produced on an industrial scale.
+>
+> This is a loose definition list. Coffee is a black hot drink, prepared from
+> roasted coffee beans, and one of the most traded agricultural commodities in
+> the world. Milk is a white cold drink, nutrient-rich, and produced on an
+> industrial scale.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -6294,6 +7942,92 @@ span of text.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererEmphasis#1{{\it#1}}
+\def\markdownRendererStrongEmphasis#1{{\bf#1}}
+\markdownBegin
+This is *emphasis*.
+
+This is **strong emphasis**.
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is *emphasis*.
+>
+> This is **strong emphasis**.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    emphasis = {\emph{#1}},
+    strongEmphasis = {\textbf{#1}},
+  },
+}
+\begin{document}
+\begin{markdown}
+This is *emphasis*.
+
+This is **strong emphasis**.
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is *emphasis*.
+>
+> This is **strong emphasis**.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererEmphasis#1{\emph{#1}}
+\def\markdownRendererStrongEmphasis#1{\bold{#1}}
+\starttext
+\startmarkdown
+This is *emphasis*.
+
+This is **strong emphasis**.
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is *emphasis*.
+>
+> This is **strong emphasis**.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -6342,6 +8076,119 @@ a block quote. The macro receives no arguments.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererBlockQuoteBegin{%
+  \begingroup
+  \vskip\parindent
+  \leftskip=2\parindent
+  \parindent=0pt
+}
+\def\markdownRendererBlockQuoteEnd{%
+  \par
+  \vskip\parindent
+  \endgroup
+}
+\markdownBegin
+A quote from William Shakespeare's King Lear:
+
+> This is the excellent foppery of the world that when we are
+> sick in fortune---often the surfeit of our own behavior---we
+> make guilty of our disasters the sun, the moon, and the
+> stars [...]
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A quote from William Shakespeare's King Lear:
+>
+> > This is the excellent foppery of the world that when we are
+> > sick in fortune—often the surfeit of our own behavior—we
+> > make guilty of our disasters the sun, the moon, and the
+> > stars [...]
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    blockQuoteBegin = {\begin{quote}},
+    blockQuoteEnd = {\end{quote}},
+  },
+}
+\begin{document}
+\begin{markdown}
+A quote from William Shakespeare's King Lear:
+
+> This is the excellent foppery of the world that when we are
+> sick in fortune---often the surfeit of our own behavior---we
+> make guilty of our disasters the sun, the moon, and the
+> stars [...]
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A quote from William Shakespeare's King Lear:
+>
+> > This is the excellent foppery of the world that when we are
+> > sick in fortune—often the surfeit of our own behavior—we
+> > make guilty of our disasters the sun, the moon, and the
+> > stars [...]
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererBlockQuoteBegin{\startquotation}
+\def\markdownRendererBlockQuoteEnd{\stopquotation}
+\starttext
+\startmarkdown
+A quote from William Shakespeare's King Lear:
+
+> This is the excellent foppery of the world that when we are
+> sick in fortune---often the surfeit of our own behavior---we
+> make guilty of our disasters the sun, the moon, and the
+> stars [...]
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> A quote from William Shakespeare's King Lear:
+>
+> > This is the excellent foppery of the world that when we are
+> > sick in fortune—often the surfeit of our own behavior—we
+> > make guilty of our disasters the sun, the moon, and the
+> > stars [...]
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -6850,9 +8697,9 @@ renderers will be introduced in this section.
 % interfaces with the Lua interface. The valid values and their meaning are
 % as follows:
 %
-% - `0` -- Shell escape via the 18 output file stream
-% - `1` -- Shell escape via the Lua \luam{os.execute} method
-% - `2` -- Direct Lua access
+% - `0` – Shell escape via the 18 output file stream
+% - `1` – Shell escape via the Lua \luam{os.execute} method
+% - `2` – Direct Lua access
 %
 % By defining the macro, the user can coerce the package to use a specific mode.
 % If the user does not define the macro prior to loading the plain \TeX{}
