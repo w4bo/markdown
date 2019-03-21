@@ -8262,6 +8262,88 @@ a file contaning the code block contents and to the code fence infostring.
 % \end{markdown}
 %
 % \iffalse
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{verbatim}
+\usepackage[hyphens]{url}
+\usepackage[fencedCode]{markdown}
+\markdownSetup{
+  renderers = {
+    interblockSeparator = {
+      \def\markdownRendererInterblockSeparator{%
+        \par
+        \def\markdownRendererInterblockSeparator{%
+          \def\markdownRendererInterblockSeparator{%
+            \par
+          }%
+        }%
+      }%
+    },
+    inputVerbatim = {
+      is contained in file \url{#1}:%
+      \verbatiminput{#1}%
+    },
+    inputFencedCode = {
+      in #2 \markdownRendererInputVerbatim{#1}%
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+The following code
+
+    def foo(bar):
+      if len(bar) <= 1:
+        return bar[0]
+      elif len(bar) == 2:
+        return sorted(bar)
+      else:
+        baz = len(bar) // 2
+        return foo(bar[baz:], bar[:baz])
+
+The following code
+
+~~~ Python
+>>> foo([4, 2, 1, 3])
+[1, 2, 3, 4]
+~~~~~~~~~~
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text except for the filename, which may differ:
+
+> The following code is contained in file
+> `./_markdown_document/882453149edcf288976647f6fe147ada.verbatim`:
+> ``` py
+> def foo(bar):
+>   if len(bar) <= 1:
+>     return bar[:1]
+>   elif len(bar) == 2:
+>     return sorted(bar)
+>   else:
+>     baz = bar[len(bar) // 2]
+>     return (
+>       foo([qux for qux in bar if qux < baz]) + [baz] +
+>       foo([qux for qux in bar if qux > baz])
+>     )
+> ``````
+> The following code in Python contained in file
+> `./_markdown_document/cf2a96e2120cef5b1fae5fea36fcc27b.verbatim`:
+> ``` py
+> >>> foo([4, 2, 1, 3])
+> [1, 2, 3, 4]
+> ``````
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -8406,6 +8488,107 @@ text.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererInterblockSeparator{}
+\def\markdownRendererHeadingOne{1}
+\def\markdownRendererHeadingTwo{2}
+\def\markdownRendererHeadingThree{3}
+\def\markdownRendererHeadingFour{4}
+\def\markdownRendererHeadingFive{5}
+\def\markdownRendererHeadingSix{6}
+\markdownBegin
+######
+#####
+#####
+###
+######
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> 65536
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    interblockSeparator = {},
+    headingOne = 1,
+    headingTwo = 2,
+    headingThree = 3,
+    headingFour = 4,
+    headingFive = 5,
+    headingSix = 6,
+  },
+}
+\begin{document}
+\begin{markdown}
+######
+#####
+#####
+###
+######
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> 65536
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererInterblockSeparator{}
+\def\markdownRendererHeadingOne{1}
+\def\markdownRendererHeadingTwo{2}
+\def\markdownRendererHeadingThree{3}
+\def\markdownRendererHeadingFour{4}
+\def\markdownRendererHeadingFive{5}
+\def\markdownRendererHeadingSix{6}
+\starttext
+\startmarkdown
+######
+#####
+#####
+###
+######
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> 65536
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -8430,6 +8613,101 @@ The macro receives no arguments.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererHorizontalRule{\vfil\break}
+\markdownBegin
+This is the first page.
+
+***
+
+This is the second page.
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is the first page.
+>
+> ***
+>
+> This is the second page.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  renderers = {
+    horizontalRule = \newpage,
+  },
+}
+\begin{document}
+\begin{markdown}
+This is the first page.
+
+***
+
+This is the second page.
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is the first page.
+>
+> ***
+>
+> This is the second page.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererHorizontalRule{\page[yes]}
+\starttext
+\startmarkdown
+This is the first page.
+
+***
+
+This is the second page.
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is the first page.
+>
+> ***
+>
+> This is the second page.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -8455,6 +8733,94 @@ macro receives a single argument that corresponds to the footnote text.
 % \end{markdown}
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionFootnotes{true}
+\def\markdownRendererFootnote#1{ (and \lowercase{#1})}
+\markdownBegin
+This is some text[^1] and this is some other text[^2].
+
+ [^1]: this is a footnote
+
+ [^2]: this is some other footnote
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is some text (and this is a footnote) and this is some other
+> text (and this is some other footnote).
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[footnotes]{markdown}
+\markdownSetup{
+  renderers = {
+    footnote = { (and \MakeLowercase{#1})},
+  },
+}
+\begin{document}
+\begin{markdown}
+This is some text[^1] and this is some other text[^2].
+
+ [^1]: this is a footnote
+
+ [^2]: this is some other footnote
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is some text (and this is a footnote) and this is some other
+> text (and this is some other footnote).
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFootnotes{true}
+\def\markdownRendererFootnote#1{ (and \lowercase{#1})}
+\starttext
+\startmarkdown
+This is some text[^1] and this is some other text[^2].
+
+ [^1]: this is a footnote
+
+ [^2]: this is some other footnote
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is some text (and this is a footnote) and this is some other
+> text (and this is some other footnote).
+
 %</manual-tokens>
 %<*tex>
 % \fi
