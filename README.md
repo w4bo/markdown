@@ -3,8 +3,8 @@ Markdown
 [![release](https://img.shields.io/github/release/witiko/markdown.svg)][release]
 [![CircleCI](https://circleci.com/gh/Witiko/markdown/tree/master.svg?style=shield)][CircleCI]
 
- [CircleCI]: https://circleci.com/gh/Witiko/markdown/tree/master (CircleCI)
- [release]:  https://github.com/Witiko/markdown/releases/latest  (Releases · Witiko/markdown)
+ [CircleCI]: https://circleci.com/gh/Witiko/markdown/tree/master "CircleCI"
+ [release]:  https://github.com/Witiko/markdown/releases/latest  "Releases · Witiko/markdown"
 
 The Markdown package converts [markdown][] markup to TeX commands. The
 functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
@@ -13,7 +13,7 @@ containing markdown markup. Unlike other convertors, the Markdown package
 makes it easy to redefine how each and every markdown element is rendered.
 Creative abuse of the markdown syntax is encouraged. 😉
 
- [markdown]: https://daringfireball.net/projects/markdown/basics/ (Daring Fireball: Markdown Basics)
+ [markdown]: https://daringfireball.net/projects/markdown/basics/ "Daring Fireball: Markdown Basics"
 
 Further information
 -------------------
@@ -30,10 +30,10 @@ For further information, consult:
    documentation will reside in the file `markdown.pdf`, and
 3. [tutorials and example documents][tutor] by Lian Tze Lim at [Overleaf][].
 
- [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  (A Markdown Interpreter for TeX)
- [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html (Markdown Package User Manual)
- [tutor]:    https://www.overleaf.com/blog?search=Markdown                 (Blog - News and Articles from Overleaf)
- [overleaf]: https://www.overleaf.com/                                     (Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview)
+ [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  "A Markdown Interpreter for TeX"
+ [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html "Markdown Package User Manual"
+ [tutor]:    https://www.overleaf.com/blog?search=Markdown                 "Blog - News and Articles from Overleaf"
+ [overleaf]: https://www.overleaf.com/                                     "Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview"
 
 Contributing
 ------------
@@ -54,7 +54,7 @@ the documentation. In `markdown.dtx`, the documentation is placed inside TeX
 comments and marked up using the [ltxdockit][] LaTeX document class. Support
 for typesetting the documentation is provided by the [doc][] LaTeX package.
 
- [DocStrip]:  https://ctan.org/pkg/docstrip   (docstrip – Remove comments from file)
- [LaTeXMK]:   https://ctan.org/pkg/latexmk    (latexmk – Fully automated LaTeX document generation)
- [ltxdockit]: https://ctan.org/pkg/ltxdockit  (ltxdockit – Documentation support)
- [doc]:       https://ctan.org/pkg/doc        (doc – Format LaTeX documentation)
+ [DocStrip]:  https://ctan.org/pkg/docstrip   "docstrip – Remove comments from file"
+ [LaTeXMK]:   https://ctan.org/pkg/latexmk    "latexmk – Fully automated LaTeX document generation"
+ [ltxdockit]: https://ctan.org/pkg/ltxdockit  "ltxdockit – Documentation support"
+ [doc]:       https://ctan.org/pkg/doc        "doc – Format LaTeX documentation"
