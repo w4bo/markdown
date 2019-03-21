@@ -554,9 +554,9 @@ Creative abuse of the markdown syntax is encouraged. ;-)
 % \iffalse
 
 This document is a user manual for the [Markdown package][pkg]. It provides
-beginner tutorials and code examples. For an in-depth description of the
-package requirements, interfaces, and implementation, please refer to the
-[technical documentation][techdoc].
+tutorials and code examples. For an in-depth description of the package
+requirements, interfaces, and implementation, please refer to the [technical
+documentation][techdoc].
 
  [techdoc]: http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf
             (A Markdown Interpreter for TeX)
@@ -617,19 +617,19 @@ modules['markdown'] = metadata
 Requirements
 ------------
 
-The package requires a working \TeX{} distribution. [TeX Live][] ≥ 2013 is
-known to work and so are recent installation of [MikTeX][]. If you are using a
-minimal installation of a \TeX{} distribution, please consult the
+The package requires a working \TeX{} distribution. [\TeX{} Live][tl] ≥ 2013 is
+known to work and so are recent installation of [Mik\TeX{}][mik]. If you are
+using a minimal installation of a \TeX{} distribution, please consult the
 [technical documentation][techdoc] for a detailed list of required packages.
 
- [TeX Live]: https://www.tug.org/texlive/ (TeX Live - TeX Users Group)
- [MikTeX]: https://miktex.org/ (Home - MiKTeXorg)
+ [tl]: https://www.tug.org/texlive/ (TeX Live - TeX Users Group)
+ [mik]: https://miktex.org/ (Home - MiKTeXorg)
 
 Installation
 ------------
 
-The package comes pre-installed with [TeX Live][] ≥ 2016 and with recent
-installations of [MikTeX][]. Unless you explicitly wish to use the latest
+The package comes pre-installed with [\TeX{} Live][tl] ≥ 2016 and with recent
+installations of [MikTeX][mik]. Unless you explicitly wish to use the latest
 version of the package, you are encouraged to skip this step.
 
 To install the package, first download the package from the repository
@@ -8851,6 +8851,64 @@ otherwise.
 % \end{markdown}
 %
 % \iffalse
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[citations]{markdown}
+\newcount\citationsCounter
+\newcount\citationsTotal
+\makeatletter
+\def\citations#1#2#3#4{%
+  a parenthesized citation \emph{#4}
+  \advance\citationsCounter by 1\relax
+  \ifx\relax#2\relax
+    \ifx\relax#3\relax\else
+      with a postfix \emph{#3}%
+    \fi
+  \else
+    with a prefix \emph{#2}%
+    \ifx\relax#3\relax\else
+      \ and a postfix \emph{#3}%
+    \fi
+  \fi
+  \ifnum\citationsCounter>\citationsTotal\relax
+    .%
+    \expandafter\@gobble
+  \else
+    , and
+  \fi\citations}
+\makeatother
+\markdownSetup{
+  renderers = {
+    cite = {%
+      \citationsCounter=1%
+      \citationsTotal=#1%
+      This is
+      \expandafter\citations
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+[see @abrahams90, pp. 12; @eijkhout91, pp. 34]
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a parenthesized citation *abrahams90* with a prefix see
+> and a postfix *pp.  > 12*, and a citation *eijkhout91* with a
+> postfix *pp. 34*.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -8877,6 +8935,63 @@ format as the \m{markdownRendererCite} macro.
 % \end{markdown}
 %
 % \iffalse
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[citations]{markdown}
+\newcount\citationsCounter
+\newcount\citationsTotal
+\makeatletter
+\def\citations#1#2#3#4{%
+  a text citation \emph{#4}
+  \advance\citationsCounter by 1\relax
+  \ifx\relax#2\relax
+    \ifx\relax#3\relax\else
+      with a postfix \emph{#3}%
+    \fi
+  \else
+    with a prefix \emph{#2}%
+    \ifx\relax#3\relax\else
+      \ and a postfix \emph{#3}%
+    \fi
+  \fi
+  \ifnum\citationsCounter>\citationsTotal\relax
+    .%
+    \expandafter\@gobble
+  \else
+    , and
+  \fi\citations}
+\makeatother
+\markdownSetup{
+  renderers = {
+    textCite = {%
+      \citationsCounter=1%
+      \citationsTotal=#1%
+      This is
+      \expandafter\citations
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+@abrahams90 [pp. 12; also @eijkhout91]
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a text citation *abrahams90* with a postfix *pp. 12*,
+> and a citation *eijkhout91* with a prefix *also*.
+
 %</manual-tokens>
 %<*tex>
 % \fi
@@ -8902,12 +9017,114 @@ format as the \m{markdownRendererCite} macro.
 % \iffalse
 
 By default, token renderers point to package-defined \TeX{} macros, further
-referred to as *prototypes*, which provide useful default definitions.  Token
-renderers will be introduced in this section.
+referred to as *prototypes*, which provide useful default definitions.
 
 % \fi
 %
 % \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownRendererTildePrototype{%
+  Packages can specify token renderer prototypes.%
+}
+\markdownBegin
+~
+\markdownEnd
+
+\def\markdownRendererTilde{%
+  User-defined token renderers take precedence.%
+}
+\markdownBegin
+~
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Packages can specify token renderer prototypes.
+>
+> User-defined token renderers take precedence.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\markdownSetup{
+  rendererPrototypes = {
+    tilde = {Packages can specify token renderer prototypes.},
+  },
+}
+\begin{document}
+\begin{markdown}
+~
+\end{markdown}
+
+\begin{markdown*}{
+  renderers = {
+    tilde = {User-defined token renderers take precedence.},
+  },
+}
+~
+\end{markdown*}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Packages can specify token renderer prototypes.
+>
+> User-defined token renderers take precedence.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownRendererTildePrototype{%
+  Packages can specify token renderer prototypes.%
+}
+\starttext
+\startmarkdown
+~
+\stopmarkdown
+
+\def\markdownRendererTilde{%
+  User-defined token renderers take precedence.%
+}
+\startmarkdown
+~
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> Packages can specify token renderer prototypes.
+>
+> User-defined token renderers take precedence.
+
 %</manual-tokens>
 %<*tex>
 % \fi
