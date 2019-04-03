@@ -3701,6 +3701,47 @@ defaultOptions.hashEnumerators = false
 %</lua,lua-cli>
 %<*manual-options>
 
+#### Option `headerAttributes`
+
+`headerAttributes` (default value: `false`)
+
+% \fi
+% \begin{markdown}
+%
+% \Optitem[false]{headerAttributes}{\opt{true}, \opt{false}}
+%
+:    true
+
+     :   Enable the assignment of HTML attributes to headings:
+
+         ``` md
+         # My first heading {#foo}
+
+         ## My second heading ##    {#bar .baz}
+
+         Yet another heading   {key=value}
+         ===================
+         ``````
+
+         These HTML attributes have currently no effect and will be ignored.
+
+:    false
+
+     :   Disable the assignment of HTML attributes to headings.
+
+% \end{markdown}
+% \iffalse
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.headerAttributes = false
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 #### Option `html`
 
 `html` (default value: `false`)
@@ -5371,6 +5412,7 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionFootnotes\undefined
 \let\markdownOptionFencedCode\undefined
 \let\markdownOptionHashEnumerators\undefined
+\let\markdownOptionHeaderAttributes\undefined
 \let\markdownOptionHtml\undefined
 \let\markdownOptionHybrid\undefined
 \let\markdownOptionInlineFootnotes\undefined
@@ -9529,6 +9571,8 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionFencedCode{#1}}%
 \define@key{markdownOptions}{hashEnumerators}[true]{%
   \def\markdownOptionHashEnumerators{#1}}%
+\define@key{markdownOptions}{headerAttributes}[true]{%
+  \def\markdownOptionHeaderAttributes{#1}}%
 \define@key{markdownOptions}{html}[true]{%
   \def\markdownOptionHtml{#1}}%
 \define@key{markdownOptions}{hybrid}[true]{%
@@ -11233,6 +11277,8 @@ parsers.lparent                = P("(")
 parsers.rparent                = P(")")
 parsers.lbracket               = P("[")
 parsers.rbracket               = P("]")
+parsers.lbrace                 = P("{")
+parsers.rbrace                 = P("}")
 parsers.circumflex             = P("^")
 parsers.slash                  = P("/")
 parsers.equal                  = P("=")
@@ -11298,6 +11344,22 @@ parsers.nonemptyline           = parsers.line - parsers.blankline
 
 parsers.chunk                  = parsers.line * (parsers.optionallyindentedline
                                                 - parsers.blankline)^0
+
+parsers.css_identifier_char    = R("AZ", "az", "09") + S("-_")
+parsers.css_identifier         = (parsers.hash + parsers.period)
+                               * (((parsers.css_identifier_char
+                                   - parsers.dash - parsers.digit)
+                                  * parsers.css_identifier_char^1)
+                                 + (parsers.dash
+                                   * (parsers.css_identifier_char
+                                     - parsers.digit)
+                                   * parsers.css_identifier_char^0))
+parsers.attribute_name_char    = parsers.any - parsers.space
+                               - parsers.squote - parsers.dquote
+                               - parsers.more - parsers.slash
+                               - parsers.equal
+parsers.attribute_value_char   = parsers.any - parsers.dquote
+                               - parsers.more
 
 -- block followed by 0 or more optionally
 -- indented blocks with first line indented.
@@ -11838,6 +11900,18 @@ parsers.dlchunk = Cs(parsers.line * (parsers.indentedline - parsers.blankline)^0
 %
 % \end{markdown}
 %  \begin{macrocode}
+parsers.heading_attribute = parsers.css_identifier
+                          + ((parsers.attribute_name_char
+                             - parsers.rbrace)^1
+                             * parsers.equal
+                             * (parsers.attribute_value_char
+                               - parsers.rbrace)^1)
+parsers.HeadingAttributes = parsers.lbrace
+                          * parsers.heading_attribute
+                          * (parsers.spacechar^1
+                            * parsers.heading_attribute)^0
+                          * parsers.rbrace
+
 -- parse Atx heading start and return level
 parsers.HeadingStart = #parsers.hash * C(parsers.hash^-6)
                      * -parsers.hash / length
@@ -12504,18 +12578,61 @@ function M.reader.new(writer, options)
 % \end{markdown}
 %  \begin{macrocode}
   -- parse atx header
-  larsers.AtxHeading = Cg(parsers.HeadingStart,"level")
-                     * parsers.optionalspace
-                     * (C(parsers.line) / strip_atx_end / parse_inlines)
-                     * Cb("level")
-                     / writer.heading
+  if options.headerAttributes then
+    larsers.AtxHeading = Cg(parsers.HeadingStart,"level")
+                       * parsers.optionalspace
+                       * (C(((parsers.linechar
+                             - ((parsers.hash^1
+                                * parsers.optionalspace
+                                * parsers.HeadingAttributes^-1
+                                + parsers.HeadingAttributes)
+                               * parsers.optionalspace
+                               * parsers.newline))
+                            * (parsers.linechar
+                              - parsers.hash
+                              - parsers.lbrace)^0)^1)
+                           / parse_inlines)
+                       * (parsers.newline
+                         + ((parsers.hash^1
+                            * parsers.optionalspace
+                            * parsers.HeadingAttributes^-1
+                            + parsers.HeadingAttributes)
+                           * parsers.optionalspace
+                           * parsers.newline))
+                       * Cb("level")
+                       / writer.heading
 
-  -- parse setext header
-  larsers.SetextHeading = #(parsers.line * S("=-"))
-                        * Ct(parsers.line / parse_inlines)
-                        * parsers.HeadingLevel
-                        * parsers.optionalspace * parsers.newline
-                        / writer.heading
+    larsers.SetextHeading = #(parsers.line * S("=-"))
+                          * (C(((parsers.linechar
+                                - (parsers.HeadingAttributes
+                                  * parsers.optionalspace
+                                  * parsers.newline))
+                               * (parsers.linechar
+                                 - parsers.lbrace)^0)^1)
+                              / parse_inlines)
+                          * (parsers.newline
+                            + (parsers.HeadingAttributes
+                              * parsers.optionalspace
+                              * parsers.newline))
+                          * parsers.HeadingLevel
+                          * parsers.optionalspace
+                          * parsers.newline
+                          / writer.heading
+  else
+    larsers.AtxHeading = Cg(parsers.HeadingStart,"level")
+                       * parsers.optionalspace
+                       * (C(parsers.line) / strip_atx_end / parse_inlines)
+                       * Cb("level")
+                       / writer.heading
+
+    larsers.SetextHeading = #(parsers.line * S("=-"))
+                          * Ct(parsers.linechar^1 / parse_inlines)
+                          * parsers.newline
+                          * parsers.HeadingLevel
+                          * parsers.optionalspace
+                          * parsers.newline
+                          / writer.heading
+  end
 
   larsers.Heading = larsers.AtxHeading + larsers.SetextHeading
 %    \end{macrocode}
@@ -12939,6 +13056,9 @@ end
 \fi
 \ifx\markdownOptionHashEnumerators\undefined\else
   hashEnumerators = \markdownOptionHashEnumerators,
+\fi
+\ifx\markdownOptionHeaderAttributes\undefined\else
+  headerAttributes = \markdownOptionHeaderAttributes,
 \fi
 \ifx\markdownOptionHtml\undefined\else
   html = \markdownOptionHtml,
