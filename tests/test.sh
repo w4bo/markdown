@@ -39,7 +39,7 @@ for TESTFILE; do
         if ! grep -q '^\s*>>>\s*$' <${TESTFILE##*/}; then
           cp test-actual.log test-expected.log
           (cat ${TESTFILE##*/} && printf '>>>\n'
-            cat test-expected.log) >../$TESTFILE
+            cat test-expected.log) >"$OLDPWD"/$TESTFILE
           printf '      Added the expected test outcome to the testfile.\n'
         fi
 
