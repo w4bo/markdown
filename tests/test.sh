@@ -27,7 +27,8 @@ for TESTFILE; do
            -DTEST_INPUT_FILENAME=test-input.md <"$OLDPWD"/$TEMPLATE >test.tex
 
         # Run the test, filter the output and concatenate adjacent lines.
-        eval $COMMAND >/dev/null 2>&1
+        eval $COMMAND >/dev/null 2>&1 ||
+          { cat test.markdown.err 1>&2 2>/dev/null; exit 1; }
         sed -nr '/^\s*TEST INPUT BEGIN\s*$/,/^\s*TEST INPUT END\s*$/{
           /^\s*TEST INPUT (BEGIN|END)\s*$/!H
           /^\s*TEST INPUT END\s*$/{s/.*//;x;s/\n//g;p}
