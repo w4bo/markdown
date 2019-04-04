@@ -4572,13 +4572,13 @@ following content:
 \directlua{
   local markdown = require("markdown")
   local convert = markdown.new()
-  input = "These are just three regular dots ..."
+  local input = "These are just three regular dots ..."
   tex.sprint(convert(input)) }
 \par
 \directlua{
   local markdown = require("markdown")
   local convert = markdown.new({smartEllipses = true})
-  input = "... and this is a victorian ellipsis."
+  local input = "... and this is a victorian ellipsis."
   tex.sprint(convert(input)) }
 \bye
 ```````
