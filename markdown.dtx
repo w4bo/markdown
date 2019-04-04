@@ -53,6 +53,7 @@
   citations,
   definitionLists,
   fencedCode,
+  headerAttributes,
   hybrid,
   html,
   stripPercentSigns,
@@ -3701,7 +3702,7 @@ defaultOptions.hashEnumerators = false
 %</lua,lua-cli>
 %<*manual-options>
 
-#### Option `headerAttributes`
+#### Option `headerAttributes` {#header-attributes}
 
 `headerAttributes` (default value: `false`)
 
@@ -3723,7 +3724,11 @@ defaultOptions.hashEnumerators = false
          ===================
          ``````
 
-         These HTML attributes have currently no effect and will be ignored.
+         These HTML attributes have currently no effect other than enabling
+%        content slicing, see the \Opt{slice} option.
+%        \iffalse
+         [content slicing](#slice).
+%        \fi
 
 :    false
 
@@ -4326,6 +4331,214 @@ defaultOptions.preserveTabs = false
 % \iffalse
 %</lua,lua-cli>
 %<*manual-options>
+
+#### Option `slice` {#slice}
+
+`slice` (default value: `^ $`)
+
+% \fi
+% \begin{markdown}
+%
+% \Valitem[\textasciicircum{} \$]{slice}{the beginning and the end of a slice}
+%
+:    Two space-separated selectors that specify the slice of a document that
+     will be processed, whereas the remainder of the document will be ignored.
+     The following selectors are recognized:
+
+     - The circumflex (`^`) selects the beginning of a document.
+     - The dollar sign (`$`) selects the end of a document.
+     - `^`\meta{identifier} selects the beginning of a section with the
+%      HTML attribute `#`\meta{identifier} (see the
+%      \Opt{headerAttributes} option).
+       \iffalse
+       [HTML attribute](#header-attributes) `#`\meta{identifier}.
+%      \fi
+     - `$`\meta{identifier} selects the end of a section with the HTML
+       attribute `#`\meta{identifier}.
+     - \meta{identifier} corresponds to `^`\meta{identifier} for the first
+       selector and to `$`\meta{identifier} for the second selector.
+
+     Specifying only a single selector, \meta{identifier}, is equivalent
+     to specifying the two selectors \meta{identifier} \meta{identifier},
+     which is equivalent to `^`\meta{identifier} `$`\meta{identifier}.
+
+% \end{markdown}
+% \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `hamlet.md` with the
+following content:
+
+``` md
+# The Tragedy of Hamlet
+Shakespeare's longest play.
+
+## Act III {#act-3}
+Hamlet kills Polonius.
+
+## Act V   {#act-5}
+Hamlet dies.
+
+## Act I   {#act-1}
+Hamlet talks to ghost.
+```
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionHeaderAttributes{true}
+
+\font\normal=cmr10\normal
+\font\big=cmr10 at 12pt
+\def\markdownRendererHeadingTwo#1{{\big #1\par}}
+\font\bigger=cmr10 scaled 1440
+\def\markdownRendererHeadingOne#1{{\bigger #1\par}}
+
+\def\markdownOptionSlice{^ ^act-3}
+\markdownInput{hamlet.md}
+
+\def\markdownOptionSlice{act-1}
+\markdownInput{hamlet.md}
+
+\def\markdownOptionSlice{act-3 act-5}
+\markdownInput{hamlet.md}
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> # The Tragedy of Hamlet
+> Shakespeare's longest play.
+>
+> ## Act I
+> Hamlet talks to ghost.
+>
+> ## Act III
+> Hamlet kills Polonius.
+>
+> ## Act V
+> Hamlet dies.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[headerAttributes]{markdown}
+\usepackage{filecontents}
+\begin{filecontents*}{hamlet.md}
+# The Tragedy of Hamlet
+Shakespeare's longest play.
+
+## Act III {#act-3}
+Hamlet kills Polonius.
+
+## Act V   {#act-5}
+Hamlet dies.
+
+## Act I   {#act-1}
+Hamlet talks to ghost.
+\end{filecontents*}
+\begin{document}
+\markdownInput[slice=^ ^act-3]{hamlet.md}
+\markdownInput[slice=act-1]{hamlet.md}
+\markdownInput[slice=act-3 act-5]{hamlet.md}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> # The Tragedy of Hamlet
+> Shakespeare's longest play.
+>
+> ## Act I
+> Hamlet talks to ghost.
+>
+> ## Act III
+> Hamlet kills Polonius.
+>
+> ## Act V
+> Hamlet dies.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `hamlet.md` with the
+following content:
+
+``` md
+# The Tragedy of Hamlet
+Shakespeare's longest play.
+
+## Act III {#act-3}
+Hamlet kills Polonius.
+
+## Act V   {#act-5}
+Hamlet dies.
+
+## Act I   {#act-1}
+Hamlet talks to ghost.
+```
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionHeaderAttributes{true}
+\starttext
+
+\def\markdownOptionSlice{^ ^act-3}
+\markdownInput{hamlet.md}
+
+\def\markdownOptionSlice{act-1}
+\markdownInput{hamlet.md}
+
+\def\markdownOptionSlice{act-3 act-5}
+\markdownInput{hamlet.md}
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> # The Tragedy of Hamlet
+> Shakespeare's longest play.
+>
+> ## Act I
+> Hamlet talks to ghost.
+>
+> ## Act III
+> Hamlet kills Polonius.
+>
+> ## Act V
+> Hamlet dies.
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.slice = "^ $"
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 
 #### Option `smartEllipses`
 
@@ -5417,6 +5630,7 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionHybrid\undefined
 \let\markdownOptionInlineFootnotes\undefined
 \let\markdownOptionPreserveTabs\undefined
+\let\markdownOptionSlice\undefined
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
 \let\markdownOptionTightLists\undefined
@@ -9583,6 +9797,8 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionPreserveTabs{#1}}%
 \define@key{markdownOptions}{smartEllipses}[true]{%
   \def\markdownOptionSmartEllipses{#1}}%
+\define@key{markdownOptions}{slice}[true]{%
+  \def\markdownOptionSlice{#1}}%
 \define@key{markdownOptions}{startNumber}[true]{%
   \def\markdownOptionStartNumber{#1}}%
 \define@key{markdownOptions}{tightLists}[true]{%
@@ -10688,6 +10904,40 @@ function M.writer.new(options)
 % \par
 % \begin{markdown}
 %
+% Parse the \Opt{slice} option and define \luamdef{writer->slice\_begin}
+% \luamdef{writer->slice\_end}, and \luamdef{writer->is\_writing}.
+%
+% \end{markdown}
+%  \begin{macrocode}
+  local slice_specifiers = {}
+  for specifier in options.slice:gmatch("[^%s]+") do
+    table.insert(slice_specifiers, specifier)
+  end
+
+  if #slice_specifiers == 2 then
+    self.slice_begin, self.slice_end = table.unpack(slice_specifiers)
+    local slice_begin_type = self.slice_begin:sub(1, 1)
+    if slice_begin_type ~= "^" and slice_begin_type ~= "$" then
+      self.slice_begin = "^" .. self.slice_begin
+    end
+    local slice_end_type = self.slice_end:sub(1, 1)
+    if slice_end_type ~= "^" and slice_end_type ~= "$" then
+      self.slice_end = "$" .. self.slice_end
+    end
+  elseif #slice_specifiers == 1 then
+    self.slice_begin = "^" .. slice_specifiers[1]
+    self.slice_end = "$" .. slice_specifiers[1]
+  end
+
+  if self.slice_begin == "^" and self.slice_end ~= "^" then
+    self.is_writing = true
+  else
+    self.is_writing = false
+  end
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 % Define \luamdef{writer->suffix} as the suffix of the produced cache files.
 %
 % \end{markdown}
@@ -10734,6 +10984,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.paragraph(s)
+    if not self.is_writing then return "" end
     return s
   end
 %    \end{macrocode}
@@ -10758,7 +11009,10 @@ function M.writer.new(options)
 %
 % \end{markdown}
 %  \begin{macrocode}
-  self.interblocksep = "\\markdownRendererInterblockSeparator\n{}"
+  function self.interblocksep()
+    if not self.is_writing then return "" end
+    return "\\markdownRendererInterblockSeparator\n{}"
+  end
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -10794,7 +11048,10 @@ function M.writer.new(options)
 %
 % \end{markdown}
 %  \begin{macrocode}
-  self.hrule = "\\markdownRendererHorizontalRule{}"
+  function self.hrule()
+    if not self.is_writing then return "" end
+    return "\\markdownRendererHorizontalRule{}"
+  end
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -10965,6 +11222,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.contentblock(src,suf,type,tit)
+    if not self.is_writing then return "" end
     src = src.."."..suf
     suf = suf:lower()
     if type == "onlineimage" then
@@ -11001,6 +11259,7 @@ function M.writer.new(options)
   end
 
   function self.bulletlist(items,tight)
+    if not self.is_writing then return "" end
     local buffer = {}
     for _,item in ipairs(items) do
       buffer[#buffer + 1] = ulitem(item)
@@ -11037,6 +11296,7 @@ function M.writer.new(options)
   end
 
   function self.orderedlist(items,tight,startnum)
+    if not self.is_writing then return "" end
     local buffer = {}
     local num = startnum
     for _,item in ipairs(items) do
@@ -11090,6 +11350,7 @@ function M.writer.new(options)
   end
 
   function self.definitionlist(items,tight)
+    if not self.is_writing then return "" end
     local buffer = {}
     for _,item in ipairs(items) do
       buffer[#buffer + 1] = dlitem(item.term, item.definitions)
@@ -11136,6 +11397,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.blockquote(s)
+    if #util.rope_to_string(s) == 0 then return "" end
     return {"\\markdownRendererBlockQuoteBegin\n",s,
       "\n\\markdownRendererBlockQuoteEnd "}
   end
@@ -11149,6 +11411,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.verbatim(s)
+    if not self.is_writing then return "" end
     local name = util.cache(options.cacheDir, s, nil, nil, ".verbatim")
     return {"\\markdownRendererInputVerbatim{",name,"}"}
   end
@@ -11163,6 +11426,7 @@ function M.writer.new(options)
 % \end{markdown}
 %  \begin{macrocode}
   function self.fencedCode(i, s)
+    if not self.is_writing then return "" end
     local name = util.cache(options.cacheDir, s, nil, nil, ".verbatim")
     return {"\\markdownRendererInputFencedCode{",name,"}{",i,"}"}
   end
@@ -11170,12 +11434,67 @@ function M.writer.new(options)
 % \par
 % \begin{markdown}
 %
-% Define \luamdef{writer->heading} as a function that will transform an
-% input heading `s` at level `level` to the output format.
+% Define \luamdef{writer->active_headings} as a stack of identifiers
+% of the headings that are currently active.
 %
 % \end{markdown}
 %  \begin{macrocode}
-  function self.heading(s,level)
+  self.active_headings = {}
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% Define \luamdef{writer->heading} as a function that will transform an
+% input heading `s` at level `level` with identifiers `identifiers` to the
+% output format.
+%
+% \end{markdown}
+%  \begin{macrocode}
+  function self.heading(s,level,attributes)
+    local active_headings = self.active_headings
+    local slice_begin_type = self.slice_begin:sub(1, 1)
+    local slice_begin_identifier = self.slice_begin:sub(2) or ""
+    local slice_end_type = self.slice_end:sub(1, 1)
+    local slice_end_identifier = self.slice_end:sub(2) or ""
+
+    while #active_headings < level do
+      -- push empty identifiers for implied sections
+      table.insert(active_headings, {})
+    end
+
+    while #active_headings >= level do
+      -- pop identifiers for sections that have ended
+      local active_identifiers = active_headings[#active_headings]
+      if active_identifiers[slice_begin_identifier] ~= nil
+          and slice_begin_type == "$" then
+        self.is_writing = true
+      end
+      if active_identifiers[slice_end_identifier] ~= nil
+          and slice_end_type == "$" then
+        self.is_writing = false
+      end
+      table.remove(active_headings, #active_headings)
+    end
+
+    -- push identifiers for the new section
+    attributes = attributes or {}
+    local identifiers = {}
+    for index = 1, #attributes do
+      attribute = attributes[index]
+      identifiers[attribute:sub(2)] = true
+    end
+    if identifiers[slice_begin_identifier] ~= nil
+        and slice_begin_type == "^" then
+      self.is_writing = true
+    end
+    if identifiers[slice_end_identifier] ~= nil
+        and slice_end_type == "^" then
+      self.is_writing = false
+    end
+    table.insert(active_headings, identifiers)
+
+    if not self.is_writing then return "" end
+
     local cmd
     if level == 1 then
       cmd = "\\markdownRendererHeadingOne"
@@ -11900,8 +12219,8 @@ parsers.dlchunk = Cs(parsers.line * (parsers.indentedline - parsers.blankline)^0
 %
 % \end{markdown}
 %  \begin{macrocode}
-parsers.heading_attribute = parsers.css_identifier
-                          + ((parsers.attribute_name_char
+parsers.heading_attribute = C(parsers.css_identifier)
+                          + C((parsers.attribute_name_char
                              - parsers.rbrace)^1
                              * parsers.equal
                              * (parsers.attribute_value_char
@@ -12592,14 +12911,15 @@ function M.reader.new(writer, options)
                               - parsers.hash
                               - parsers.lbrace)^0)^1)
                            / parse_inlines)
-                       * (parsers.newline
-                         + ((parsers.hash^1
-                            * parsers.optionalspace
-                            * parsers.HeadingAttributes^-1
-                            + parsers.HeadingAttributes)
-                           * parsers.optionalspace
-                           * parsers.newline))
+                       * Cg(Ct(parsers.newline
+                              + (parsers.hash^1
+                                * parsers.optionalspace
+                                * parsers.HeadingAttributes^-1
+                                + parsers.HeadingAttributes)
+                              * parsers.optionalspace
+                              * parsers.newline), "attributes")
                        * Cb("level")
+                       * Cb("attributes")
                        / writer.heading
 
     larsers.SetextHeading = #(parsers.line * S("=-"))
@@ -12610,11 +12930,12 @@ function M.reader.new(writer, options)
                                * (parsers.linechar
                                  - parsers.lbrace)^0)^1)
                               / parse_inlines)
-                          * (parsers.newline
-                            + (parsers.HeadingAttributes
-                              * parsers.optionalspace
-                              * parsers.newline))
+                          * Cg(Ct(parsers.newline
+                                 + (parsers.HeadingAttributes
+                                   * parsers.optionalspace
+                                   * parsers.newline)), "attributes")
                           * parsers.HeadingLevel
+                          * Cb("attributes")
                           * parsers.optionalspace
                           * parsers.newline
                           / writer.heading
@@ -12647,9 +12968,7 @@ function M.reader.new(writer, options)
     { "Blocks",
 
       Blocks                = larsers.Blank^0 * parsers.Block^-1
-                            * (larsers.Blank^0 / function()
-                                                   return writer.interblocksep
-                                                 end
+                            * (larsers.Blank^0 / writer.interblocksep
                               * parsers.Block)^0
                             * larsers.Blank^0 * parsers.eof,
 
@@ -13071,6 +13390,9 @@ end
 \fi
 \ifx\markdownOptionPreserveTabs\undefined\else
   preserveTabs = \markdownOptionPreserveTabs,
+\fi
+\ifx\markdownOptionSlice\undefined\else
+  slice = "\markdownOptionSlice",
 \fi
 \ifx\markdownOptionSmartEllipses\undefined\else
   smartEllipses = \markdownOptionSmartEllipses,
