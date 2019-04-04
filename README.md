@@ -24,9 +24,9 @@ For further information, consult:
    (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`). The manual will
    reside in the file `markdown.md` and the CSS stylesheet `markdown.css`, and
 2. the [technical documentation][techdoc], which can be typeset by running the
-   [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
+   [LaTeXMK][] tool on the `markdown.dtx` file
    (`latexmk markdown.dtx`) after installing the Markdown package.
-   [LaTeXMK][LaTeXMK] should be included in your TeX distribution. The typeset
+   [LaTeXMK][] should be included in your TeX distribution. The typeset
    documentation will reside in the file `markdown.pdf`, and
 3. [tutorials and example documents][tutor] by Lian Tze Lim at [Overleaf][].
 
@@ -48,13 +48,27 @@ files are produced from the `markdown.dtx` document. In `markdown.dtx`, the
 boundaries between the produced files are marked up using a XML-like syntax
 provided by the [DocStrip][] plain TeX package.
 
-Running the [LaTeXMK][LaTeXMK] tool on the `markdown.dtx` file
+Running the [LaTeXMK][] tool on the `markdown.dtx` file
 (`latexmk markdown.dtx`) after the Markdown package has been installed typesets
 the documentation. In `markdown.dtx`, the documentation is placed inside TeX
 comments and marked up using the [ltxdockit][] LaTeX document class. Support
 for typesetting the documentation is provided by the [doc][] LaTeX package.
 
- [DocStrip]:  https://ctan.org/pkg/docstrip   "docstrip – Remove comments from file"
- [LaTeXMK]:   https://ctan.org/pkg/latexmk    "latexmk – Fully automated LaTeX document generation"
- [ltxdockit]: https://ctan.org/pkg/ltxdockit  "ltxdockit – Documentation support"
- [doc]:       https://ctan.org/pkg/doc        "doc – Format LaTeX documentation"
+ [DocStrip]:  https://ctan.org/pkg/docstrip  "docstrip – Remove comments from file"
+ [LaTeXMK]:   https://ctan.org/pkg/latexmk   "latexmk – Fully automated LaTeX document generation"
+ [ltxdockit]: https://ctan.org/pkg/ltxdockit "ltxdockit – Documentation support"
+ [doc]:       https://ctan.org/pkg/doc       "doc – Format LaTeX documentation"
+
+Acknowledgements
+----------------
+I gratefully acknowledge the funding from the [Faculty of Informatics][fimu]
+at the [Masaryk University][mu] in Brno, Czech Republic, for the development of
+the Markdown package.
+
+Support for content slicing was graciously sponsored by [David Vins][dvins]
+and [Omedym][].
+
+ [fimu]:   https://www.fi.muni.cz/index.html.en "Faculty of Informatics, Masaryk University"
+ [mu]:     https://www.muni.cz/en               "Masaryk University"
+ [dvins]:  https://github.com/dvins             "David Vins"
+ [Omedym]: https://www.omedym.com/              "Omedym"
