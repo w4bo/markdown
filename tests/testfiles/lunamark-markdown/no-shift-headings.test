@@ -1,0 +1,35 @@
+<<<
+This test ensures that the Lua `shiftHeadings` option is disabled by default.
+
+# A level one heading
+
+A level one heading
+===================
+
+## A level two heading
+
+A level two heading
+-------------------
+
+### A level three heading
+#### A level four heading
+##### A level five heading
+###### A level six heading
+>>>
+codeSpan: shiftHeadings
+interblockSeparator
+headingOne: A level one heading
+interblockSeparator
+headingOne: A level one heading
+interblockSeparator
+headingTwo: A level two heading
+interblockSeparator
+headingTwo: A level two heading
+interblockSeparator
+headingThree: A level three heading
+interblockSeparator
+headingFour: A level four heading
+interblockSeparator
+headingFive: A level five heading
+interblockSeparator
+headingSix: A level six heading

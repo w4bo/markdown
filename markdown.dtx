@@ -4332,6 +4332,142 @@ defaultOptions.preserveTabs = false
 %</lua,lua-cli>
 %<*manual-options>
 
+#### Option `shiftHeadings`
+
+`shiftHeadings` (default value: `0`)
+
+% \fi
+% \begin{markdown}
+%
+% \Valitem[0]{shiftHeadings}{shift amount}
+%
+:    All headings will be shifted by \meta{shift amount}, which can be both
+     positive and negative. Headings will not be shifted beyond level 6 or
+     below level 1. Instead, those headings will be shifted to level 6, when
+     \meta{shift amount} is positive, and to level 1, when \meta{shift amount}
+     is negative.
+
+% \end{markdown}
+% \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `example.md` with the
+following content:
+
+``` md
+## A section
+```
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+
+\font\normal=cmr10\normal
+\font\big=cmr10 at 12pt
+\def\markdownRendererHeadingTwo#1{{\big #1\par}}
+\font\bigger=cmr10 scaled 1440
+\def\markdownRendererHeadingOne#1{{\bigger #1\par}}
+
+\def\markdownOptionShiftHeadings{-1}
+\markdownInput{example.md}
+
+\def\markdownOptionShiftHeadings{0}
+\markdownInput{example.md}
+
+\def\markdownOptionShiftHeadings{+1}
+\markdownInput{example.md}
+
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> # A section
+> ## A section
+> ### A section
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage{markdown}
+\usepackage{filecontents}
+\begin{filecontents*}{example.md}
+## A section
+\end{filecontents*}
+\begin{document}
+\markdownInput[shiftHeadings=-1]{example.md}
+\markdownInput{example.md}
+\markdownInput[shiftHeadings=+1]{example.md}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> # A section
+> ## A section
+> ### A section
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `example.md` with the
+following content:
+
+``` md
+## A section
+```
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\starttext
+
+\def\markdownOptionShiftHeadings{-1}
+\markdownInput{example.md}
+
+\def\markdownOptionShiftHeadings{0}
+\markdownInput{example.md}
+
+\def\markdownOptionShiftHeadings{+1}
+\markdownInput{example.md}
+
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> # A section
+> ## A section
+> ### A section
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.shiftHeadings = 0
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 #### Option `slice` {#slice}
 
 `slice` (default value: `^ $`)
@@ -5632,6 +5768,7 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionHybrid\undefined
 \let\markdownOptionInlineFootnotes\undefined
 \let\markdownOptionPreserveTabs\undefined
+\let\markdownOptionShiftHeadings\undefined
 \let\markdownOptionSlice\undefined
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
@@ -9799,6 +9936,8 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionPreserveTabs{#1}}%
 \define@key{markdownOptions}{smartEllipses}[true]{%
   \def\markdownOptionSmartEllipses{#1}}%
+\define@key{markdownOptions}{shiftHeadings}{%
+  \def\markdownOptionShiftHeadings{#1}}%
 \define@key{markdownOptions}{slice}{%
   \def\markdownOptionSlice{#1}}%
 \define@key{markdownOptions}{startNumber}[true]{%
@@ -11498,7 +11637,8 @@ function M.writer.new(options)
     if not self.is_writing then return "" end
 
     local cmd
-    if level == 1 then
+    level = level + options.shiftHeadings
+    if level <= 1 then
       cmd = "\\markdownRendererHeadingOne"
     elseif level == 2 then
       cmd = "\\markdownRendererHeadingTwo"
@@ -11508,7 +11648,7 @@ function M.writer.new(options)
       cmd = "\\markdownRendererHeadingFour"
     elseif level == 5 then
       cmd = "\\markdownRendererHeadingFive"
-    elseif level == 6 then
+    elseif level >= 6 then
       cmd = "\\markdownRendererHeadingSix"
     else
       cmd = ""
@@ -13392,6 +13532,9 @@ end
 \fi
 \ifx\markdownOptionPreserveTabs\undefined\else
   preserveTabs = \markdownOptionPreserveTabs,
+\fi
+\ifx\markdownOptionShiftHeadings\undefined\else
+  shiftHeadings = "\markdownOptionShiftHeadings",
 \fi
 \ifx\markdownOptionSlice\undefined\else
   slice = "\markdownOptionSlice",

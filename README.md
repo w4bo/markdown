@@ -65,8 +65,8 @@ I gratefully acknowledge the funding from the [Faculty of Informatics][fimu]
 at the [Masaryk University][mu] in Brno, Czech Republic, for the development of
 the Markdown package.
 
-Support for content slicing was graciously sponsored by [David Vins][dvins]
-and [Omedym][].
+Support for content slicing (Lua options `shiftHeadings` and `slice`) was
+graciously sponsored by [David Vins][dvins] and [Omedym][].
 
  [fimu]:   https://www.fi.muni.cz/index.html.en "Faculty of Informatics, Masaryk University"
  [mu]:     https://www.muni.cz/en               "Masaryk University"

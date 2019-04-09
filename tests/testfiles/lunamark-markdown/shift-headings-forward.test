@@ -1,0 +1,37 @@
+\def\markdownOptionShiftHeadings{2}
+<<<
+This test ensures that the Lua `shiftHeadings` option correctly propagates
+through the plain TeX interface.
+
+# A level one heading
+
+A level one heading
+===================
+
+## A level two heading
+
+A level two heading
+-------------------
+
+### A level three heading
+#### A level four heading
+##### A level five heading
+###### A level six heading
+>>>
+codeSpan: shiftHeadings
+interblockSeparator
+headingThree: A level one heading
+interblockSeparator
+headingThree: A level one heading
+interblockSeparator
+headingFour: A level two heading
+interblockSeparator
+headingFour: A level two heading
+interblockSeparator
+headingFive: A level three heading
+interblockSeparator
+headingSix: A level four heading
+interblockSeparator
+headingSix: A level five heading
+interblockSeparator
+headingSix: A level six heading
