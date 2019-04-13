@@ -46,7 +46,7 @@
 \newcommand\Opt[1]{% An option / value item reference
   \hyperref[opt:#1]{\t`#1`}}
 \newcommand\acro[1]{% An acronym
-  \textsc{#1}}
+  \textsc{\MakeLowercase{#1}}}
 
 % Set up markdown.
 \usepackage[
@@ -509,6 +509,7 @@ table td {
 }
 
 abbr {
+  text-transform: lowercase;
   font-variant: small-caps;
 }
 
@@ -10692,8 +10693,8 @@ end
 % \par
 % \begin{markdown}
 %
-%### \textsc{html} Entities
-% This section documents the \textsc{html} entities recognized by the
+%### HTML Entities
+% This section documents the \acro{HTML} entities recognized by the
 % markdown reader.  These functions are encapsulated in the `entities`
 % object. The functions were originally located in the
 % `lunamark/entities.lua` file in the Lunamark Lua module.
@@ -10958,7 +10959,7 @@ local character_entities = {
 % \begin{markdown}
 %
 % Given a string `s` of decimal digits, the \luamdef{entities.dec_entity}
-% returns the corresponding \textsc{utf}8-encoded Unicode codepoint.
+% returns the corresponding \acro{utf}8-encoded Unicode codepoint.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -10971,7 +10972,7 @@ end
 %
 % Given a string `s` of hexadecimal digits, the
 % \luamdef{entities.hex_entity} returns the corresponding
-% \textsc{utf}8-encoded Unicode codepoint.
+% \acro{utf}8-encoded Unicode codepoint.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -10984,7 +10985,7 @@ end
 %
 % Given a character entity name `s` (like `ouml`), the
 % \luamdef{entities.char_entity} returns the corresponding
-% \textsc{utf}8-encoded Unicode codepoint.
+% \acro{utf}8-encoded Unicode codepoint.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -11460,8 +11461,8 @@ function M.writer.new(options)
 % \begin{markdown}
 %
 % Define \luamdef{writer->inline_html} and \luamdef{writer->display_html}
-% as functions that will transform an inline or block \textsc{html} element
-% respectively to the output format, where `html` is the \textsc{html}
+% as functions that will transform an inline or block \acro{html} element
+% respectively to the output format, where `html` is the \acro{html}
 % input.
 %
 % \end{markdown}
@@ -12144,7 +12145,7 @@ parsers.RawNoteRef = #(parsers.lbracket * parsers.circumflex)
 % \par
 % \begin{markdown}
 %
-%#### Parsers Used for \textsc{html}
+%#### Parsers Used for HTML
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -12257,7 +12258,7 @@ parsers.inlinehtml  = parsers.emptyelt_any
 % \par
 % \begin{markdown}
 %
-%#### Parsers Used for \textsc{html} Entities
+%#### Parsers Used for HTML Entities
 %
 % \end{markdown}
 %  \begin{macrocode}
