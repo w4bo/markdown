@@ -4295,6 +4295,48 @@ defaultOptions.inlineFootnotes = false
 %</lua,lua-cli>
 %<*manual-options>
 
+#### Option `pipeTables`
+
+`pipeTables` (default value: `false`)
+
+% \fi
+% \begin{markdown}
+%
+% \Optitem[false]{pipeTables}{\opt{true}, \opt{false}}
+%
+:    true
+
+     :  Enable the \acro{PHP} Markdown table syntax extension:
+
+        ``` md
+        | Right | Left | Default | Center |
+        |------:|:-----|---------|:------:|
+        |   12  |  12  |    12   |    12  |
+        |  123  |  123 |   123   |   123  |
+        |    1  |    1 |     1   |     1  |
+
+          : Demonstration of pipe table syntax.
+        ``````
+
+:    false
+
+     :  Disable the \acro{PHP} Markdown table syntax extension:
+
+% \end{markdown}
+% \iffalse
+
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.pipeTables = false
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 #### Option `preserveTabs`
 
 `preserveTabs` (default value: `false`)
@@ -5768,6 +5810,7 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionHtml\undefined
 \let\markdownOptionHybrid\undefined
 \let\markdownOptionInlineFootnotes\undefined
+\let\markdownOptionPipeTables\undefined
 \let\markdownOptionPreserveTabs\undefined
 \let\markdownOptionShiftHeadings\undefined
 \let\markdownOptionSlice\undefined
@@ -9405,6 +9448,35 @@ following text:
 %
 % \begin{markdown}
 
+#### Table Renderer
+The \mdef{markdownRendererTable} macro represents a table. This macro will only
+be produced, when the \Opt{pipeTables} option is `true`. The macro receives the
+parameters `{`\meta{number of rows}`}{`\meta{number of columns}`}` followed by
+`{`\meta{row}`}` repeated \meta{number of rows} times, where \meta{row} is
+`{`\meta{column}`}` repeated \meta{number of columns} times.
+
+% \end{markdown}
+%
+% \iffalse
+
+
+%</manual-tokens>
+%<*tex>
+% \fi
+%
+%  \begin{macrocode}
+\def\markdownRendererTable{%
+  \markdownRendererTablePrototype}%
+%    \end{macrocode}
+% \par
+%
+% \iffalse
+%</tex>
+%<*manual-tokens>
+% \fi
+%
+% \begin{markdown}
+
 ### Token Renderer Prototypes
 
 % \label{sec:texrendererprototypes}
@@ -9594,6 +9666,7 @@ following text:
 \def\markdownRendererFootnotePrototype#1{}%
 \def\markdownRendererCitePrototype#1{}%
 \def\markdownRendererTextCitePrototype#1{}%
+\def\markdownRendererTablePrototype#1#2{}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -9933,6 +10006,8 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionHybrid{#1}}%
 \define@key{markdownOptions}{inlineFootnotes}[true]{%
   \def\markdownOptionInlineFootnotes{#1}}%
+\define@key{markdownOptions}{pipeTables}[true]{%
+  \def\markdownOptionPipeTables{#1}}%
 \define@key{markdownOptions}{preserveTabs}[true]{%
   \def\markdownOptionPreserveTabs{#1}}%
 \define@key{markdownOptions}{smartEllipses}[true]{%
@@ -10090,6 +10165,8 @@ pdflatex --shell-escape document.tex
   \renewcommand\markdownRendererCite[1]{#1}}%
 \define@key{markdownRenderers}{textCite}{%
   \renewcommand\markdownRendererTextCite[1]{#1}}%
+\define@key{markdownRenderers}{table}{%
+  \renewcommand\markdownRendererTable[2]{#1}}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -11304,6 +11381,31 @@ function M.writer.new(options)
 % \par
 % \begin{markdown}
 %
+% Define \luamdef{writer->table} as a function that will transform an input
+% table to the output format, where `rows` is a sequence of columns and a
+% column is a sequence of cell texts.
+%
+% \end{markdown}
+%  \begin{macrocode}
+  function self.table(rows)
+    local buffer = {"\\markdownRendererTable{", #rows - 1, "}{", #rows[1], "}"}
+    for i, row in ipairs(rows) do
+      if i ~= 2 then -- the horizontal line
+        table.insert(buffer, "{")
+        for _, column in ipairs(row) do
+          table.insert(buffer, "{")
+          table.insert(buffer, column)
+          table.insert(buffer, "}%\n")
+        end
+        table.insert(buffer, "}%\n")
+      end
+    end
+    return buffer
+  end
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 % Define \luamdef{writer->image} as a function that will transform an input
 % image to the output format, where `lab` corresponds to the label, `src`
 % to the \acro{url}, and `tit` to the title of the image.
@@ -11747,6 +11849,7 @@ parsers.equal                  = P("=")
 parsers.colon                  = P(":")
 parsers.semicolon              = P(";")
 parsers.exclamation            = P("!")
+parsers.pipe                   = P("|")
 parsers.tilde                  = P("~")
 parsers.tab                    = P("\t")
 parsers.newline                = P("\n")
@@ -12141,6 +12244,69 @@ end
 
 parsers.RawNoteRef = #(parsers.lbracket * parsers.circumflex)
                    * parsers.tag / strip_first_char
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+%#### Parsers Used for Tables
+%
+% \end{markdown}
+%  \begin{macrocode}
+local function make_pipe_table_rectangular(rows)
+  local num_columns = #rows[2]
+  local rectangular_rows = {}
+  for i = 1, #rows do
+    local row = rows[i]
+    local rectangular_row = {}
+    for j = 1, num_columns do
+      rectangular_row[j] = row[j] or ""
+    end
+    table.insert(rectangular_rows, rectangular_row)
+  end
+  return rectangular_rows
+end
+
+local function pipe_table_row(allow_empty_first_column
+                             , nonempty_column
+                             , column_separator
+                             , column)
+  local row_beginning
+  if allow_empty_first_column then
+    row_beginning = -- empty first column
+                    #(parsers.spacechar^4
+                     * column_separator)
+                  * parsers.optionalspace
+                  * column
+                  -- non-empty first column
+                  + parsers.nonindentspace
+                  * nonempty_column^-1
+  else
+    row_beginning = parsers.nonindentspace
+                  * nonempty_column^-1
+  end
+
+  return Ct(row_beginning
+           * (-- single column with no leading pipes
+              #(column_separator
+               * parsers.optionalspace
+               * parsers.newline)
+             * column_separator
+             * parsers.optionalspace
+             -- single column with leading pipes or
+             -- more than a single column
+             + (column_separator
+               * parsers.optionalspace
+               * column)^1
+             * (column_separator
+               * parsers.optionalspace)^-1))
+end
+
+parsers.table_hline = pipe_table_row(false
+                                    , C((parsers.dash + parsers.colon)^1)
+                                    * parsers.optionalspace
+                                    , parsers.pipe + parsers.plus
+                                    , C((parsers.dash + parsers.colon)^1)
+                                    * parsers.optionalspace)
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -12644,6 +12810,29 @@ function M.reader.new(writer, options)
 % \par
 % \begin{markdown}
 %
+%#### Parsers Used for Tables (local)
+%
+% \end{markdown}
+%  \begin{macrocode}
+larsers.table_row = pipe_table_row(true
+                                  , (C((parsers.linechar - parsers.pipe)^1)
+                                    / parse_inlines)
+                                  * parsers.optionalspace
+                                  , parsers.pipe
+                                  , (C((parsers.linechar - parsers.pipe)^0)
+                                    / parse_inlines)
+                                  * parsers.optionalspace)
+
+larsers.PipeTable = Ct(larsers.table_row * parsers.newline
+                    * parsers.table_hline
+                    * (parsers.newline * larsers.table_row)^0
+                    * (parsers.eof / "")^-1)
+                / make_pipe_table_rectangular
+                / writer.table
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 %#### Helpers for Links and References (local)
 %
 % \end{markdown}
@@ -13118,6 +13307,7 @@ function M.reader.new(writer, options)
 
       Block                 = V("ContentBlock")
                             + V("Blockquote")
+                            + V("PipeTable")
                             + V("Verbatim")
                             + V("FencedCode")
                             + V("HorizontalRule")
@@ -13140,6 +13330,7 @@ function M.reader.new(writer, options)
       DefinitionList        = larsers.DefinitionList,
       DisplayHtml           = larsers.DisplayHtml,
       Paragraph             = larsers.Paragraph,
+      PipeTable             = larsers.PipeTable,
       Plain                 = larsers.Plain,
 
       Inline                = V("Str")
@@ -13219,6 +13410,10 @@ function M.reader.new(writer, options)
 
   if not options.smartEllipses then
     syntax.Smart = parsers.fail
+  end
+
+  if not options.pipeTables then
+    syntax.PipeTable = parsers.fail
   end
 
   local blocks_toplevel_t = util.table_copy(syntax)
@@ -13529,6 +13724,9 @@ end
 \fi
 \ifx\markdownOptionInlineFootnotes\undefined\else
   inlineFootnotes = \markdownOptionInlineFootnotes,
+\fi
+\ifx\markdownOptionPipeTables\undefined\else
+  pipeTables = \markdownOptionPipeTables,
 \fi
 \ifx\markdownOptionPreserveTabs\undefined\else
   preserveTabs = \markdownOptionPreserveTabs,

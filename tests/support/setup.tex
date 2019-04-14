@@ -7,6 +7,33 @@
   \endgroup}%
 \def\GOBBLE#1{}%
 
+% Table parsing
+\newcount\ROWCOUNTER
+\newcount\COLCOUNTER
+
+\def\DOROW#1{%
+  \advance\ROWCOUNTER by 1\relax
+  \COLCOUNTER=1%
+  \DOCOL#1
+  \ifnum\ROWCOUNTER>\ROWTOTAL\relax
+    \TYPE{END table}%
+    \expandafter\GOBBLE
+  \fi\DOROW}%
+\def\DOCOL#1{%
+  \advance\ROWCOUNTER by -1\relax
+  \TYPE{- row \the\ROWCOUNTER, column \the\COLCOUNTER: #1}
+  \advance\ROWCOUNTER by 1\relax
+  \advance\COLCOUNTER by 1\relax
+  \ifnum\COLCOUNTER>\COLTOTAL\relax
+    \expandafter\GOBBLE
+  \fi\DOCOL}%
+\def\TABLE#1#2{%
+  \ROWCOUNTER=1%
+  \def\ROWTOTAL{#1}%
+  \def\COLTOTAL{#2}%
+  \TYPE{BEGIN table (#1 rows, #2 columns)}%
+  \DOROW}%
+
 % Citations parsing
 \newcount\CITATIONSCOUNTER
 
