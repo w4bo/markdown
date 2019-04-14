@@ -17,22 +17,34 @@ Creative abuse of the markdown syntax is encouraged. 😉
 
 Further information
 -------------------
-For further information, consult:
+For further information, consult one of the following:
 
-1. the [user manual][manual], which can be produced by interpreting the
+1. The [user manual][manual], which can be produced by interpreting the
    `markdown.ins` file using a Unicode-aware TeX engine, such as XeTeX
    (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`). The manual will
-   reside in the file `markdown.md` and the CSS stylesheet `markdown.css`, and
-2. the [technical documentation][techdoc], which can be typeset by running the
+   reside in the file `markdown.md` and the CSS stylesheet `markdown.css`.
+2. The [technical documentation][techdoc], which can be typeset by running the
    [LaTeXMK][] tool on the `markdown.dtx` file
    (`latexmk markdown.dtx`) after installing the Markdown package.
    [LaTeXMK][] should be included in your TeX distribution. The typeset
-   documentation will reside in the file `markdown.pdf`, and
-3. [tutorials and example documents][tutor] by Lian Tze Lim at [Overleaf][].
+   documentation will reside in the file `markdown.pdf`.
+3. Tutorials and example documents by Lian Tze Lim at [Overleaf][]:
+    - [How to write in Markdown on Overleaf][overleaf-1],
+    - [Markdown into LaTeX with Style][overleaf-2],
+    - [Writing Markdown in LaTeX Documents][overleaf-3],
+    - [Writing Beamer Slides with Markdown][overleaf-4],
+    - [Writing Posters with Markdown][overleaf-5], and
+    - [Using Markdown in LaTeX documents][overleaf-6].
+
+ [overleaf-1]: https://www.overleaf.com/learn/latex/Articles/How_to_write_in_Markdown_on_Overleaf       "How to write in Markdown on Overleaf"
+ [overleaf-2]: https://www.overleaf.com/learn/latex/Articles/Markdown_into_LaTeX_with_Style             "Markdown into LaTeX with Style"
+ [overleaf-3]: https://www.overleaf.com/learn/how-to/Writing_Markdown_in_LaTeX_Documents                "Writing Markdown in LaTeX Documents"
+ [overleaf-4]: https://www.overleaf.com/latex/examples/writing-beamer-slides-with-markdown/dnrwnjrpjjhw "Writing Beamer Slides with Markdown"
+ [overleaf-5]: https://www.overleaf.com/latex/examples/writing-posters-with-markdown/jtbgmmgqrqmh       "Writing Posters with Markdown"
+ [overleaf-6]: https://www.overleaf.com/latex/examples/using-markdown-in-latex-documents/whdrnpcpnwrm   "Using Markdown in LaTeX documents"
 
  [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf  "A Markdown Interpreter for TeX"
  [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html "Markdown Package User Manual"
- [tutor]:    https://www.overleaf.com/blog?search=Markdown                 "Blog - News and Articles from Overleaf"
  [overleaf]: https://www.overleaf.com/                                     "Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview"
 
 Contributing
