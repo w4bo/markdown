@@ -9,11 +9,12 @@ the plain TeX interface.
 |  123  |   123  |   **123**   |   123  |
 |    1  |     1  |       1     |     1  |
 
-  : Demonstration of pipe table syntax.
+  : Demonstration of *pipe table* syntax.
 >>>
 codeSpan: pipeTables
 interblockSeparator
 BEGIN table (4 rows, 4 columns)
+- caption: Demonstration of (emphasis: pipe table) syntax.
 - row 1, column 1: Right
 - row 1, column 2: (emphasis: Left)
 - row 1, column 3: Default
@@ -31,4 +32,3 @@ BEGIN table (4 rows, 4 columns)
 - row 4, column 3: 1
 - row 4, column 4: 1
 END table
-interblockSeparator

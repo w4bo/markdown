@@ -9451,9 +9451,10 @@ following text:
 #### Table Renderer
 The \mdef{markdownRendererTable} macro represents a table. This macro will only
 be produced, when the \Opt{pipeTables} option is `true`. The macro receives the
-parameters `{`\meta{number of rows}`}{`\meta{number of columns}`}` followed by
-`{`\meta{row}`}` repeated \meta{number of rows} times, where \meta{row} is
-`{`\meta{column}`}` repeated \meta{number of columns} times.
+parameters `{`\meta{caption}`}``{`\meta{number of rows}`}{`\meta{number of
+columns}`}` followed by `{`\meta{row}`}` repeated \meta{number of rows} times,
+where \meta{row} is `{`\meta{column}`}` repeated \meta{number of columns}
+times.
 
 % \end{markdown}
 %
@@ -9666,7 +9667,7 @@ following text:
 \def\markdownRendererFootnotePrototype#1{}%
 \def\markdownRendererCitePrototype#1{}%
 \def\markdownRendererTextCitePrototype#1{}%
-\def\markdownRendererTablePrototype#1#2{}%
+\def\markdownRendererTablePrototype#1#2#3{}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -10166,7 +10167,7 @@ pdflatex --shell-escape document.tex
 \define@key{markdownRenderers}{textCite}{%
   \renewcommand\markdownRendererTextCite[1]{#1}}%
 \define@key{markdownRenderers}{table}{%
-  \renewcommand\markdownRendererTable[2]{#1}}%
+  \renewcommand\markdownRendererTable[3]{#1}}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -11387,8 +11388,9 @@ function M.writer.new(options)
 %
 % \end{markdown}
 %  \begin{macrocode}
-  function self.table(rows)
-    local buffer = {"\\markdownRendererTable{", #rows - 1, "}{", #rows[1], "}"}
+  function self.table(rows, caption)
+    local buffer = {"\\markdownRendererTable{",
+      caption or "", "}{", #rows - 1, "}{", #rows[1], "}"}
     for i, row in ipairs(rows) do
       if i ~= 2 then -- the horizontal line
         table.insert(buffer, "{")
@@ -12307,6 +12309,10 @@ parsers.table_hline = pipe_table_row(false
                                     , parsers.pipe + parsers.plus
                                     , C((parsers.dash + parsers.colon)^1)
                                     * parsers.optionalspace)
+parsers.table_caption_beginning = parsers.skipblanklines
+                                * parsers.nonindentspace
+                                * (P("table") + parsers.colon)
+                                * parsers.optionalspace
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -12822,13 +12828,17 @@ larsers.table_row = pipe_table_row(true
                                   , (C((parsers.linechar - parsers.pipe)^0)
                                     / parse_inlines)
                                   * parsers.optionalspace)
+larsers.table_caption = #parsers.table_caption_beginning
+                      * parsers.table_caption_beginning
+                      * C(parsers.linechar^0) / parse_inlines
+                      * parsers.newline
 
 larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                     * parsers.table_hline
-                    * (parsers.newline * larsers.table_row)^0
-                    * (parsers.eof / "")^-1)
-                / make_pipe_table_rectangular
-                / writer.table
+                    * (parsers.newline * larsers.table_row)^0)
+                  / make_pipe_table_rectangular
+                  * larsers.table_caption^-1
+                  / writer.table
 %    \end{macrocode}
 % \par
 % \begin{markdown}
