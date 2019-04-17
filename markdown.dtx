@@ -12825,8 +12825,7 @@ larsers.table_row = pipe_table_row(true
 
 larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                     * parsers.table_hline
-                    * (parsers.newline * larsers.table_row)^0
-                    * (parsers.eof / "")^-1)
+                    * (parsers.newline * larsers.table_row)^0)
                 / make_pipe_table_rectangular
                 / writer.table
 %    \end{macrocode}
