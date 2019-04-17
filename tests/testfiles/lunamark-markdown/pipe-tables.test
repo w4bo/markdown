@@ -12,6 +12,10 @@ the plain TeX interface.
 codeSpan: pipeTables
 interblockSeparator
 BEGIN table (4 rows, 4 columns)
+- alignment of column 1: r
+- alignment of column 2: l
+- alignment of column 3: d
+- alignment of column 4: c
 - row 1, column 1: Right
 - row 1, column 2: (emphasis: Left)
 - row 1, column 3: Default

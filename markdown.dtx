@@ -9452,8 +9452,15 @@ following text:
 The \mdef{markdownRendererTable} macro represents a table. This macro will only
 be produced, when the \Opt{pipeTables} option is `true`. The macro receives the
 parameters `{`\meta{number of rows}`}{`\meta{number of columns}`}` followed by
-`{`\meta{row}`}` repeated \meta{number of rows} times, where \meta{row} is
-`{`\meta{column}`}` repeated \meta{number of columns} times.
+`{`\meta{alignments}`}` and then by `{`\meta{row}`}` repeated \meta{number of
+rows} times, where \meta{row} is `{`\meta{column}`}` repeated \meta{number of
+columns} times, \meta{alignments} is \meta{alignment} repeated \meta{number of
+columns} times, and \meta{alignment} is one of the following:
+
+- `d` -- The corresponding column has an unspecified (default) alignment.
+- `l` -- The corresponding column is left-aligned.
+- `c` -- The corresponding column is centered.
+- `r` -- The corresponding column is right-aligned.
 
 % \end{markdown}
 %
@@ -11389,16 +11396,17 @@ function M.writer.new(options)
 %  \begin{macrocode}
   function self.table(rows)
     local buffer = {"\\markdownRendererTable{", #rows - 1, "}{", #rows[1], "}"}
+    local temp = rows[2] -- put alignments on the first row
+    rows[2] = rows[1]
+    rows[1] = temp
     for i, row in ipairs(rows) do
-      if i ~= 2 then -- the horizontal line
+      table.insert(buffer, "{")
+      for _, column in ipairs(row) do
         table.insert(buffer, "{")
-        for _, column in ipairs(row) do
-          table.insert(buffer, "{")
-          table.insert(buffer, column)
-          table.insert(buffer, "}%\n")
-        end
+        table.insert(buffer, column)
         table.insert(buffer, "}%\n")
       end
+      table.insert(buffer, "}%\n")
     end
     return buffer
   end
@@ -12277,12 +12285,15 @@ local function pipe_table_row(allow_empty_first_column
                      * column_separator)
                   * parsers.optionalspace
                   * column
+                  * parsers.optionalspace
                   -- non-empty first column
                   + parsers.nonindentspace
                   * nonempty_column^-1
+                  * parsers.optionalspace
   else
     row_beginning = parsers.nonindentspace
                   * nonempty_column^-1
+                  * parsers.optionalspace
   end
 
   return Ct(row_beginning
@@ -12296,17 +12307,32 @@ local function pipe_table_row(allow_empty_first_column
              -- more than a single column
              + (column_separator
                * parsers.optionalspace
-               * column)^1
+               * column
+               * parsers.optionalspace)^1
              * (column_separator
                * parsers.optionalspace)^-1))
 end
 
+parsers.table_hline_separator = parsers.pipe + parsers.plus
+parsers.table_hline_column = (parsers.dash
+                             - #(parsers.dash
+                                * (parsers.spacechar
+                                  + parsers.table_hline_separator
+                                  + parsers.newline)))^1
+                           * (parsers.colon * Cc("r")
+                             + parsers.dash * Cc("d"))
+                           + parsers.colon
+                           * (parsers.dash
+                             - #(parsers.dash
+                                * (parsers.spacechar
+                                  + parsers.table_hline_separator
+                                  + parsers.newline)))^1
+                           * (parsers.colon * Cc("c")
+                             + parsers.dash * Cc("l"))
 parsers.table_hline = pipe_table_row(false
-                                    , C((parsers.dash + parsers.colon)^1)
-                                    * parsers.optionalspace
-                                    , parsers.pipe + parsers.plus
-                                    , C((parsers.dash + parsers.colon)^1)
-                                    * parsers.optionalspace)
+                                    , parsers.table_hline_column
+                                    , parsers.table_hline_separator
+                                    , parsers.table_hline_column)
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -12817,11 +12843,9 @@ function M.reader.new(writer, options)
 larsers.table_row = pipe_table_row(true
                                   , (C((parsers.linechar - parsers.pipe)^1)
                                     / parse_inlines)
-                                  * parsers.optionalspace
                                   , parsers.pipe
                                   , (C((parsers.linechar - parsers.pipe)^0)
-                                    / parse_inlines)
-                                  * parsers.optionalspace)
+                                    / parse_inlines))
 
 larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                     * parsers.table_hline
