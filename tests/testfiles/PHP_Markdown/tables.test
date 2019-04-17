@@ -112,6 +112,7 @@ Cell      | Cell
 | Cell | Cell | Extra cell? |
 >>>
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -122,6 +123,7 @@ END table
 interblockSeparator
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -132,6 +134,7 @@ END table
 interblockSeparator
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -142,6 +145,7 @@ END table
 interblockSeparator
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -156,18 +160,21 @@ headingOne: One-column one-row table
 interblockSeparator
 interblockSeparator
 BEGIN table (2 rows, 1 columns)
+- caption: 
 - row 1, column 1: Header
 - row 2, column 1: Cell
 END table
 interblockSeparator
 interblockSeparator
 BEGIN table (2 rows, 1 columns)
+- caption: 
 - row 1, column 1: Header
 - row 2, column 1: Cell
 END table
 interblockSeparator
 interblockSeparator
 BEGIN table (2 rows, 1 columns)
+- caption: 
 - row 1, column 1: Header
 - row 2, column 1: Cell
 END table
@@ -176,6 +183,7 @@ horizontalRule
 interblockSeparator
 interblockSeparator
 BEGIN table (3 rows, 4 columns)
+- caption: 
 - row 1, column 1: Default
 - row 1, column 2: Right
 - row 1, column 3: Center
@@ -192,6 +200,7 @@ END table
 interblockSeparator
 interblockSeparator
 BEGIN table (3 rows, 4 columns)
+- caption: 
 - row 1, column 1: Default
 - row 1, column 2: Right
 - row 1, column 3: Center
@@ -211,6 +220,7 @@ interblockSeparator
 headingOne: Empty cells
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: A
@@ -220,6 +230,7 @@ BEGIN table (3 rows, 2 columns)
 END table
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: A
@@ -233,6 +244,7 @@ interblockSeparator
 headingOne: Missing tailing pipe
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -242,6 +254,7 @@ BEGIN table (3 rows, 2 columns)
 END table
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -251,6 +264,7 @@ BEGIN table (3 rows, 2 columns)
 END table
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -260,6 +274,7 @@ BEGIN table (3 rows, 2 columns)
 END table
 interblockSeparator
 BEGIN table (3 rows, 2 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -273,6 +288,7 @@ interblockSeparator
 headingOne: Too many pipes in rows
 interblockSeparator
 BEGIN table (3 rows, 1 columns)
+- caption: 
 - row 1, column 1: Header 1
 - row 2, column 1: Cell
 - row 3, column 1: Cell
