@@ -14881,7 +14881,7 @@ local convert = md.new(\markdownLuaOptions)
     \markdownLaTeXTableEnd={%
       \markdownLaTeXBottomRule
       \end{tabular}}%
-    \if\empty#1\empty\else
+    \ifx\empty#1\empty\else
       \addto@hook\markdownLaTeXTable{%
         \begin{table}
         \centering}%
@@ -15182,7 +15182,7 @@ local convert = md.new(\markdownLuaOptions)
 \newtoks\markdownConTeXtTableFloat
 \def\markdownRendererTablePrototype#1#2#3{%
   \markdownConTeXtTable={}%
-  \if\empty#1\empty
+  \ifx\empty#1\empty
     \markdownConTeXtTableFloat={%
       \the\markdownConTeXtTable}%
   \else
