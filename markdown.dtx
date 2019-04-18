@@ -4323,6 +4323,65 @@ defaultOptions.inlineFootnotes = false
 % \end{markdown}
 % \iffalse
 
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[pipeTables]{markdown}
+\begin{document}
+\begin{markdown}
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> | Right | Left | Default | Center |
+> |------:|:-----|---------|:------:|
+> |   12  |  12  |    12   |    12  |
+> |  123  |  123 |   123   |   123  |
+> |    1  |    1 |     1   |     1  |
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionPipeTables{true}
+\starttext
+\startmarkdown
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> | Right | Left | Default | Center |
+> |------:|:-----|---------|:------:|
+> |   12  |  12  |    12   |    12  |
+> |  123  |  123 |   123   |   123  |
+> |    1  |    1 |     1   |     1  |
 
 %</manual-options>
 %<*lua,lua-cli>
