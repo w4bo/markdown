@@ -114,6 +114,7 @@ Cell      | Cell
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -126,6 +127,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -138,6 +140,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -150,6 +153,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell 1
@@ -165,6 +169,7 @@ interblockSeparator
 interblockSeparator
 BEGIN table (2 rows, 1 columns)
 - alignment of column 1: d
+- caption: 
 - row 1, column 1: Header
 - row 2, column 1: Cell
 END table
@@ -172,6 +177,7 @@ interblockSeparator
 interblockSeparator
 BEGIN table (2 rows, 1 columns)
 - alignment of column 1: d
+- caption: 
 - row 1, column 1: Header
 - row 2, column 1: Cell
 END table
@@ -179,6 +185,7 @@ interblockSeparator
 interblockSeparator
 BEGIN table (2 rows, 1 columns)
 - alignment of column 1: d
+- caption: 
 - row 1, column 1: Header
 - row 2, column 1: Cell
 END table
@@ -191,6 +198,7 @@ BEGIN table (3 rows, 4 columns)
 - alignment of column 2: l
 - alignment of column 3: c
 - alignment of column 4: r
+- caption: 
 - row 1, column 1: Default
 - row 1, column 2: Right
 - row 1, column 3: Center
@@ -211,6 +219,7 @@ BEGIN table (3 rows, 4 columns)
 - alignment of column 2: l
 - alignment of column 3: c
 - alignment of column 4: r
+- caption: 
 - row 1, column 1: Default
 - row 1, column 2: Right
 - row 1, column 3: Center
@@ -232,6 +241,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: A
@@ -243,6 +253,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: A
@@ -258,6 +269,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -269,6 +281,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -280,6 +293,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -291,6 +305,7 @@ interblockSeparator
 BEGIN table (3 rows, 2 columns)
 - alignment of column 1: d
 - alignment of column 2: d
+- caption: 
 - row 1, column 1: Header 1
 - row 1, column 2: Header 2
 - row 2, column 1: Cell
@@ -305,6 +320,7 @@ headingOne: Too many pipes in rows
 interblockSeparator
 BEGIN table (3 rows, 1 columns)
 - alignment of column 1: d
+- caption: 
 - row 1, column 1: Header 1
 - row 2, column 1: Cell
 - row 3, column 1: Cell

@@ -31,11 +31,12 @@
   \ifnum\COLCOUNTER>\COLTOTAL\relax
     \expandafter\GOBBLE
   \fi\DOCOL}%
-\def\TABLE#1#2{%
+\def\TABLE#1#2#3{%
   \ROWCOUNTER=0%
-  \def\ROWTOTAL{#1}%
-  \def\COLTOTAL{#2}%
-  \TYPE{BEGIN table (#1 rows, #2 columns)}%
+  \def\ROWTOTAL{#2}%
+  \def\COLTOTAL{#3}%
+  \TYPE{BEGIN table (#2 rows, #3 columns)}%
+  \TYPE{- caption: #1}%
   \DOROW}%
 
 % Citations parsing

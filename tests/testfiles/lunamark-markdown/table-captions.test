@@ -1,17 +1,24 @@
 \def\markdownOptionPipeTables{true}
+\def\markdownOptionTableCaptions{true}
 <<<
-This test ensures that the Lua `pipeTables` option correctly propagates through
-the plain TeX interface.
+This test ensures that the Lua `tableCaptions` option correctly propagates
+through the plain TeX interface.
 
 | Right | *Left* |   Default   | Center |
 |------:|:-------|-------------|:------:|
 |   12  |   12   |      12     |    12  |
 |  123  |   123  |   **123**   |   123  |
 |    1  |     1  |       1     |     1  |
+
+  : Demonstration of *pipe table* syntax with the caption spreading over
+    multiple lines.
+
+A caption may not span multiple paragraphs.
 >>>
-codeSpan: pipeTables
+codeSpan: tableCaptions
 interblockSeparator
 BEGIN table (4 rows, 4 columns)
+- caption: Demonstration of (emphasis: pipe table) syntax with the caption spreading over multiple lines.
 - alignment of column 1: r
 - alignment of column 2: l
 - alignment of column 3: d
@@ -33,3 +40,4 @@ BEGIN table (4 rows, 4 columns)
 - row 4, column 3: 1
 - row 4, column 4: 1
 END table
+interblockSeparator

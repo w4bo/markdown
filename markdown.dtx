@@ -4295,7 +4295,7 @@ defaultOptions.inlineFootnotes = false
 %</lua,lua-cli>
 %<*manual-options>
 
-#### Option `pipeTables`
+#### Option `pipeTables` {#pipe-tables}
 
 `pipeTables` (default value: `false`)
 
@@ -4314,8 +4314,6 @@ defaultOptions.inlineFootnotes = false
         |   12  |  12  |    12   |    12  |
         |  123  |  123 |   123   |   123  |
         |    1  |    1 |     1   |     1  |
-
-          : Demonstration of pipe table syntax.
         ``````
 
 :    false
@@ -5041,6 +5039,53 @@ defaultOptions.startNumber = true
 % \iffalse
 %</lua,lua-cli>
 %<*manual-options>
+
+#### Option `tableCaptions`
+
+`tableCaptions` (default value: `false`)
+
+% \fi
+% \begin{markdown}
+%
+% \Optitem[false]{tableCaptions}{\opt{true}, \opt{false}}
+%
+:    true
+
+     :  Enable the Pandoc `table_captions` syntax extension for
+%       pipe tables (see the \Opt{pipeTables} option).
+       \iffalse
+       [pipe tables](#pipe-tables).
+%      \fi
+
+        ``` md
+        | Right | Left | Default | Center |
+        |------:|:-----|---------|:------:|
+        |   12  |  12  |    12   |    12  |
+        |  123  |  123 |   123   |   123  |
+        |    1  |    1 |     1   |     1  |
+
+          : Demonstration of pipe table syntax.
+        ``````
+
+:    false
+
+     :  Enable the Pandoc `table_captions` syntax extension.
+
+% \end{markdown}
+% \iffalse
+
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.tableCaptions = false
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 
 #### Option `tightLists`
 
@@ -5816,6 +5861,7 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionSlice\undefined
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
+\let\markdownOptionTableCaptions\undefined
 \let\markdownOptionTightLists\undefined
 %    \end{macrocode}
 % \par
@@ -9451,11 +9497,12 @@ following text:
 #### Table Renderer
 The \mdef{markdownRendererTable} macro represents a table. This macro will only
 be produced, when the \Opt{pipeTables} option is `true`. The macro receives the
-parameters `{`\meta{number of rows}`}{`\meta{number of columns}`}` followed by
-`{`\meta{alignments}`}` and then by `{`\meta{row}`}` repeated \meta{number of
-rows} times, where \meta{row} is `{`\meta{column}`}` repeated \meta{number of
-columns} times, \meta{alignments} is \meta{alignment} repeated \meta{number of
-columns} times, and \meta{alignment} is one of the following:
+parameters `{`\meta{caption}`}{``{`\meta{number of rows}`}{`\meta{number of
+columns}`}` followed by `{`\meta{alignments}`}` and then by `{`\meta{row}`}`
+repeated \meta{number of rows} times, where \meta{row} is `{`\meta{column}`}`
+repeated \meta{number of columns} times, \meta{alignments} is
+\meta{alignment} repeated \meta{number of columns} times, and
+\meta{alignment} is one of the following:
 
 - `d` -- The corresponding column has an unspecified (default) alignment.
 - `l` -- The corresponding column is left-aligned.
@@ -9673,7 +9720,7 @@ following text:
 \def\markdownRendererFootnotePrototype#1{}%
 \def\markdownRendererCitePrototype#1{}%
 \def\markdownRendererTextCitePrototype#1{}%
-\def\markdownRendererTablePrototype#1#2{}%
+\def\markdownRendererTablePrototype#1#2#3{}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -10025,6 +10072,8 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionSlice{#1}}%
 \define@key{markdownOptions}{startNumber}[true]{%
   \def\markdownOptionStartNumber{#1}}%
+\define@key{markdownOptions}{tableCaptions}[true]{%
+  \def\markdownOptionTableCaptions{#1}}%
 \define@key{markdownOptions}{tightLists}[true]{%
   \def\markdownOptionTightLists{#1}}%
 \define@key{markdownOptions}{underscores}[true]{%
@@ -10173,7 +10222,7 @@ pdflatex --shell-escape document.tex
 \define@key{markdownRenderers}{textCite}{%
   \renewcommand\markdownRendererTextCite[1]{#1}}%
 \define@key{markdownRenderers}{table}{%
-  \renewcommand\markdownRendererTable[2]{#1}}%
+  \renewcommand\markdownRendererTable[3]{#1}}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -10315,6 +10364,8 @@ pdflatex --shell-escape document.tex
   \renewcommand\markdownRendererCitePrototype[1]{#1}}%
 \define@key{markdownRendererPrototypes}{textCite}{%
   \renewcommand\markdownRendererTextCitePrototype[1]{#1}}%
+\define@key{markdownRendererPrototypes}{table}{%
+  \renewcommand\markdownRendererTablePrototype[3]{#1}}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -11394,8 +11445,9 @@ function M.writer.new(options)
 %
 % \end{markdown}
 %  \begin{macrocode}
-  function self.table(rows)
-    local buffer = {"\\markdownRendererTable{", #rows - 1, "}{", #rows[1], "}"}
+  function self.table(rows, caption)
+    local buffer = {"\\markdownRendererTable{",
+      caption or "", "}{", #rows - 1, "}{", #rows[1], "}"}
     local temp = rows[2] -- put alignments on the first row
     rows[2] = rows[1]
     rows[1] = temp
@@ -12337,6 +12389,10 @@ parsers.table_hline = pipe_table_row(false
                                     , parsers.table_hline_column
                                     , parsers.table_hline_separator
                                     , parsers.table_hline_column)
+parsers.table_caption_beginning = parsers.skipblanklines
+                                * parsers.nonindentspace
+                                * (P("table") + parsers.colon)
+                                * parsers.optionalspace
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -12484,7 +12540,8 @@ parsers.define_reference_parser = parsers.leader * parsers.tag * parsers.colon
 %
 % \end{markdown}
 %  \begin{macrocode}
-parsers.Inline       = V("Inline")
+parsers.Inline         = V("Inline")
+parsers.IndentedInline = V("IndentedInline")
 
 -- parse many p between starter and ender
 parsers.between = function(p, starter, ender)
@@ -12851,11 +12908,21 @@ larsers.table_row = pipe_table_row(true
                                   , (C((parsers.linechar - parsers.pipe)^0)
                                     / parse_inlines))
 
+if options.tableCaptions then
+  larsers.table_caption = #parsers.table_caption_beginning
+                        * parsers.table_caption_beginning
+                        * Ct(parsers.IndentedInline^1)
+                        * parsers.newline
+else
+  larsers.table_caption = parsers.fail
+end
+
 larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                     * parsers.table_hline
                     * (parsers.newline * larsers.table_row)^0)
-                / make_pipe_table_rectangular
-                / writer.table
+                  / make_pipe_table_rectangular
+                  * larsers.table_caption^-1
+                  / writer.table
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -12970,6 +13037,9 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                       + larsers.headerstart
                       + larsers.fencestart
                     ) * parsers.spacechar^0 / writer.space
+
+  larsers.OptionalIndent
+                     = parsers.spacechar^1 / writer.space
 
   larsers.Space      = parsers.spacechar^2 * larsers.Endline / writer.linebreak
                      + parsers.spacechar^1 * larsers.Endline^-1 * parsers.eof / ""
@@ -13380,8 +13450,29 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                             + V("Smart")
                             + V("Symbol"),
 
+      IndentedInline        = V("Str")
+                            + V("OptionalIndent")
+                            + V("Endline")
+                            + V("UlOrStarLine")
+                            + V("Strong")
+                            + V("Emph")
+                            + V("InlineNote")
+                            + V("NoteRef")
+                            + V("Citations")
+                            + V("Link")
+                            + V("Image")
+                            + V("Code")
+                            + V("AutoLinkUrl")
+                            + V("AutoLinkEmail")
+                            + V("InlineHtml")
+                            + V("HtmlEntity")
+                            + V("EscapedChar")
+                            + V("Smart")
+                            + V("Symbol"),
+
       Str                   = larsers.Str,
       Space                 = larsers.Space,
+      OptionalIndent        = larsers.OptionalIndent,
       Endline               = larsers.Endline,
       UlOrStarLine          = larsers.UlOrStarLine,
       Strong                = larsers.Strong,
@@ -13769,6 +13860,9 @@ end
 \fi
 \ifx\markdownOptionStartNumber\undefined\else
   startNumber = \markdownOptionStartNumber,
+\fi
+\ifx\markdownOptionTableCaptions\undefined\else
+  tableCaptions = \markdownOptionTableCaptions,
 \fi
 \ifx\markdownOptionTightLists\undefined\else
   tightLists = \markdownOptionTightLists,
@@ -14770,6 +14864,7 @@ local convert = md.new(\markdownLuaOptions)
 \newcount\markdownLaTeXColumnTotal
 \newtoks\markdownLaTeXTable
 \newtoks\markdownLaTeXTableAlignment
+\newtoks\markdownLaTeXTableEnd
 \@ifpackageloaded{booktabs}{
   \let\markdownLaTeXTopRule\toprule
   \let\markdownLaTeXMidRule\midrule
@@ -14779,18 +14874,32 @@ local convert = md.new(\markdownLuaOptions)
   \let\markdownLaTeXMidRule\hline
   \let\markdownLaTeXBottomRule\hline
 }
-\def\markdownRendererTablePrototype#1#2{%
-  \markdownLaTeXTable={}%
-  \markdownLaTeXTableAlignment={}%
-  \markdownLaTeXRowCounter=0%
-  \markdownLaTeXRowTotal=#1%
-  \markdownLaTeXColumnTotal=#2%
-  \markdownLaTeXRenderTableRow}
+\markdownSetup{rendererPrototypes={
+  table = {%
+    \markdownLaTeXTable={}%
+    \markdownLaTeXTableAlignment={}%
+    \markdownLaTeXTableEnd={%
+      \markdownLaTeXBottomRule
+      \end{tabular}}%
+    \if\empty#1\empty\else
+      \addto@hook\markdownLaTeXTable{%
+        \begin{table}
+        \centering}%
+      \addto@hook\markdownLaTeXTableEnd{%
+        \caption{#1}
+        \end{table}}%
+    \fi
+    \addto@hook\markdownLaTeXTable{\begin{tabular}}%
+    \markdownLaTeXRowCounter=0%
+    \markdownLaTeXRowTotal=#2%
+    \markdownLaTeXColumnTotal=#3%
+    \markdownLaTeXRenderTableRow
+  }
+}}
 \def\markdownLaTeXRenderTableRow#1{%
   \markdownLaTeXColumnCounter=0%
   \ifnum\markdownLaTeXRowCounter=0\relax
     \markdownLaTeXReadAlignments#1%
-    \markdownLaTeXTable={\begin{tabular}}%
     \markdownLaTeXTable=\expandafter\expandafter\expandafter{%
       \expandafter\the\expandafter\markdownLaTeXTable\expandafter{%
         \the\markdownLaTeXTableAlignment}}%
@@ -14803,10 +14912,10 @@ local convert = md.new(\markdownLuaOptions)
   \fi
   \advance\markdownLaTeXRowCounter by 1\relax
   \ifnum\markdownLaTeXRowCounter>\markdownLaTeXRowTotal\relax
-    \addto@hook\markdownLaTeXTable{%
-      \markdownLaTeXBottomRule
-      \end{tabular}}%
+    \markdownInfo{\the\markdownLaTeXTable}
+    \markdownInfo{\the\markdownLaTeXTableEnd}
     \the\markdownLaTeXTable
+    \the\markdownLaTeXTableEnd
     \expandafter\@gobble
   \fi\markdownLaTeXRenderTableRow}
 \def\markdownLaTeXReadAlignments#1{%
@@ -15070,16 +15179,24 @@ local convert = md.new(\markdownLuaOptions)
 \newcount\markdownConTeXtColumnCounter
 \newcount\markdownConTeXtColumnTotal
 \newtoks\markdownConTeXtTable
-\def\markdownRendererTablePrototype#1#2{%
+\newtoks\markdownConTeXtTableFloat
+\def\markdownRendererTablePrototype#1#2#3{%
   \markdownConTeXtTable={}%
+  \if\empty#1\empty
+    \markdownConTeXtTableFloat={%
+      \the\markdownConTeXtTable}%
+  \else
+    \markdownConTeXtTableFloat={%
+      \placetable{#1}{\the\markdownConTeXtTable}}%
+  \fi
   \begingroup
   \setupTABLE[r][each][topframe=off, bottomframe=off, leftframe=off, rightframe=off]
   \setupTABLE[c][each][topframe=off, bottomframe=off, leftframe=off, rightframe=off]
   \setupTABLE[r][1][topframe=on, bottomframe=on]
   \setupTABLE[r][#1][bottomframe=on]
   \markdownConTeXtRowCounter=0%
-  \markdownConTeXtRowTotal=#1%
-  \markdownConTeXtColumnTotal=#2%
+  \markdownConTeXtRowTotal=#2%
+  \markdownConTeXtColumnTotal=#3%
   \markdownConTeXtRenderTableRow}
 \def\markdownConTeXtRenderTableRow#1{%
   \markdownConTeXtColumnCounter=0%
@@ -15097,7 +15214,7 @@ local convert = md.new(\markdownLuaOptions)
   \ifnum\markdownConTeXtRowCounter>\markdownConTeXtRowTotal\relax
     \markdownConTeXtTable=\expandafter{%
       \the\markdownConTeXtTable\eTABLE}%
-    \the\markdownConTeXtTable
+    \the\markdownConTeXtTableFloat
     \endgroup
     \expandafter\gobbleoneargument
   \fi\markdownConTeXtRenderTableRow}

@@ -36,6 +36,8 @@ This is a table:
 |   123 | 123  | 123     |   123  |
 |     1 | 1    | 1       |    1   |
 
+  : Demonstration of pipe table syntax.
+
 This is a bullet list:
 
   * The first item of a bullet list

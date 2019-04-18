@@ -5,7 +5,7 @@ AUXFILES=*.tmp *.tui *.tuo *.mp *.tuc *.markdown.in *.markdown.out \
 AUXDIRS=_markdown_*/
 LUACLI_OPTIONS=hashEnumerators=true definitionLists=true footnotes=true \
   inlineFootnotes=true smartEllipses=true fencedCode=true contentBlocks=true \
-  pipeTables=true
+  pipeTables=true tableCaptions=true
 OUTPUT=context-mkii.pdf context-mkiv.pdf latex-pdftex.pdf \
   latex-luatex.pdf latex-xetex.pdf
 
