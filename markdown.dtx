@@ -5133,6 +5133,74 @@ defaultOptions.startNumber = true
 % \end{markdown}
 % \iffalse
 
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[pipeTables, tableCaptions]{markdown}
+\begin{document}
+\begin{markdown}
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+
+  : Demonstration of pipe table syntax.
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> | Right | Left | Default | Center |
+> |------:|:-----|---------|:------:|
+> |   12  |  12  |    12   |    12  |
+> |  123  |  123 |   123   |   123  |
+> |    1  |    1 |     1   |     1  |
+> 
+>   : Demonstration of pipe table syntax.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionPipeTables{true}
+\def\markdownOptionTableCaptions{true}
+\starttext
+\startmarkdown
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+
+  : Demonstration of pipe table syntax.
+\stopmarkdown
+\stoptext
+````````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+`````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> | Right | Left | Default | Center |
+> |------:|:-----|---------|:------:|
+> |   12  |  12  |    12   |    12  |
+> |  123  |  123 |   123   |   123  |
+> |    1  |    1 |     1   |     1  |
+> 
+>   : Demonstration of pipe table syntax.
 
 %</manual-options>
 %<*lua,lua-cli>
