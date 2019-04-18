@@ -4295,7 +4295,7 @@ defaultOptions.inlineFootnotes = false
 %</lua,lua-cli>
 %<*manual-options>
 
-#### Option `pipeTables`
+#### Option `pipeTables` {#pipe-tables}
 
 `pipeTables` (default value: `false`)
 
@@ -4314,8 +4314,6 @@ defaultOptions.inlineFootnotes = false
         |   12  |  12  |    12   |    12  |
         |  123  |  123 |   123   |   123  |
         |    1  |    1 |     1   |     1  |
-
-          : Demonstration of pipe table syntax.
         ``````
 
 :    false
@@ -5041,6 +5039,53 @@ defaultOptions.startNumber = true
 % \iffalse
 %</lua,lua-cli>
 %<*manual-options>
+
+#### Option `tableCaptions`
+
+`tableCaptions` (default value: `false`)
+
+% \fi
+% \begin{markdown}
+%
+% \Optitem[false]{tableCaptions}{\opt{true}, \opt{false}}
+%
+:    true
+
+     :  Enable the Pandoc `table_captions` syntax extension for
+%       pipe tables (see the \Opt{pipeTables} option).
+       \iffalse
+       [pipe tables](#pipe-tables).
+%      \fi
+
+        ``` md
+        | Right | Left | Default | Center |
+        |------:|:-----|---------|:------:|
+        |   12  |  12  |    12   |    12  |
+        |  123  |  123 |   123   |   123  |
+        |    1  |    1 |     1   |     1  |
+
+          : Demonstration of pipe table syntax.
+        ``````
+
+:    false
+
+     :  Enable the Pandoc `table_captions` syntax extension.
+
+% \end{markdown}
+% \iffalse
+
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.tableCaptions = false
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 
 #### Option `tightLists`
 
@@ -5816,6 +5861,7 @@ bug](https://github.com/witiko/markdown/issues).
 \let\markdownOptionSlice\undefined
 \let\markdownOptionSmartEllipses\undefined
 \let\markdownOptionStartNumber\undefined
+\let\markdownOptionTableCaptions\undefined
 \let\markdownOptionTightLists\undefined
 %    \end{macrocode}
 % \par
@@ -10019,6 +10065,8 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionSlice{#1}}%
 \define@key{markdownOptions}{startNumber}[true]{%
   \def\markdownOptionStartNumber{#1}}%
+\define@key{markdownOptions}{tableCaptions}[true]{%
+  \def\markdownOptionTableCaptions{#1}}%
 \define@key{markdownOptions}{tightLists}[true]{%
   \def\markdownOptionTightLists{#1}}%
 \define@key{markdownOptions}{underscores}[true]{%
@@ -12460,7 +12508,8 @@ parsers.define_reference_parser = parsers.leader * parsers.tag * parsers.colon
 %
 % \end{markdown}
 %  \begin{macrocode}
-parsers.Inline       = V("Inline")
+parsers.Inline         = V("Inline")
+parsers.IndentedInline = V("IndentedInline")
 
 -- parse many p between starter and ender
 parsers.between = function(p, starter, ender)
@@ -12828,10 +12877,15 @@ larsers.table_row = pipe_table_row(true
                                   , (C((parsers.linechar - parsers.pipe)^0)
                                     / parse_inlines)
                                   * parsers.optionalspace)
-larsers.table_caption = #parsers.table_caption_beginning
-                      * parsers.table_caption_beginning
-                      * C(parsers.linechar^0) / parse_inlines
-                      * parsers.newline
+
+if options.tableCaptions then
+  larsers.table_caption = #parsers.table_caption_beginning
+                        * parsers.table_caption_beginning
+                        * Ct(parsers.IndentedInline^1)
+                        * parsers.newline
+else
+  larsers.table_caption = parsers.fail
+end
 
 larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                     * parsers.table_hline
@@ -12953,6 +13007,9 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                       + larsers.headerstart
                       + larsers.fencestart
                     ) * parsers.spacechar^0 / writer.space
+
+  larsers.OptionalIndent
+                     = parsers.spacechar^1 / writer.space
 
   larsers.Space      = parsers.spacechar^2 * larsers.Endline / writer.linebreak
                      + parsers.spacechar^1 * larsers.Endline^-1 * parsers.eof / ""
@@ -13363,8 +13420,29 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                             + V("Smart")
                             + V("Symbol"),
 
+      IndentedInline        = V("Str")
+                            + V("OptionalIndent")
+                            + V("Endline")
+                            + V("UlOrStarLine")
+                            + V("Strong")
+                            + V("Emph")
+                            + V("InlineNote")
+                            + V("NoteRef")
+                            + V("Citations")
+                            + V("Link")
+                            + V("Image")
+                            + V("Code")
+                            + V("AutoLinkUrl")
+                            + V("AutoLinkEmail")
+                            + V("InlineHtml")
+                            + V("HtmlEntity")
+                            + V("EscapedChar")
+                            + V("Smart")
+                            + V("Symbol"),
+
       Str                   = larsers.Str,
       Space                 = larsers.Space,
+      OptionalIndent        = larsers.OptionalIndent,
       Endline               = larsers.Endline,
       UlOrStarLine          = larsers.UlOrStarLine,
       Strong                = larsers.Strong,
@@ -13752,6 +13830,9 @@ end
 \fi
 \ifx\markdownOptionStartNumber\undefined\else
   startNumber = \markdownOptionStartNumber,
+\fi
+\ifx\markdownOptionTableCaptions\undefined\else
+  tableCaptions = \markdownOptionTableCaptions,
 \fi
 \ifx\markdownOptionTightLists\undefined\else
   tightLists = \markdownOptionTightLists,
