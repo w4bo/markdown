@@ -28,6 +28,14 @@ This is a fenced code block:
 \end{document}
 ```
 
+This is a table:
+
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|    12 | 12   | 12      |   12   |
+|   123 | 123  | 123     |   123  |
+|     1 | 1    | 1       |    1   |
+
 This is a bullet list:
 
   * The first item of a bullet list

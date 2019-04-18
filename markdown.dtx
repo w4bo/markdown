@@ -11402,9 +11402,13 @@ function M.writer.new(options)
     for i, row in ipairs(rows) do
       table.insert(buffer, "{")
       for _, column in ipairs(row) do
-        table.insert(buffer, "{")
+        if i > 1 then -- do not use braces for alignments
+          table.insert(buffer, "{")
+        end
         table.insert(buffer, column)
-        table.insert(buffer, "}%\n")
+        if i > 1 then
+          table.insert(buffer, "}%\n")
+        end
       end
       table.insert(buffer, "}%\n")
     end
@@ -14751,6 +14755,79 @@ local convert = md.new(\markdownLuaOptions)
       \ifx\empty##4\empty\else##4: \fi\texttt<\url{##3}\texttt>}%
     \endgroup}%
   \next}
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% There is a basic implementation of tables. If the \pkg{booktabs} package is
+% loaded, then it is used to produce horizontal lines.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\newcount\markdownLaTeXRowCounter
+\newcount\markdownLaTeXRowTotal
+\newcount\markdownLaTeXColumnCounter
+\newcount\markdownLaTeXColumnTotal
+\newtoks\markdownLaTeXTable
+\newtoks\markdownLaTeXTableAlignment
+\@ifpackageloaded{booktabs}{
+  \let\markdownLaTeXTopRule\toprule
+  \let\markdownLaTeXMidRule\midrule
+  \let\markdownLaTeXBottomRule\bottomrule
+}{
+  \let\markdownLaTeXTopRule\hline
+  \let\markdownLaTeXMidRule\hline
+  \let\markdownLaTeXBottomRule\hline
+}
+\def\markdownRendererTablePrototype#1#2{%
+  \markdownLaTeXTable={}%
+  \markdownLaTeXTableAlignment={}%
+  \markdownLaTeXRowCounter=0%
+  \markdownLaTeXRowTotal=#1%
+  \markdownLaTeXColumnTotal=#2%
+  \markdownLaTeXRenderTableRow}
+\def\markdownLaTeXRenderTableRow#1{%
+  \markdownLaTeXColumnCounter=0%
+  \ifnum\markdownLaTeXRowCounter=0\relax
+    \markdownLaTeXReadAlignments#1%
+    \markdownLaTeXTable={\begin{tabular}}%
+    \markdownLaTeXTable=\expandafter\expandafter\expandafter{%
+      \expandafter\the\expandafter\markdownLaTeXTable\expandafter{%
+        \the\markdownLaTeXTableAlignment}}%
+    \addto@hook\markdownLaTeXTable{\markdownLaTeXTopRule}%
+    \markdownInfo{\the\markdownLaTeXTable}%
+  \else
+    \markdownLaTeXRenderTableCell#1%
+  \fi
+  \ifnum\markdownLaTeXRowCounter=1\relax
+    \addto@hook\markdownLaTeXTable\markdownLaTeXMidRule
+  \fi
+  \advance\markdownLaTeXRowCounter by 1\relax
+  \ifnum\markdownLaTeXRowCounter>\markdownLaTeXRowTotal\relax
+    \addto@hook\markdownLaTeXTable{%
+      \markdownLaTeXBottomRule
+      \end{tabular}}%
+    \the\markdownLaTeXTable
+    \expandafter\@gobble
+  \fi\markdownLaTeXRenderTableRow}
+\def\markdownLaTeXReadAlignments#1{%
+  \advance\markdownLaTeXColumnCounter by 1\relax
+  \if#1d
+    \addto@hook\markdownLaTeXTableAlignment{l}%
+  \else
+    \addto@hook\markdownLaTeXTableAlignment{#1}%
+  \fi
+  \ifnum\markdownLaTeXColumnCounter<\markdownLaTeXColumnTotal\relax\else
+    \expandafter\@gobble
+  \fi\markdownLaTeXReadAlignments}
+\def\markdownLaTeXRenderTableCell#1{%
+  \advance\markdownLaTeXColumnCounter by 1\relax
+  \ifnum\markdownLaTeXColumnCounter<\markdownLaTeXColumnTotal\relax
+    \addto@hook\markdownLaTeXTable{#1&}%
+  \else
+    \addto@hook\markdownLaTeXTable{#1\\}%
+    \expandafter\@gobble
+  \fi\markdownLaTeXRenderTableCell}
 %    \end{macrocode}
 % \par
 % \begin{markdown}
