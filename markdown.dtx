@@ -9640,6 +9640,90 @@ repeated \meta{number of columns} times, \meta{alignments} is
 %
 % \iffalse
 
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass{article}
+\usepackage[pipeTables, tableCaptions]{markdown}
+\newcount\rowCounter
+\newcount\columnCounter
+\makeatletter
+\def\processRow#1{%
+  \columnCounter=1%
+  \ifnum\rowCounter=0\relax
+    As for the alignment,
+  \else
+    In row \the\rowCounter,
+  \fi
+  \processColumn#1
+  \advance\rowCounter by 1\relax
+  \ifnum\rowCounter>\rowTotal\relax
+    \expandafter\@gobble
+  \fi\processRow}%
+\def\processColumn#1{%
+  column number \the\columnCounter{}
+  \ifnum\rowCounter=0\relax
+    \if#1d{}has default alignment\fi
+    \if#1l{}is left-aligned\fi
+    \if#1c{}is centered\fi
+    \if#1r{}is right-aligned\fi
+  \else
+    says \emph{#1}%
+  \fi
+  \advance\columnCounter by 1\relax
+  \ifnum\columnCounter<\columnTotal\relax, \fi
+  \ifnum\columnCounter=\columnTotal\relax, and \fi
+  \ifnum\columnCounter>\columnTotal\relax
+    .\expandafter\@gobble
+  \fi\processColumn}%
+\makeatother
+\markdownSetup{
+  renderers = {
+    table = {%
+      This is a table with caption \emph{#1} that is #3 colums wide
+      and #2 rows long.
+      \rowCounter=0%
+      \def\rowTotal{#2}%
+      \def\columnTotal{#3}%
+      \processRow
+    },
+  },
+}
+\begin{document}
+\begin{markdown}
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+
+  : Demonstration of pipe table syntax
+\end{markdown}
+\end{document}
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the
+following text:
+
+> This is a table with caption *Demonstration of pipe table syntax* that is 4
+> colums wide and 4 rows long. As for the alignment, column number 1 is
+> right-aligned, column number 2 is left-aligned, column number 3 has default
+> alignment, and column number 4 is centered. In row 1, column number 1 says
+> *Right*, column number 2 says *Left*, column number 3 says *Default*, and
+> column number 4 says *Center*. In row 2, column number 1 says *12*, column
+> number 2 says *12*, column number 3 says *12*, and column number 4 says *12*.
+> In row 3, column number 1 says *123*, column number 2 says *123*, column
+> number 3 says *123*, and column number 4 says *123*. In row 4, column number
+> 1 says *1*, column number 2 says *1*, column number 3 says *1*, and column
+> number 4 says *1*.
+
 
 %</manual-tokens>
 %<*tex>

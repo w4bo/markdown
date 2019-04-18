@@ -12,21 +12,19 @@
 \newcount\COLCOUNTER
 
 \def\DOROW#1{%
-  \advance\ROWCOUNTER by 1\relax
   \COLCOUNTER=1%
   \DOCOL#1
+  \advance\ROWCOUNTER by 1\relax
   \ifnum\ROWCOUNTER>\ROWTOTAL\relax
     \TYPE{END table}%
     \expandafter\GOBBLE
   \fi\DOROW}%
 \def\DOCOL#1{%
-  \advance\ROWCOUNTER by -1\relax
   \ifnum\ROWCOUNTER=0
     \TYPE{- alignment of column \the\COLCOUNTER: #1}%
   \else
     \TYPE{- row \the\ROWCOUNTER, column \the\COLCOUNTER: #1}%
   \fi
-  \advance\ROWCOUNTER by 1\relax
   \advance\COLCOUNTER by 1\relax
   \ifnum\COLCOUNTER>\COLTOTAL\relax
     \expandafter\GOBBLE
