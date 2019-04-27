@@ -12602,7 +12602,7 @@ parsers.table_hline = pipe_table_row(false
                                     , parsers.table_hline_column)
 parsers.table_caption_beginning = parsers.skipblanklines
                                 * parsers.nonindentspace
-                                * (P("table") + parsers.colon)
+                                * (P("Table")^-1 * parsers.colon)
                                 * parsers.optionalspace
 %    \end{macrocode}
 % \par
