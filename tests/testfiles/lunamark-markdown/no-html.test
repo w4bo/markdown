@@ -7,6 +7,15 @@ This test ensures that the Lua `html` option is disabled by default.
 *There is no <inline tag="tag"></inline> support.*
 _There is no <!-- comment --> support._
 _There is no <? HTML instruction ?> support._
+
+Here are several ways to write a pipe:
+
+- |
+- &verbar;
+- &vert;
+- &VerticalLine;
+- &#x0007C;
+- &#124;
 >>>
 codeSpan: html
 interblockSeparator
@@ -14,3 +23,27 @@ emphasis: There is no block tag support.
 emphasis: There is no <inline tag="tag"></inline> support.
 emphasis: There is no <!-- comment --> support.
 emphasis: There is no <? HTML instruction ?> support.
+interblockSeparator
+interblockSeparator
+ulBeginTight
+ulItem
+pipe
+ulItemEnd
+ulItem
+ampersand
+ulItemEnd
+ulItem
+ampersand
+ulItemEnd
+ulItem
+ampersand
+ulItemEnd
+ulItem
+ampersand
+hash
+ulItemEnd
+ulItem
+ampersand
+hash
+ulItemEnd
+ulEndTight

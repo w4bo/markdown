@@ -9,6 +9,15 @@ the plain TeX interface.
 *There is <inline tag="tag"></inline> support.*
 _There is <!-- comment --> support._
 _There is <? HTML instruction ?> support._
+
+Here are several ways to write a pipe:
+
+- |
+- &verbar;
+- &vert;
+- &VerticalLine;
+- &#x0007C;
+- &#124;
 >>>
 codeSpan: html
 interblockSeparator
@@ -16,3 +25,25 @@ interblockSeparator
 emphasis: There is support.
 emphasis: There is support.
 emphasis: There is support.
+interblockSeparator
+interblockSeparator
+ulBeginTight
+ulItem
+pipe
+ulItemEnd
+ulItem
+pipe
+ulItemEnd
+ulItem
+pipe
+ulItemEnd
+ulItem
+pipe
+ulItemEnd
+ulItem
+pipe
+ulItemEnd
+ulItem
+pipe
+ulItemEnd
+ulEndTight
