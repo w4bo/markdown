@@ -83,6 +83,9 @@ Support for content slicing (Lua options `shiftHeadings` and `slice`) and pipe
 tables (Lua options `pipeTables` and `tableCaptions`) was graciously sponsored
 by [David Vins][dvins] and [Omedym][].
 
+Extensive user documentation of the Markdown package was kindly written by
+[Lian Tze Lim][liantze] and published by [Overleaf][].
+
  [dvins]:  https://github.com/dvins             "David Vins"
  [fimu]:   https://www.fi.muni.cz/index.html.en "Faculty of Informatics, Masaryk University"
  [mu]:     https://www.muni.cz/en               "Masaryk University"
