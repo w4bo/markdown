@@ -109,13 +109,13 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
 $(DISTARCHIVE): $(EVERYTHING) $(TDSARCHIVE)
 	-ln -s . markdown
 	zip -MM -r -v -nw $@ $(addprefix markdown/,$(EVERYTHING)) $(TDSARCHIVE)
-	rm -f markdown-dist
+	rm -f markdown
 
 # This target produces the CTAN archive.
 $(CTANARCHIVE): $(RESOURCES) $(TDSARCHIVE)
 	-ln -s . markdown
 	zip -MM -r -v -nw $@ $(addprefix markdown/,$(RESOURCES)) $(TDSARCHIVE)
-	rm -f markdown-dist
+	rm -f markdown
 
 # This pseudo-target removes any existing auxiliary files and directories.
 clean:
