@@ -16,6 +16,8 @@ Here are several ways to write a pipe:
 - &VerticalLine;
 - &#x0007C;
 - &#124;
+
+Unrecognized character entities are ignored: &nonsense;
 >>>
 codeSpan: html
 interblockSeparator
@@ -47,3 +49,5 @@ ampersand
 hash
 ulItemEnd
 ulEndTight
+interblockSeparator
+ampersand
