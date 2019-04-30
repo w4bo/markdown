@@ -74,7 +74,8 @@
 }
 
 % Set up the catcodes.
-\catcode`\_=12 % We won't be typesetting math and Lua contains lots of `_`.
+\catcode`\_=12 % We won't be typesetting much math and Lua contains lots of `_`.
+\catcode`\^^B=8 % When we occasionally need subscripts , we will use `^^B` (STX).
 
 % Set up the title page.
 \titlepage{%
@@ -10972,7 +10973,7 @@ function util.escaper(char_escapes, string_escapes)
 %    \end{macrocode}
 % \begin{markdown}
 % If `string_escapes` is provided, turn `escapable` into the
-% $$\sum\_{(`k`,`v`)\in`string_escapes`}`P(k) / v` + `escapable`$$
+% $$\sum^^B{(`k`, `v`)\in`string_escapes`}`P(k) / v` + `escapable`$$
 % capture that replaces any occurance of the string `k` with the string
 % `v` for each $(`k`, `v`)\in`string_escapes`$. Note that the pattern
 % summation is not commutative and its operands are inspected in the
