@@ -62,7 +62,9 @@ Contributing
 Apart from the example markdown documents, tests and continuous integration,
 which are placed in the `examples/`, `tests/`, and `.circleci/` directories,
 the complete source code and documentation of the package are placed in the
-`markdown.dtx` document following the literate programming paradigm.
+`markdown.dtx` document following the [literate programming][] paradigm.
+Some useful commands, such as building the release archives and typesetting
+the documentation, are placed in the `Makefile` file for ease of maintenance.
 
 When the file `markdown.ins` is interpreted using a Unicode-aware TeX engine,
 such as XeTeX (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`), several
@@ -77,10 +79,11 @@ documentation is placed inside TeX comments and marked up using the
 [ltxdockit][] LaTeX document class. Support for typesetting the documentation
 is provided by the [doc][] LaTeX package.
 
- [doc]:       https://ctan.org/pkg/doc       "doc – Format LaTeX documentation"
- [DocStrip]:  https://ctan.org/pkg/docstrip  "docstrip – Remove comments from file"
- [LaTeXMK]:   https://ctan.org/pkg/latexmk   "latexmk – Fully automated LaTeX document generation"
- [ltxdockit]: https://ctan.org/pkg/ltxdockit "ltxdockit – Documentation support"
+ [doc]:                  https://ctan.org/pkg/doc                           "doc – Format LaTeX documentation"
+ [DocStrip]:             https://ctan.org/pkg/docstrip                      "docstrip – Remove comments from file"
+ [LaTeXMK]:              https://ctan.org/pkg/latexmk                       "latexmk – Fully automated LaTeX document generation"
+ [literate programming]: https://en.wikipedia.org/wiki/Literate_programming "Literate programming"
+ [ltxdockit]:            https://ctan.org/pkg/ltxdockit                     "ltxdockit – Documentation support"
 
 Acknowledgements
 ----------------
