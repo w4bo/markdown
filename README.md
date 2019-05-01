@@ -59,7 +59,7 @@ For further information, consult one of the following:
 
 Contributing
 ------------
-Apart from the example markdown documents, tests and continuous integration,
+Apart from the example markdown documents, tests, and continuous integration,
 which are placed in the `examples/`, `tests/`, and `.circleci/` directories,
 the complete source code and documentation of the package are placed in the
 `markdown.dtx` document following the [literate programming][] paradigm.
