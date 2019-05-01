@@ -10,7 +10,7 @@ The Markdown package converts [markdown][] markup to TeX commands. The
 functionality is provided both as a Lua module, and as plain TeX, LaTeX, and
 ConTeXt macro packages that can be used to directly typeset TeX documents
 containing markdown markup. Unlike other convertors, the Markdown package
-does not require any external programs and makes it easy to redefine how each
+does not require any external programs, and makes it easy to redefine how each
 and every markdown element is rendered. Creative abuse of the markdown syntax
 is encouraged. 😉
 
