@@ -59,10 +59,10 @@ For further information, consult one of the following:
 
 Contributing
 ------------
-Apart from the example markdown documents and tests, which are placed in the
-`examples/` and `tests/` directories, the complete source code and
-documentation of the package are placed in the `markdown.dtx` document
-following the literate programming paradigm.
+Apart from the example markdown documents, tests and continuous integration,
+which are placed in the `examples/`, `tests/`, and `.circleci/` directories,
+the complete source code and documentation of the package are placed in the
+`markdown.dtx` document following the literate programming paradigm.
 
 When the file `markdown.ins` is interpreted using a Unicode-aware TeX engine,
 such as XeTeX (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`), several
