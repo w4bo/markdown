@@ -63,7 +63,7 @@ Acknowledgements
 | Logo | Acknowledgement |
 | ------------- | ------------- |
 | [<img width="150" src="https://www.fi.muni.cz/images/fi-logo.png">][fimu] | I gratefully acknowledge the funding from the [Faculty of Informatics][fimu] at the [Masaryk University][mu] in Brno, Czech Republic, for the development of the Markdown package. |
-| [<img width="150" src="https://cdn.sharelatex.com/img/ol-brand/overleaf_og_logo.png">][overleaf] | Extensive user documentation of the Markdown package was kindly written by [Lian Tze Lim][liantze] and published by [Overleaf][]. |
+| [<img width="150" src="https://cdn.sharelatex.com/img/ol-brand/overleaf_og_logo.png">][overleaf] | Extensive user documentation for the Markdown package was kindly written by [Lian Tze Lim][liantze] and published by [Overleaf][]. |
 | [<img width="150" src="https://pbs.twimg.com/profile_images/1004769879319334912/6Bh1UthD.jpg">][omedym] | Support for content slicing (Lua options `shiftHeadings` and `slice`) and pipe tables (Lua options `pipeTables` and `tableCaptions`) was graciously sponsored by [David Vins][dvins] and [Omedym][]. |
 
  [dvins]:  https://github.com/dvins             "David Vins"
