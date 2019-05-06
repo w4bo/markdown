@@ -57,6 +57,20 @@ For further information, consult one of the following:
  [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf               "A Markdown Interpreter for TeX"
  [tugboat]:  https://www.tug.org/tugboat/                                               "TUGboat - Communications of the TeX Users Group"
 
+Acknowledgements
+----------------
+
+| Logo | Acknowledgement |
+| ------------- | ------------- |
+| [<img width="150" src="https://www.fi.muni.cz/images/fi-logo.png">][fimu] | I gratefully acknowledge the funding from the [Faculty of Informatics][fimu] at the [Masaryk University][mu] in Brno, Czech Republic, for the development of the Markdown package. |
+| [<img width="150" src="https://cdn.sharelatex.com/img/ol-brand/overleaf_og_logo.png">][overleaf] | Extensive user documentation of the Markdown package was kindly written by [Lian Tze Lim][liantze] and published by [Overleaf][]. |
+| [<img width="150" src="https://pbs.twimg.com/profile_images/1004769879319334912/6Bh1UthD.jpg">][omedym] | Support for content slicing (Lua options `shiftHeadings` and `slice`) and pipe tables (Lua options `pipeTables` and `tableCaptions`) was graciously sponsored by [David Vins][dvins] and [Omedym][]. |
+
+ [dvins]:  https://github.com/dvins             "David Vins"
+ [fimu]:   https://www.fi.muni.cz/index.html.en "Faculty of Informatics, Masaryk University"
+ [mu]:     https://www.muni.cz/en               "Masaryk University"
+ [Omedym]: https://www.omedym.com/              "Omedym"
+
 Contributing
 ------------
 Apart from the example markdown documents, tests, and continuous integration,
@@ -84,17 +98,3 @@ is provided by the [doc][] LaTeX package.
  [LaTeXMK]:              https://ctan.org/pkg/latexmk                       "latexmk – Fully automated LaTeX document generation"
  [literate programming]: https://en.wikipedia.org/wiki/Literate_programming "Literate programming"
  [ltxdockit]:            https://ctan.org/pkg/ltxdockit                     "ltxdockit – Documentation support"
-
-Acknowledgements
-----------------
-
-| Logo | Acknowledgement |
-| ------------- | ------------- |
-| [<img width="150" src="https://www.fi.muni.cz/images/fi-logo.png">][fimu] | I gratefully acknowledge the funding from the [Faculty of Informatics][fimu] at the [Masaryk University][mu] in Brno, Czech Republic, for the development of the Markdown package. |
-| [<img width="150" src="https://cdn.sharelatex.com/img/ol-brand/overleaf_og_logo.png">][overleaf] | Extensive user documentation of the Markdown package was kindly written by [Lian Tze Lim][liantze] and published by [Overleaf][]. |
-| [<img width="150" src="https://pbs.twimg.com/profile_images/1004769879319334912/6Bh1UthD.jpg">][omedym] | Support for content slicing (Lua options `shiftHeadings` and `slice`) and pipe tables (Lua options `pipeTables` and `tableCaptions`) was graciously sponsored by [David Vins][dvins] and [Omedym][]. |
-
- [dvins]:  https://github.com/dvins             "David Vins"
- [fimu]:   https://www.fi.muni.cz/index.html.en "Faculty of Informatics, Masaryk University"
- [mu]:     https://www.muni.cz/en               "Masaryk University"
- [Omedym]: https://www.omedym.com/              "Omedym"
