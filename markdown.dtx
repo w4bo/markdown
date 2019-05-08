@@ -6940,6 +6940,8 @@ following content:
 \catcode`\^^A=14
 \global\def\markdownRendererImage#1#2#3#4{^^A
   \immediate\write18{^^A
+```
+``` sh
     if printf '%s' "#3" | grep -q ^http; then
       OUTPUT="$(printf '%s' "#3" | md5sum | cut -d' ' -f1).^^A
               $(printf '%s' "#3" | sed 's/.*[.]//')";
@@ -6951,6 +6953,8 @@ following content:
     else
       printf '%s%%' "#3"      > \jobname.fetched;
     fi^^A
+```
+``` tex
   }^^A
   {^^A
     \everyeof={\noexpand}^^A
