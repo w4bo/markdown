@@ -1,0 +1,19 @@
+\def\markdownOptionCitations{true}
+<<<
+This test ensures that the Lua `citations` option correctly propagates through
+the plain TeX interface and that space characters are required before a text
+citation.
+
+foo@bar
+
+foo @bar
+>>>
+codeSpan: citations
+interblockSeparator
+interblockSeparator
+BEGIN textCite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: bar
+END textCite

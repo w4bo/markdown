@@ -14983,7 +14983,8 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
 %
 % \end{markdown}
 %  \begin{macrocode}
-  larsers.Str      = parsers.normalchar^1 / writer.string
+  larsers.Str      = (parsers.normalchar * (parsers.normalchar + parsers.at)^0)
+                   / writer.string
 
   larsers.Symbol   = (parsers.specialchar - parsers.tightblocksep)
                    / writer.string
