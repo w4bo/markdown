@@ -13706,6 +13706,7 @@ function M.writer.new(options)
 %  \begin{macrocode}
   function self.verbatim(s)
     if not self.is_writing then return "" end
+    s = string.gsub(s, '[\r\n%s]*$', '')
     local name = util.cache(options.cacheDir, s, nil, nil, ".verbatim")
     return {"\\markdownRendererInputVerbatim{",name,"}"}
   end
@@ -13721,6 +13722,7 @@ function M.writer.new(options)
 %  \begin{macrocode}
   function self.fencedCode(i, s)
     if not self.is_writing then return "" end
+    s = string.gsub(s, '[\r\n%s]*$', '')
     local name = util.cache(options.cacheDir, s, nil, nil, ".verbatim")
     return {"\\markdownRendererInputFencedCode{",name,"}{",i,"}"}
   end
@@ -15656,7 +15658,14 @@ if metadata.version ~= md.metadata.version then
        "markdown.lua " .. md.metadata.version .. ".")
 end
 local convert = md.new(options)
-local output = convert(input:gsub("\r\n?", "\n"))
+%    \end{macrocode}
+% \begin{markdown}
+% Since the Lua converter expects \acro{unix} line endings, normalize the
+% input. Also add a line ending at the end of the file in case the input file
+% has none.
+% \end{markdown}
+%  \begin{macrocode}
+local output = convert(input:gsub("\r\n?", "\n") .. "\n")
 
 if output_filename then
   local output_file = io.open(output_filename, "w")
@@ -16297,10 +16306,11 @@ local convert = md.new(\markdownLuaOptions)
 %    \end{macrocode}
 % \begin{markdown}
 % Since the Lua converter expects \acro{unix} line endings, normalize the
-% input.
+% input. Also add a line ending at the end of the file in case the input file
+% has none.
 % \end{markdown}
 %  \begin{macrocode}
-      print(convert(input:gsub("\r\n?", "\n")))}}%
+      print(convert(input:gsub("\r\n?", "\n") .. "\n"))}}%
 |endgroup
 %    \end{macrocode}
 % \iffalse

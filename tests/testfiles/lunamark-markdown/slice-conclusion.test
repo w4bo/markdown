@@ -151,5 +151,5 @@ interblockSeparator
 blockQuoteEnd
 interblockSeparator
 footnote: Here is the footnote.
-footnote: Here's one with multiple blocks.(interblockSeparator)Subsequent paragraphs are indented to show that they belong to the previous footnote.(interblockSeparator)(inputVerbatim: ./_markdown_test/384313ed77c3960a536af8343b57216d.verbatim)(interblockSeparator)The whole paragraph can be indented, or just the first line. In this way, multi-paragraph footnotes work like multi-paragraph list items.
+footnote: Here's one with multiple blocks.(interblockSeparator)Subsequent paragraphs are indented to show that they belong to the previous footnote.(interblockSeparator)(inputVerbatim: ./_markdown_test/c92b3efa18315dd3d2ff8cccfb5a26a0.verbatim)(interblockSeparator)The whole paragraph can be indented, or just the first line. In this way, multi-paragraph footnotes work like multi-paragraph list items.
 footnote: Inlines notes are easier to write, since you don't have to pick an identifier and move down to type the note.

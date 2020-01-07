@@ -176,7 +176,7 @@ END contentBlock
 interblockSeparator
 interblockSeparator
 BEGIN fencedCode
-- src: ./_markdown_test/5ccbfd8d1e383aae968fc8c9b1412c8e.verbatim
+- src: ./_markdown_test/4b6b6e5629f4aa0fcfcb9164fca2efa3.verbatim
 - infostring: latex
 END fencedCode
 interblockSeparator
