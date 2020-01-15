@@ -88,7 +88,7 @@ the documentation, are placed in the `Makefile` file for ease of maintenance.
 When the file `markdown.ins` is interpreted using a Unicode-aware TeX engine,
 such as XeTeX (`xetex markdown.ins`) or LuaTeX (`luatex markdown.ins`), several
 files are produced from the `markdown.dtx` document. In `markdown.dtx`, the
-boundaries between the produced files are marked up using a XML-like syntax
+boundaries between the produced files are marked up using an XML-like syntax
 provided by the [DocStrip][] plain TeX package.
 
 Running the [LaTeXMK][] tool on the `markdown.dtx` file
