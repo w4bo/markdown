@@ -39,6 +39,8 @@ For further information, consult one of the following:
 4. My journal articles published by [TUGboat][]:
     - [Using Markdown inside TeX documents][tb119], and
     - [Markdown 2.7.0: Towards lightweight markup in TeX][tb124].
+5. My journal articles published by [CSTUG][] (in Czech):
+    - [Rendering Markdown inside TeX Documents][10.5300/2016-1-4/78].
 
  [overleaf-1]: https://www.overleaf.com/learn/latex/Articles/How_to_write_in_Markdown_on_Overleaf       "How to write in Markdown on Overleaf"
  [overleaf-2]: https://www.overleaf.com/learn/latex/Articles/Markdown_into_LaTeX_with_Style             "Markdown into LaTeX with Style"
@@ -50,12 +52,15 @@ For further information, consult one of the following:
  [tb119]: https://www.tug.org/members/TUGboat/tb38-2/tb119novotny.pdf           "Using Markdown inside TeX documents"
  [tb124]: https://www.tug.org/members/TUGboat/tb40-1/tb124novotny-markdown.pdf  "Markdown 2.7.0: Towards lightweight markup in TeX"
 
+ [10.5300/2016-1-4/78]: https://doi.org/10.5300/2016-1-4/78 "Rendering Markdown inside TeX Documents"
+
  [install]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.html#installation "Markdown Package User Manual"
  [liantze]:  http://liantze.penguinattack.org/                                          "Rants from the Lab"
  [manual]:   http://mirrors.ctan.org/macros/generic/markdown/markdown.html              "Markdown Package User Manual"
  [overleaf]: https://www.overleaf.com/                                                  "Overleaf: Real-time Collaborative Writing and Publishing Tools with Integrated PDF Preview"
  [techdoc]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.pdf               "A Markdown Interpreter for TeX"
  [tugboat]:  https://www.tug.org/tugboat/                                               "TUGboat - Communications of the TeX Users Group"
+ [cstug]:    https://www.cstug.cz/                                                      "Československé sdružení uživatelů TeXu"
 
 Acknowledgements
 ----------------
