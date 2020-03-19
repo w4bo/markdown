@@ -10,20 +10,15 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.8.1-tl2019-{{ .Branch }}
-        - markdown-v2.8.1-tl2019-master
-        - markdown-v2.8.1-tl2019-
+        - markdown-v2.8.2-tl2020_pretest-{{ .Branch }}
+        - markdown-v2.8.2-tl2020_pretest-master
+        - markdown-v2.8.2-tl2020_pretest-
     # Install TeX Live
     - run: |
         set -e
-        mkdir -p ~/apt-cache/partial
-        sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
         if [[ ! -e ~/texlive-cache ]]; then
-          cd /tmp
-          sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install p7zip-full
-          wget ftp://tug.org/tex-archive/systems/texlive/Images/texlive2019.iso
-          7z x texlive2019.iso
-          chmod +x install-tl
+          rsync -v -a --delete --exclude="mactex*" ftp.cstug.cz::pub/tex/local/tlpretest /tmp
+          cd /tmp/tlpretest
           sudo ./install-tl <<<I
           sudo mv /usr/local/texlive ~/texlive-cache
           cd -
@@ -31,10 +26,11 @@ jobs:
     # Install additional packages
     - run: |
         set -e
-        sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel
-        sudo pip install pygments
+        mkdir -p ~/apt-cache/partial
+        sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
+        sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.8.1-tl2019-{{ .Branch }}
+        key: markdown-v2.8.2-tl2020_pretest-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
@@ -42,7 +38,7 @@ jobs:
     - run: |
         set -e
         sudo mv ~/texlive-cache /usr/local/texlive
-        echo 'export PATH=/usr/local/texlive/2019/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
+        echo 'export PATH=/usr/local/texlive/2020/bin/x86_64-linux:"$PATH"' >>$BASH_ENV
     - checkout
     # Install the Markdown package
     - run: |
