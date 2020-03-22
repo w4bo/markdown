@@ -14,7 +14,7 @@ does not require any external programs, and makes it easy to redefine how each
 and every markdown element is rendered. Creative abuse of the markdown syntax
 is encouraged. 😉
 
- [markdown]: https://daringfireball.net/projects/markdown/basics/ "Daring Fireball: Markdown Basics"
+ [markdown]: https://daringfireball.net/projects/markdown/basics  "Daring Fireball: Markdown Basics"
 
 Further information
 -------------------
@@ -49,8 +49,8 @@ For further information, consult one of the following:
  [overleaf-5]: https://www.overleaf.com/latex/examples/writing-posters-with-markdown/jtbgmmgqrqmh       "Writing Posters with Markdown"
  [overleaf-6]: https://www.overleaf.com/latex/examples/using-markdown-in-latex-documents/whdrnpcpnwrm   "Using Markdown in LaTeX documents"
 
- [tb119]: https://www.tug.org/members/TUGboat/tb38-2/tb119novotny.pdf           "Using Markdown inside TeX documents"
- [tb124]: https://www.tug.org/members/TUGboat/tb40-1/tb124novotny-markdown.pdf  "Markdown 2.7.0: Towards lightweight markup in TeX"
+ [tb119]: https://www.tug.org/TUGboat/tb38-2/tb119novotny.pdf           "Using Markdown inside TeX documents"
+ [tb124]: https://www.tug.org/TUGboat/tb40-1/tb124novotny-markdown.pdf  "Markdown 2.7.0: Towards lightweight markup in TeX"
 
  [10.5300/2016-1-4/78]: https://doi.org/10.5300/2016-1-4/78 "Rendering Markdown inside TeX Documents"
 
