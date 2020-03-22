@@ -84,7 +84,7 @@ dist: implode
 	$(MAKE) clean
 
 # This target produces the TeX directory structure archive.
-$(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
+$(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLER) $(INSTALLABLES) $(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) README.md
 	@# Installing the macro package.
 	mkdir -p tex/generic/markdown tex/luatex/markdown tex/latex/markdown \
 	  tex/context/third/markdown scripts/markdown
@@ -96,7 +96,7 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLABLES) $(DOCUMENTATION)
 	@# Installing the documentation.
 	mkdir -p doc/generic/markdown doc/latex/markdown/examples \
 	  doc/context/third/markdown/examples
-	cp $(DOCUMENTATION) doc/generic/markdown/
+	cp $(DOCUMENTATION) README.md doc/generic/markdown/
 	cp examples/context.tex $(EXAMPLES_RESOURCES) doc/context/third/markdown/examples/
 	cp examples/latex.tex $(EXAMPLES_RESOURCES) doc/latex/markdown/examples/
 	@# Installing the sources.
@@ -112,9 +112,9 @@ $(DISTARCHIVE): $(EVERYTHING) $(TDSARCHIVE)
 	rm -f markdown
 
 # This target produces the CTAN archive.
-$(CTANARCHIVE): $(RESOURCES) $(TDSARCHIVE)
+$(CTANARCHIVE): $(DTXARCHIVE) $(INSTALLER) $(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) README.md $(TDSARCHIVE)
 	-ln -s . markdown
-	zip -MM -r -v -nw $@ $(addprefix markdown/,$(RESOURCES)) $(TDSARCHIVE)
+	zip -MM -r -v -nw $@ $(addprefix markdown/,$(DTXARCHIVE) $(INSTALLER) $(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) README.md) $(TDSARCHIVE)
 	rm -f markdown
 
 # This pseudo-target removes any existing auxiliary files and directories.
