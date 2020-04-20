@@ -10,18 +10,18 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.8.2-tl2020_pretest-{{ .Branch }}
-        - markdown-v2.8.2-tl2020_pretest-master
-        - markdown-v2.8.2-tl2020_pretest-
+        - markdown-v2.8.2-tl2020-{{ .Branch }}
+        - markdown-v2.8.2-tl2020-master
+        - markdown-v2.8.2-tl2020-
     # Install TeX Live
     - run: |
         set -e
         if [[ ! -e ~/texlive-cache ]]; then
-          rsync -v -a --delete --exclude="mactex*" ftp.cstug.cz::pub/tex/local/tlpretest /tmp
-          cd /tmp/tlpretest
+          cd /tmp
+          wget -q -O- 'http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz' | tar xzv
+          cd install-tl-*
           sudo ./install-tl <<<I
           sudo mv /usr/local/texlive ~/texlive-cache
-          cd -
         fi
     # Install additional packages
     - run: |
@@ -30,7 +30,7 @@ jobs:
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.8.2-tl2020_pretest-{{ .Branch }}
+        key: markdown-v2.8.2-tl2020-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
