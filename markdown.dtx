@@ -16377,10 +16377,12 @@ local convert = md.new(\markdownLuaOptions)
 % \end{markdown}
 %  \begin{macrocode}
 \renewenvironment{markdown}{%
-  \markdownReadAndConvert@markdown{}}\relax
+  \markdownReadAndConvert@markdown{}}{%
+  \markdownEnd}%
 \renewenvironment{markdown*}[1]{%
   \markdownSetup{#1}%
-  \markdownReadAndConvert@markdown*}\relax
+  \markdownReadAndConvert@markdown*}{%
+  \markdownEnd}%
 \begingroup
 %    \end{macrocode}
 % \begin{markdown}
@@ -17039,6 +17041,7 @@ local convert = md.new(\markdownLuaOptions)
   |gdef|startmarkdown{%
     |markdownReadAndConvert{\stopmarkdown}%
                            {|stopmarkdown}}%
+  |gdef|stopmarkdown{|markdownEnd}%
 |endgroup
 %    \end{macrocode}
 % \par
