@@ -1,5 +1,6 @@
 Markdown
 ========
+
 [![release](https://img.shields.io/github/release/witiko/markdown.svg)][release]
 [![CircleCI](https://circleci.com/gh/Witiko/markdown/tree/master.svg?style=shield)][CircleCI]
 
@@ -18,6 +19,7 @@ is encouraged. 😉
 
 Further information
 -------------------
+
 For further information, consult one of the following:
 
 1. The [user manual][manual], which can be produced by interpreting the
@@ -83,6 +85,7 @@ Acknowledgements
 
 Contributing
 ------------
+
 Apart from the example markdown documents, tests, and continuous integration,
 which are placed in the `examples/`, `tests/`, and `.circleci/` directories,
 the complete source code and documentation of the package are placed in the
