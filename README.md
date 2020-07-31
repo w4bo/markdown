@@ -42,7 +42,8 @@ For further information, consult one of the following:
     - [Using Markdown inside TeX documents][tb119], and
     - [Markdown 2.7.0: Towards lightweight markup in TeX][tb124].
 5. My journal articles published by [CSTUG][] (in Czech):
-    - [Rendering Markdown inside TeX Documents][10.5300/2016-1-4/78].
+    - [Rendering Markdown inside TeX Documents][10.5300/2016-1-4/78], and
+    - [Markdown 2.8.1: Boldly Unto the Throne of Lightweight Markup in TeX][10.5300/2020-1-2/48].
 
  [overleaf-1]: https://www.overleaf.com/learn/latex/Articles/How_to_write_in_Markdown_on_Overleaf       "How to write in Markdown on Overleaf"
  [overleaf-2]: https://www.overleaf.com/learn/latex/Articles/Markdown_into_LaTeX_with_Style             "Markdown into LaTeX with Style"
@@ -54,7 +55,8 @@ For further information, consult one of the following:
  [tb119]: https://www.tug.org/TUGboat/tb38-2/tb119novotny.pdf           "Using Markdown inside TeX documents"
  [tb124]: https://www.tug.org/TUGboat/tb40-1/tb124novotny-markdown.pdf  "Markdown 2.7.0: Towards lightweight markup in TeX"
 
- [10.5300/2016-1-4/78]: https://doi.org/10.5300/2016-1-4/78 "Rendering Markdown inside TeX Documents"
+ [10.5300/2016-1-4/78]: https://bulletin.cstug.cz/pdf/2016-1-4.pdf#page=80 "Rendering Markdown inside TeX Documents"
+ [10.5300/2020-1-2/48]: https://bulletin.cstug.cz/pdf/2020-1-2.pdf#page=50 "Markdown 2.8.1: Boldly Unto the Throne of Lightweight Markup in TeX"
 
  [install]:  http://mirrors.ctan.org/macros/generic/markdown/markdown.html#installation "Markdown Package User Manual"
  [liantze]:  http://liantze.penguinattack.org/                                          "Rants from the Lab"
