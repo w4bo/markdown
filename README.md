@@ -113,3 +113,24 @@ is provided by the [doc][] LaTeX package.
  [LaTeXMK]:              https://ctan.org/pkg/latexmk                       "latexmk – Fully automated LaTeX document generation"
  [literate programming]: https://en.wikipedia.org/wiki/Literate_programming "Literate programming"
  [ltxdockit]:            https://ctan.org/pkg/ltxdockit                     "ltxdockit – Documentation support"
+
+Citing Markdown
+---------------
+
+When citing Markdown in academic papers and theses, please use the following
+BibTeX entry:
+
+```bib
+@article{novotny17markdown,
+  author  = {V\'{i}t Novotn\'{y}},
+  year    = {2017},
+  title   = {Using {M}arkdown Inside {\TeX} Documents},
+  journal = {TUGboat},
+  volume  = {38},
+  number  = {2},
+  pages   = {214--217},
+  issn    = {0896-3207},
+  url     = {https://tug.org/TUGboat/tb38-2/tb119novotny.pdf},
+  urldate = {2020-07-31},
+}
+```
