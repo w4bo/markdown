@@ -17,6 +17,8 @@ is encouraged. 😉
 
  [markdown]: https://daringfireball.net/projects/markdown/basics  "Daring Fireball: Markdown Basics"
 
+ ![banner](banner.png "An example LaTeX document using the Markdown package")
+
 Further information
 -------------------
 
