@@ -5777,8 +5777,68 @@ the `markdown` Lua module. They are supported by all higher-level interfaces of
 the Markdown package, i.e. the plain \TeX{}, \LaTeX{} and \Hologo{ConTeXt}
 interfaces.
 
+%</manual-options>
+%<*tex>
+% \fi
+% \par
+% \begin{markdown}
+%
+%#### Finalizing and Freezing the Cache
+% The \mdef{markdownOptionFinalizeCache} option corresponds to the Lua
+% interface \Opt{finalizeCache} option, which creates an output file
+% \m{markdownOptionFrozenCacheFileName} (frozen cache) that contains a mapping
+% between an enumeration of the markdown documents in the plain \TeX{} document
+% and their auxiliary files cached in the \Opt{cacheDir} directory.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\let\markdownOptionFinalizeCache\undefined
+%    \end{macrocode}
+% \par
+% \iffalse
+%</tex>
+%<*manual-options>
+
+#### Finalizing and Freezing the Cache
+
 % \fi
 % \begin{markdown}
+%
+The \mdef{markdownOptionFrozenCache} option uses the mapping previously
+% created by the \m{markdownOptionFinalizeCache} option,
+% \iffalse
+created by the Lua interface \Opt{finalizeCache} option,
+% \fi
+and uses it to typeset the plain \TeX{} document without invoking Lua. As a
+result, the plain \TeX{} document becomes more portable, but further changes
+in the order and the content of markdown documents will not be reflected. It
+defaults to `false`.
+%
+% \end{markdown}
+% \iffalse
+%</manual-options>
+%<*tex>
+% \fi
+%  \begin{macrocode}
+\def\markdownOptionFrozenCache{false}
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% The standard usage of the above two options is as follows:
+%
+% 1. Remove the \Opt{cacheDir} cache directory with stale auxiliary cache
+%    files.
+% 2. Enable the \m{markdownOptionFinalizeCache} option.
+% 3. Typeset the plain \TeX{} document to populate and finalize the cache.
+% 4. Enable the \m{markdownOptionFrozenCache} option.
+% 5. Publish the source code of the plain \TeX{} document and the
+%    \Opt{cacheDir} directory.
+%
+% \iffalse
+%</tex>
+%<*manual-options>
+% \fi
 
 #### File and Directory Names
 
@@ -5847,9 +5907,9 @@ interfaces.
 % \begin{markdown}
 %
 % The \mdef{markdownOptionOutputDir} macro sets the path to the directory that
-% will contain the cache files produced by the Lua implementation and also the
-% auxiliary files produced by the plain \TeX{} implementation. The option
-% defaults to `.`.
+% will contain the auxiliary cache files produced by the Lua implementation and
+% also the auxiliary files produced by the plain \TeX{} implementation. The
+% option defaults to `.`.
 %
 % The path must be set to the same value as the `-output-directory` option of
 % your \TeX{} engine for the package to function correctly. We need this macro
@@ -5875,6 +5935,20 @@ interfaces.
 %  \begin{macrocode}
 \def\markdownOptionCacheDir{\markdownOptionOutputDir/_markdown_\jobname}%
 %    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% The \mdef{markdownOptionFrozenCacheFileName} macro corresponds to the Lua
+% interface \Opt{frozenCacheFileName} option that sets the path to an output
+% file (frozen cache) that will contain a mapping between an enumeration of the
+% markdown documents in the plain \TeX{} document and their auxiliary cache
+% files. The option defaults to `frozenCache.tex`. The same limitations apply
+% here as in the case of the \m{markdownOptionHelperScriptFileName} macro.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\def\markdownOptionFrozenCacheFileName{\markdownOptionCacheDir/frozenCache.tex}
+%    \end{macrocode}
 %
 % \iffalse
 %</tex>
@@ -5888,8 +5962,9 @@ Markdown to \TeX{}:
 - `\markdownOptionInputTempFileName`,
 - `\markdownOptionOutputTempFileName`,
 - `\markdownOptionErrorTempFileName`,
-- `\markdownOptionOutputDir`, and
-- `\markdownOptionCacheDir`.
+- `\markdownOptionOutputDir`,
+- `\markdownOptionCacheDir`, and
+- `\markdownOptionFrozenCacheFileName`.
 
 Using a text editor, create a folder named `output-directory` and a text
 document named `document.tex` with the following content:
@@ -5902,6 +5977,8 @@ document named `document.tex` with the following content:
 \def\markdownOptionErrorTempFileName{error-output.txt}
 \def\markdownOptionOutputDir{output-directory}
 \def\markdownOptionCacheDir{output-directory/cache-directory}
+\markdownOptionFinalizeCachetrue
+\def\markdownOptionFrozenCacheFileName{output-directory/cache-directory/frozen-cache.tex}
 \markdownBegin
 Hello *world*!
 \markdownEnd
