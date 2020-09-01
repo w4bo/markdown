@@ -120,6 +120,14 @@
   date      = {2017-04-15},
   url       = {http://mirrors.ctan.org/macros/latex/base/doc.pdf},
   urldate   = {2018-02-19}}
+@book{poore17,
+  author    = {Poore, Geoffrey M.},
+  title     = {The \texttt{minted} Package},
+  subtitle  = {Highlighted source code in \LaTeX},
+  date      = {2017-07-19},
+  version   = {v2.5},
+  url       = {http://mirrors.ctan.org/macros/latex/contrib/minted/minted.pdf},
+  urldate   = {2020-09-01}}
 @online{novotny15,
   author    = {Novotný, Vít},
   year      = {2015},
@@ -10357,6 +10365,43 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionUnderscores{#1}}%
 \define@key{markdownOptions}{stripPercentSigns}[true]{%
   \def\markdownOptionStripPercentSigns{#1}}%
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% The \m{markdownOptionFinalizeCache} and \m{markdownOptionFrozenCache} plain
+% \TeX{} options are exposed through \LaTeX{} options with keys `finalizeCache`
+% and `frozenCache`.
+%
+% To ensure compatibility with the `minted` package [@poore17, Section
+% 5.1], which supports the `finalizecache` and `frozencache` package options
+% with similar semantics, the Markdown package also recognizes these as aliases
+% and recognizes them as document class options. By passing `finalizecache` and
+% `frozencache` as document class options, you may conveniently control the
+% behavior of both packages at once:
+%
+% ``` tex
+% \documentclass[frozencache]{article}
+% \usepackage{markdown,minted}
+% \begin{document}
+% % ...
+% \end{document}
+% ```````
+%
+% We hope that other packages will support the `finalizecache` and
+% `frozencache` package options in the future, so that they can become a
+% standard interface for preparing \LaTeX{} document sources for distribution.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\define@key{markdownOptions}{finalizeCache}[true]{%
+  \def\markdownOptionFinalizeCache{#1}}%
+\DeclareOption{finalizecache}{\markdownSetup{finalizeCache}}
+\define@key{markdownOptions}{frozenCache}[true]{%
+  \def\markdownOptionFrozenCache{#1}}%
+\DeclareOption{frozencache}{\markdownSetup{frozenCache}}
+\define@key{markdownOptions}{frozenCacheFileName}{%
+  \def\markdownOptionFrozenCacheFileName{#1}}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
