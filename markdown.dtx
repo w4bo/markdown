@@ -6541,28 +6541,6 @@ A PDF document named `document.pdf` should be produced and contain the text
 %  \begin{macrocode}
 \def\markdownOptionStripPercentSigns{false}%
 %    \end{macrocode}
-% \par
-% \begin{markdown}
-%
-% The \mdef{markdownIfOption}`{`\meta{name}`}` macro is provided for testing,
-% whether the value of `\markdownOption`\meta{name} is `true` or `false`.
-%
-% \end{markdown}
-%  \begin{macrocode}
-\def\markdownIfOption#1{%
-  \def\next##1##2##3##4##5{%
-    \expandafter\def\expandafter\next\expandafter{%
-      \csname iffalse\endcsname}%
-    \if##1t\if##2r\if##3u\if##4e
-      \expandafter\def\expandafter\next\expandafter{%
-        \csname iftrue\endcsname}%
-    \fi\fi\fi\fi
-    \next}%
-  \expandafter\expandafter\expandafter\next
-    \csname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
-%    \end{macrocode}
-% \par
-%
 % \iffalse
 %</tex>
 %<*manual-tokens>
@@ -16249,6 +16227,23 @@ end
 % \par
 % \begin{markdown}
 %
+%### Finalizing and Freezing the Cache
+%
+% When the \m{markdownOptionFinalizeCache} option is enabled, then the
+% \mdef{markdownFrozenCacheCounter} counter is used to enumerate the markdown
+% documents using the Lua interface \Opt{frozenCacheCounter} option.
+%
+% When the \m{markdownOptionFrozenCache} option is enabled, then the
+% \m{markdownFrozenCacheCounter} counter is used to render markdown documents
+% from the frozen cache without invoking Lua.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\newcount\markdownFrozenCacheCounter
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 %### Token Renderer Prototypes
 % The following definitions should be considered placeholder.
 %
@@ -16361,6 +16356,11 @@ end
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
 \fi
+\ifx\markdownOptionFinalizeCache\undefined\else
+  finalizeCache = \markdownOptionFinalizeCache,
+\fi
+  frozenCacheFileName = "\markdownOptionFrozenCacheFileName",
+  frozenCacheCounter = \the\markdownFrozenCacheCounter,
 \ifx\markdownOptionFootnotes\undefined\else
   footnotes = \markdownOptionFootnotes,
 \fi
@@ -16447,6 +16447,24 @@ local convert = md.new(\markdownLuaOptions)
 %
 %### Buffering Markdown Input
 % \label{sec:buffering}
+%
+% The
+% \mdef{markdownIfOption}`{`\meta{name}`}{`\meta{iftrue}`}{`\meta{iffalse}`}`
+% macro is provided for testing, whether the value of
+% `\markdownOption`\meta{name} is `true`. If the value is `true`, then
+% \meta{iftrue} is expanded, otherwise \meta{iffalse} is expanded.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\def\markdownIfOption#1#2#3{%
+  \begingroup
+  \def\next{true}%
+  \expandafter\ifx\csname markdownOption#1\endcsname\next
+    \endgroup#2\else\endgroup#3\fi}%
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 % The macros \mdef{markdownInputFileStream} and \mdef{markdownOutputFileStream}
 % contain the number of the input and output file streams that will be used for
 % the IO operations of the package.
@@ -16497,14 +16515,17 @@ local convert = md.new(\markdownLuaOptions)
     |begingroup@
 %    \end{macrocode}
 % \begin{markdown}
-% Open the \m{markdownOptionInputTempFileName} file for writing.
+% If we are not reading markdown documents from the frozen cache,
+% open the \m{markdownOptionInputTempFileName} file for writing.
 % \end{markdown}
 %  \begin{macrocode}
-    |immediate|openout|markdownOutputFileStream@
-      |markdownOptionInputTempFileName|relax@
-    |markdownInfo{Buffering markdown input into the temporary @
-      input file "|markdownOptionInputTempFileName" and scanning @
-      for the closing token sequence "#1"}@
+    |markdownIfOption{FrozenCache}{}{@
+      |immediate|openout|markdownOutputFileStream@
+        |markdownOptionInputTempFileName|relax@
+      |markdownInfo{Buffering markdown input into the temporary @
+        input file "|markdownOptionInputTempFileName" and scanning @
+        for the closing token sequence "#1"}@
+    }@
 %    \end{macrocode}
 % \begin{markdown}
 % Locally change the category of the special plain \TeX{} characters to
@@ -16527,7 +16548,7 @@ local convert = md.new(\markdownLuaOptions)
 % \end{markdown}
 %  \begin{macrocode}
     |def|markdownReadAndConvertStripPercentSign##1{@
-      |markdownIfOption{StripPercentSigns}@
+      |markdownIfOption{StripPercentSigns}{@
         |if##1%@
           |expandafter|expandafter|expandafter@
             |markdownReadAndConvertProcessLine@
@@ -16536,11 +16557,12 @@ local convert = md.new(\markdownLuaOptions)
             |markdownReadAndConvertProcessLine@
             |expandafter|expandafter|expandafter##1@
         |fi@
-      |else@
+      }{@
         |expandafter@
           |markdownReadAndConvertProcessLine@
           |expandafter##1@
-      |fi}@
+      }@
+    }@
 %    \end{macrocode}
 % \begin{markdown}
 % The \mdef{markdownReadAndConvertProcessLine} macro will process the individual
@@ -16553,12 +16575,17 @@ local convert = md.new(\markdownLuaOptions)
     |def|markdownReadAndConvertProcessLine##1#1##2#1##3|relax{@
 %    \end{macrocode}
 % \begin{markdown}
-% When the ending token sequence does not appear in the line, store the line in
-% the \m{markdownOptionInputTempFileName} file.
+% If we are not reading markdown documents from the frozen cache and the ending
+% token sequence does not appear in the line, store the line in the
+% \m{markdownOptionInputTempFileName} file.
+% If we are reading markdown documents from the frozen cache and the
+% ending token sequence does not appear in the line, gobble the line.
 % \end{markdown}
 %  \begin{macrocode}
       |ifx|relax##3|relax@
-        |immediate|write|markdownOutputFileStream{##1}@
+        |markdownIfOption{FrozenCache}{}{@
+          |immediate|write|markdownOutputFileStream{##1}@
+        }@
       |else@
 %    \end{macrocode}
 % \begin{markdown}
@@ -16572,7 +16599,9 @@ local convert = md.new(\markdownLuaOptions)
 %  \begin{macrocode}
         |def^^M{@
           |markdownInfo{The ending token sequence was found}@
-          |immediate|closeout|markdownOutputFileStream@
+          |markdownIfOption{FrozenCache}{}{@
+            |immediate|closeout|markdownOutputFileStream@
+          }@
           |endgroup@
           |markdownInput{@
             |markdownOptionOutputDir@
@@ -16817,6 +16846,7 @@ local convert = md.new(\markdownLuaOptions)
 % \begin{markdown}
 %
 %### Typesetting Markdown
+%
 % The \m{markdownInput} macro uses an implementation of the
 % \m{markdownLuaExecute} macro to convert the contents of the file whose
 % filename it has received as its single argument from markdown to plain
@@ -16834,7 +16864,25 @@ local convert = md.new(\markdownLuaOptions)
   \catcode`|=0%
   \catcode`\\=12%
   |gdef|markdownInput#1{%
-    |markdownInfo{Including markdown document "#1"}%
+%    \end{macrocode}
+% \begin{markdown}
+% If we are reading from the frozen cache, input it, expand the corresponding
+% `\markdownFrozenCache`\meta{number} macro, and increment
+% \m{markdownFrozenCacheCounter}.
+% \end{markdown}
+%  \begin{macrocode}
+    |markdownIfOption{FrozenCache}{%
+      |ifnum|markdownFrozenCacheCounter=0|relax
+        |markdownInfo{Reading frozen cache from
+          "|markdownOptionFrozenCacheFileName"}%
+        |input|markdownOptionFrozenCacheFileName|relax
+      |fi
+      |markdownInfo{Including markdown document number
+        "|the|markdownFrozenCacheCounter" from frozen cache}%
+      |csname markdownFrozenCache|the|markdownFrozenCacheCounter|endcsname
+      |advance|markdownFrozenCacheCounter by 1|relax
+    }{%
+      |markdownInfo{Including markdown document "#1"}%
 %    \end{macrocode}
 % \begin{markdown}
 % Attempt to open the markdown document to record it in the `.log` and
@@ -16842,11 +16890,11 @@ local convert = md.new(\markdownLuaOptions)
 % changes to the markdown document.
 % \end{markdown}
 %  \begin{macrocode}
-    |openin|markdownInputFileStream#1
-    |closein|markdownInputFileStream
-    |markdownLuaExecute{%
-      |markdownPrepare
-      local input = assert(io.open("#1", "r"):read("*a"))
+      |openin|markdownInputFileStream#1
+      |closein|markdownInputFileStream
+      |markdownLuaExecute{%
+        |markdownPrepare
+        local input = assert(io.open("#1", "r"):read("*a"))
 %    \end{macrocode}
 % \begin{markdown}
 % Since the Lua converter expects \acro{unix} line endings, normalize the
@@ -16854,7 +16902,18 @@ local convert = md.new(\markdownLuaOptions)
 % has none.
 % \end{markdown}
 %  \begin{macrocode}
-      print(convert(input:gsub("\r\n?", "\n") .. "\n"))}}%
+        print(convert(input:gsub("\r\n?", "\n") .. "\n"))}%
+%    \end{macrocode}
+% \begin{markdown}
+% If we are finalizing the frozen cache, increment
+% \m{markdownFrozenCacheCounter}.
+% \end{markdown}
+%  \begin{macrocode}
+      |markdownIfOption{FinalizeCache}{%
+        |advance|markdownFrozenCacheCounter by 1|relax
+      }%
+    }%
+  }%
 |endgroup
 %    \end{macrocode}
 % \iffalse
