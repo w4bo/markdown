@@ -5508,6 +5508,8 @@ for i = 1, #arg do
       default_type = type(defaultOptions[key])
       if default_type == "boolean" then
         options[key] = (value == "true")
+      elseif default_type == "number" then
+        options[key] = tonumber(value)
       else
         if default_type ~= "string" then
           if default_type == "nil" then
