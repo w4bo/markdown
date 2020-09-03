@@ -15627,9 +15627,9 @@ return M
 
 local input
 if input_filename then
-  local input_file = io.open(input_filename, "r")
+  local input_file = assert(io.open(input_filename, "r"))
   input = assert(input_file:read("*a"))
-  input_file:close()
+  assert(input_file:close())
 else
   input = assert(io.read("*a"))
 end
@@ -15669,7 +15669,7 @@ local convert = md.new(options)
 local output = convert(input:gsub("\r\n?", "\n") .. "\n")
 
 if output_filename then
-  local output_file = io.open(output_filename, "w")
+  local output_file = assert(io.open(output_filename, "w"))
   assert(output_file:write(output))
   assert(output_file:close())
 else
@@ -16300,11 +16300,13 @@ local convert = md.new(\markdownLuaOptions)
 % changes to the markdown document.
 % \end{markdown}
 %  \begin{macrocode}
-    |openin|markdownInputFileStream#1
-    |closein|markdownInputFileStream
-    |markdownLuaExecute{%
-      |markdownPrepare
-      local input = assert(io.open("#1", "r"):read("*a"))
+      |openin|markdownInputFileStream#1
+      |closein|markdownInputFileStream
+      |markdownLuaExecute{%
+        |markdownPrepare
+        local file = assert(io.open("#1", "r"))
+        local input = assert(file:read("*a"))
+        assert(file:close())
 %    \end{macrocode}
 % \begin{markdown}
 % Since the Lua converter expects \acro{unix} line endings, normalize the
