@@ -16099,14 +16099,35 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
     local salt = table.concat(opt_string, ",") .. "," .. metadata.version
 %    \end{macrocode}
 % \begin{markdown}
-% Produce the cache file, transform its filename via the \luam{writer->pack}
-% method, and return the result.
+% Produce the cache file and transform its filename to plain \TeX{} output
+% via the \luam{writer->pack} method.
 % \end{markdown}
 %  \begin{macrocode}
     local name = util.cache(options.cacheDir, input, salt, function(input)
         return util.rope_to_string(parse_blocks_toplevel(input)) .. writer.eof
       end, ".md" .. writer.suffix)
-    return writer.pack(name)
+    local output = writer.pack(name)
+%    \end{macrocode}
+% \begin{markdown}
+% If the \Opt{frozenCache} option is enabled, populate the frozen cache in
+% the file \Opt{frozenCacheFileName} with an entry for markdown document
+% number \Opt{frozenCacheCounter}.
+% \end{markdown}
+%  \begin{macrocode}
+    if options.finalizeCache then
+      local file, mode
+      if options.frozenCacheCounter > 0 then
+        mode = "a"
+      else
+        mode = "w"
+      end
+      file = assert(io.open(options.frozenCacheFileName, mode))
+      assert(file:write([[\expandafter\def\csname markdownFrozenCache]] ..
+        options.frozenCacheCounter .. [[\endcsname{]] .. output .. [[}]] ..
+        "\n"))
+      assert(file:close())
+    end
+    return output
   end
   return self
 end
