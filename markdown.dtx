@@ -5990,7 +5990,8 @@ The \mdef{markdownOptionStripPercentSigns} macro controls whether a percent
 sign (`%`) at the beginning of a line will be discarded when reading Markdown
 input from a \TeX{} document. This enables the use of markdown when writing
 \TeX{} package documentation using the [Doc \LaTeX{} package][doc] by Frank
-Mittelbach.
+Mittelbach. The recognized values of the macro are `true` (discard) and `false`
+(retain). It defaults to `false`.
 
  [doc]: https://ctan.org/pkg/doc (doc – Format LaTeX documentation)
 
@@ -6030,7 +6031,8 @@ A PDF document named `document.pdf` should be produced and contain the text
 % Markdown input (see Section~\ref{sec:buffering}) or not. Notably, this
 % enables the use of markdown when writing \TeX{} package documentation using
 % the \pkg{Doc} \LaTeX{}~package~[@mittelbach17] or similar. The recognized
-% values of the macro are `true` (discard) and `false` (retain).
+% values of the macro are `true` (discard) and `false` (retain). It defaults
+% to `false`.
 %
 % \end{markdown}
 %  \begin{macrocode}
