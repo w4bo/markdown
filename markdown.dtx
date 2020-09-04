@@ -6358,7 +6358,7 @@ following text:
 #### Ellipsis Renderer
  The \mdef{markdownRendererEllipsis} macro replaces any occurance of ASCII
  ellipses in the input text. This macro will only be produced, when the
- \Opt{smartEllipses} option is `true`.  The macro receives no arguments.
+ \Opt{smartEllipses} option is enabled.  The macro receives no arguments.
 
 % \end{markdown}
 %
@@ -7686,7 +7686,7 @@ an ordered list. The macro receives no arguments.
 
 The \mdef{markdownRendererOlItemWithNumber} macro represents an item in an
 ordered list.  This macro will only be produced, when the \Opt{startNumber}
-option is `true`.  The macro receives no arguments.
+option is enabled.  The macro receives no arguments.
 
 % \end{markdown}
 %
@@ -8013,7 +8013,7 @@ following text:
 
 #### Definition List Renderers
 The following macros are only produced, when the \Opt{definitionLists} option
-is `true`.
+is enabled.
 
 The \mdef{markdownRendererDlBegin} macro represents the beginning of a
 definition list that contains an item with several paragraphs of text (the
@@ -8862,7 +8862,7 @@ filename of a file contaning the code block contents.
 
 The \mdef{markdownRendererInputFencedCode} macro represents a fenced code
 block. This macro will only be produced, when the \Opt{fencedCode} option is
-`true`. The macro receives two arguments that correspond to the filename of
+enabled. The macro receives two arguments that correspond to the filename of
 a file contaning the code block contents and to the code fence infostring.
 
 % \end{markdown}
@@ -9333,7 +9333,7 @@ following text:
 
 #### Footnote Renderer
 The \mdef{markdownRendererFootnote} macro represents a footnote. This macro
-will only be produced, when the \Opt{footnotes} option is `true`.  The
+will only be produced, when the \Opt{footnotes} option is enabled.  The
 macro receives a single argument that corresponds to the footnote text.
 
 % \end{markdown}
@@ -9447,7 +9447,7 @@ following text:
 #### Parenthesized Citations Renderer
 The \mdef{markdownRendererCite} macro represents a string of one or more
 parenthetical citations. This macro will only be produced, when the
-\Opt{citations} option is `true`. The macro receives the parameter
+\Opt{citations} option is enabled. The macro receives the parameter
 `{`\meta{number of citations}`}` followed by \meta{suppress author}
 `{`\meta{prenote}`}{`\meta{postnote}`}{`\meta{name}`}` repeated
 \meta{number of citations} times. The \meta{suppress author} parameter is
@@ -9535,7 +9535,7 @@ following text:
 #### Text Citations Renderer
 The \mdef{markdownRendererTextCite} macro represents a string of one or more
 text citations. This macro will only be produced, when the
-\Opt{citations} option is `true`. The macro receives parameters in the same 
+\Opt{citations} option is enabled. The macro receives parameters in the same 
 format as the \m{markdownRendererCite} macro.
 
 % \end{markdown}
@@ -9617,7 +9617,7 @@ following text:
 
 #### Table Renderer
 The \mdef{markdownRendererTable} macro represents a table. This macro will only
-be produced, when the \Opt{pipeTables} option is `true`. The macro receives the
+be produced, when the \Opt{pipeTables} option is enabled. The macro receives the
 parameters `{`\meta{caption}`}{`\meta{number of rows}`}{`\meta{number of columns}`}`
 followed by `{`\meta{alignments}`}` and then by `{`\meta{row}`}` repeated
 \meta{number of rows} times, where \meta{row} is `{`\meta{column}`}` repeated
@@ -13382,7 +13382,7 @@ function M.writer.new(options)
 % Define \luamdef{writer->string} as a function that will transform an input
 % plain text span `s` to the output format and \luamdef{writer->uri} as a
 % function that will transform an input \acro{uri} `u` to the output format.
-% If the \Opt{hybrid} option is `true`, use identity functions. Otherwise,
+% If the \Opt{hybrid} option is enabled, use identity functions. Otherwise,
 % use the \luam{escape} and \luam{escape_minimal} functions.
 %
 % \end{markdown}
@@ -13831,7 +13831,7 @@ function M.writer.new(options)
 %
 % Define \luamdef{writer->citations} as a function that will transform an
 % input array of citations `cites` to the output format. If `text_cites`
-% is `true`, the citations should be rendered in-text, when applicable.
+% is enabled, the citations should be rendered in-text, when applicable.
 % The `cites` array contains tables with the following keys and values:
 % \begin{itemize}
 %   \item`suppress_author` -- If the value of the key is true, then the
@@ -14690,7 +14690,7 @@ function M.reader.new(writer, options)
 % \begin{markdown}
 %
 % Define \luamdef{expandtabs} either as an identity function, when the
-% \Opt{preserveTabs} Lua inrerface option is `true`, or to a function that
+% \Opt{preserveTabs} Lua inrerface option is enabled, or to a function that
 % expands tabs into spaces otherwise.
 %
 % \end{markdown}
@@ -15944,7 +15944,7 @@ end
 % backslash as an ordinary character inside the macro definition.  Likewise,
 % swap the character codes of the percent sign (`%`) and the ampersand (`@`),
 % so that we can remove percent signs from the beginning of lines when
-% \m{markdownOptionStripPercentSigns} is `true`.
+% \m{markdownOptionStripPercentSigns} is enabled.
 % \end{markdown}
 %  \begin{macrocode}
   \catcode`\^^M=13%
@@ -15980,7 +15980,7 @@ end
 % \begin{markdown}
 % The \mdef{markdownReadAndConvertStripPercentSigns} macro will process the
 % individual lines of output, stipping away leading percent signs (`%`) when
-% \m{markdownOptionStripPercentSigns} is `true`.
+% \m{markdownOptionStripPercentSigns} is enabled.
 % Notice the use of the comments (`@`) to ensure that the entire macro is at
 % a single line and therefore no (active) newline symbols
 % (`^^M`) are produced.
