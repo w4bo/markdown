@@ -120,6 +120,14 @@
   date      = {2017-04-15},
   url       = {http://mirrors.ctan.org/macros/latex/base/doc.pdf},
   urldate   = {2018-02-19}}
+@book{poore17,
+  author    = {Poore, Geoffrey M.},
+  title     = {The \texttt{minted} Package},
+  subtitle  = {Highlighted source code in \LaTeX},
+  date      = {2017-07-19},
+  version   = {v2.5},
+  url       = {http://mirrors.ctan.org/macros/latex/contrib/minted/minted.pdf},
+  urldate   = {2020-09-01}}
 @online{novotny15,
   author    = {Novotný, Vít},
   year      = {2015},
@@ -1545,6 +1553,224 @@ option.
 % \fi
 %  \begin{macrocode}
 defaultOptions.cacheDir = "."
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
+#### Option `frozenCacheFileName`
+
+`frozenCacheFileName` (default value: `"frozenCache.tex"`)
+
+% \fi
+% \begin{markdown}
+%
+% \Valitem[frozenCache.tex]{frozenCacheFileName}{path}
+%
+:    A path to an output file (frozen cache) that will be created when
+     the \Opt{finalizeCache} option is enabled and will contain a mapping
+     between an enumeration of markdown documents and their auxiliary cache
+     files.
+
+     The frozen cache makes it possible to later typeset a plain \TeX{}
+     document that contains markdown documents without invoking Lua using
+     the \m{markdownOptionFrozenCache} plain \TeX{} option. As a result, the
+     plain \TeX{} document becomes more portable, but further changes in the
+     order and the content of markdown documents will not be reflected.
+
+% \end{markdown}
+% \iffalse
+
+##### Lua Module Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\directlua{
+  local markdown = require("markdown")
+  local convert = markdown.new({finalizeCache = true, frozenCacheFileName = "cache.tex"})
+  local input = "Hello *world*!"
+  tex.sprint(convert(input)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced in the `cache.tex`
+output file as we requested using the `finalizeCache` and `frozenCacheFileName`
+options.
+
+##### Lua CLI Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\input hello
+\bye
+```````
+Using a text editor, create a text document named `hello.md` with the
+following content:
+``` md
+Hello *world*!
+``````
+Next, invoke LuaTeX from the terminal:
+``` sh
+texlua ⟨CLI pathname⟩ finalizeCache=true frozenCacheFileName=cache.tex -- hello.md hello.tex
+luatex document.tex
+```````
+where \meta{CLI pathname} corresponds to the location of the Lua CLI script file,
+such as `~/texmf/scripts/markdown/markdown-cli.lua` on UN\*X systems or
+`C:\Users\`\meta{Your username}`\texmf\scripts\markdown\markdown-cli.lua` on Windows
+systems. Use the command `kpsewhich -a markdown-cli.lua` to locate the Lua CLI
+script file using [Kpathsea][].
+
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced in the `cache.tex`
+output file as we requested using the `finalizeCache` and `frozenCacheFileName`
+options.
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionFinalizeCache{true}
+\def\markdownOptionFrozenCacheFileName{cache.tex}
+\markdownBegin
+Hello *world*!
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced in the `cache.tex`
+output file as we requested using the `finalizeCache` and `frozenCacheFileName`
+options.
+
+Next, create a new text document `frozen-document.tex` with the following
+content:
+``` tex
+\input markdown
+\def\markdownOptionFrozenCache{true}
+\def\markdownOptionFrozenCacheFileName{cache.tex}
+\markdownBegin
+Hi *world*!
+\markdownEnd
+\bye
+```````
+Last, invoke pdfTeX without shell access from the terminal:
+``` sh
+pdftex -no-shell-escape frozen-document.tex
+``````
+A PDF document named `frozen-document.pdf` should be produced and contain the
+text “Hello *world*!” Since we used the contents of the frozen cache using
+the `\markdownOptionFrozenCache` option, we were able to typeset the
+document without accessing the shell or invoking Lua, but the change in the
+content of the markdown document from “Hello *world*!” to “Hi *world*!” was
+not reflected.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass[finalizecache]{article}
+\usepackage[frozenCacheFileName=cache.tex]{markdown}
+\begin{document}
+\begin{markdown}
+Hello *world*!
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced in the `cache.tex`
+output file as we requested using the `finalizecache` and `frozenCacheFileName`
+options.
+
+Next, create a new text document `frozen-document.tex` with the following
+content:
+``` tex
+\documentclass[frozencache]{article}
+\usepackage[frozenCacheFileName=cache.tex]{markdown}
+\begin{document}
+\begin{markdown}
+Hi *world*!
+\end{markdown}
+\end{document}
+```````
+Last, invoke pdfTeX without shell access from the terminal:
+``` sh
+pdflatex -no-shell-escape frozen-document.tex
+``````
+A PDF document named `frozen-document.pdf` should be produced and contain the
+text “Hello *world*!” Since we used the contents of the frozen cache using
+the `frozencache` option, we were able to typeset the document without
+accessing the shell or invoking Lua, but the change in the content of the
+markdown document from “Hello *world*!” to “Hi *world*!” was not reflected.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFinalizeCache{true}
+\def\markdownOptionFrozenCacheFileName{cache.tex}
+\starttext
+\startmarkdown
+Hello *world*!
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced in the `cache.tex`
+output file as we requested using the `finalizeCache` and `frozenCacheFileName`
+options.
+
+Next, create a new text document `frozen-document.tex` with the following
+content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFrozenCache{true}
+\def\markdownOptionFrozenCacheFileName{cache.tex}
+\starttext
+\startmarkdown
+Hi *world*!
+\stopmarkdown
+\stoptext
+```````
+Last, invoke pdfTeX without shell access from the terminal:
+``` sh
+texexec --passon=--no-shell-escape frozen-document.tex
+``````
+A PDF document named `frozen-document.pdf` should be produced and contain the
+text “Hello *world*!” Since we used the contents of the frozen cache using
+the `\markdownOptionFrozenCache` option, we were able to typeset the document
+without accessing the shell or invoking Lua, but the change in the content of
+the markdown document from “Hello *world*!” to “Hi *world*!” was not reflected.
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.frozenCacheFileName = "frozenCache.tex"
 %    \end{macrocode}
 % \par
 % \iffalse
@@ -3424,6 +3650,160 @@ defaultOptions.fencedCode = false
 %</lua,lua-cli>
 %<*manual-options>
 
+#### Option `finalizeCache`
+
+`finalizeCache` (default value: `false`)
+
+% \fi
+% \begin{markdown}
+%
+% \Optitem[false]{finalizeCache}{\opt{true}, \opt{false}}
+%
+:    Whether an output file specified with the \Opt{frozenCacheFileName} option
+     (frozen cache) that contains a mapping between an enumeration of markdown
+     documents and their auxiliary cache files will be created.
+
+     The frozen cache makes it possible to later typeset a plain \TeX{}
+     document that contains markdown documents without invoking Lua using
+     the \m{markdownOptionFrozenCache} plain \TeX{} option. As a result, the
+     plain \TeX{} document becomes more portable, but further changes in the
+     order and the content of markdown documents will not be reflected.
+
+% \end{markdown}
+% \iffalse
+
+##### Plain \TeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\def\markdownOptionFinalizeCache{true}
+\markdownBegin
+Hello *world*!
+\markdownEnd
+\bye
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced as we requested using the
+`finalizeCache` option.
+
+Next, change the content of `document.tex` as follows:
+``` tex
+\input markdown
+\def\markdownOptionFrozenCache{true}
+\markdownBegin
+Hi *world*!
+\markdownEnd
+\bye
+```````
+Last, invoke pdfTeX without shell access from the terminal:
+``` sh
+pdftex -no-shell-escape document.tex
+``````
+A new PDF document named `document.pdf` should be produced and contain the
+same text “Hello *world*!” Since we used the contents of the frozen cache using
+the `\markdownOptionFrozenCache` option, we were able to typeset the document
+without accessing the shell or invoking Lua, but the change in the content of
+the markdown document from “Hello *world*!” to “Hi *world*!” was not reflected.
+
+##### \LaTeX{} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\documentclass[finalizecache]{article}
+\usepackage{markdown}
+\begin{document}
+\begin{markdown}
+Hello *world*!
+\end{markdown}
+\end{document}
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+lualatex document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced as we requested using the
+`finalizecache` option.
+
+Next, change the content of `document.tex` as follows:
+``` tex
+\documentclass[frozencache]{article}
+\usepackage{markdown}
+\begin{document}
+\begin{markdown}
+Hi *world*!
+\end{markdown}
+\end{document}
+```````
+Last, invoke pdfTeX without shell access from the terminal:
+``` sh
+pdflatex -no-shell-escape document.tex
+``````
+A new PDF document named `document.pdf` should be produced and contain the
+same text “Hello *world*!” Since we used the contents of the frozen cache using
+the `\markdownOptionFrozenCache` option, we were able to typeset the document
+without accessing the shell or invoking Lua, but the change in the content of
+the markdown document from “Hello *world*!” to “Hi *world*!” was not reflected.
+
+##### \Hologo{ConTeXt} Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFinalizeCache{true}
+\starttext
+\startmarkdown
+Hello *world*!
+\stopmarkdown
+\stoptext
+```````
+Next, invoke LuaTeX from the terminal:
+``` sh
+context document.tex
+``````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache will also be produced in the `cache.tex`
+output file as we requested using the `finalizeCache` option.
+
+Next, change the content of `document.tex` as follows:
+``` tex
+\usemodule[t][markdown]
+\def\markdownOptionFrozenCache{true}
+\starttext
+\startmarkdown
+Hi *world*!
+\stopmarkdown
+\stoptext
+```````
+Last, invoke pdfTeX without shell access from the terminal:
+``` sh
+texexec --passon=--no-shell-escape document.tex
+``````
+A new PDF document named `document.pdf` should be produced and contain the
+same text “Hello *world*!” Since we used the contents of the frozen cache using
+the `\markdownOptionFrozenCache` option, we were able to typeset the document
+without accessing the shell or invoking Lua, but the change in the content of
+the markdown document from “Hello *world*!” to “Hi *world*!” was not reflected.
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.finalizeCache = false
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
 #### Option `footnotes`
 
 `footnotes` (default value: `false`)
@@ -3577,6 +3957,61 @@ following text:
 % \fi
 %  \begin{macrocode}
 defaultOptions.footnotes = false
+%    \end{macrocode}
+% \par
+% \iffalse
+%</lua,lua-cli>
+%<*manual-options>
+
+#### Option `frozenCacheCounter`
+
+`frozenCacheCounter` (default value: `0`)
+
+% \fi
+% \begin{markdown}
+%
+% \Valitem[0]{frozenCacheCounter}{number}
+%
+:    The number of the current markdown document that will be stored in
+     an output file (frozen cache) when the \Opt{finalizeCache} is enabled.
+     When the document number is 0, then a new frozen cache will be created.
+     Otherwise, the frozen cache will be appended.
+
+     Each frozen cache entry will define a \TeX{} macro
+     `\markdownFrozenCache`\meta{number} that will typeset markdown document
+     number \meta{number}.
+
+% \end{markdown}
+% \iffalse
+
+##### Lua Module Example {.unnumbered}
+
+Using a text editor, create a text document named `document.tex` with the
+following content:
+``` tex
+\input markdown
+\directlua{
+  local markdown = require("markdown")
+  local firstConvert = markdown.new({finalizeCache = true, frozenCacheCounter = 0})
+  local firstInput = "Hello"
+  local secondConvert = markdown.new({finalizeCache = true, frozenCacheCounter = 1})
+  local secondInput = "*world*!"
+  tex.sprint(firstConvert(firstInput) .. [[ ]] .. secondConvert(secondInput)) }
+\bye
+```````
+Then, invoke LuaTeX from the terminal:
+``` sh
+luatex document.tex
+```````
+A PDF document named `document.pdf` should be produced and contain the text
+“Hello *world*!” A frozen cache with two entries will also be produced as we
+requested using the `frozenCacheCounter` option.
+
+%</manual-options>
+%<*lua,lua-cli>
+% \fi
+%  \begin{macrocode}
+defaultOptions.frozenCacheCounter = 0
 %    \end{macrocode}
 % \par
 % \iffalse
@@ -5779,8 +6214,63 @@ the `markdown` Lua module. They are supported by all higher-level interfaces of
 the Markdown package, i.e. the plain \TeX{}, \LaTeX{} and \Hologo{ConTeXt}
 interfaces.
 
+%</manual-options>
+%<*tex>
+% \fi
+% \par
+% \begin{markdown}
+%
+%#### Finalizing and Freezing the Cache
+% The \mdef{markdownOptionFinalizeCache} option corresponds to the Lua
+% interface \Opt{finalizeCache} option, which creates an output file
+% \m{markdownOptionFrozenCacheFileName} (frozen cache) that contains a mapping
+% between an enumeration of the markdown documents in the plain \TeX{} document
+% and their auxiliary files cached in the \Opt{cacheDir} directory.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\let\markdownOptionFinalizeCache\undefined
+%    \end{macrocode}
+% \par
+% \iffalse
+%</tex>
+%<*manual-options>
+
+#### Finalizing and Freezing the Cache
+
 % \fi
 % \begin{markdown}
+%
+The \mdef{markdownOptionFrozenCache} option uses the mapping previously
+% created by the \m{markdownOptionFinalizeCache} option,
+% \iffalse
+created by the Lua interface \Opt{finalizeCache} option,
+% \fi
+and uses it to typeset the plain \TeX{} document without invoking Lua. As a
+result, the plain \TeX{} document becomes more portable, but further changes
+in the order and the content of markdown documents will not be reflected. It
+defaults to `false`.
+
+% The standard usage of the above two options is as follows:
+% \iffalse
+The standard usage of the \Opt{finalizeCache} and \m{markdownOptionFrozenCache}
+options is as follows:
+% \fi
+
+1. Remove the \Opt{cacheDir} cache directory with stale auxiliary cache
+   files.
+% 2. Enable the \m{markdownOptionFinalizeCache} option.
+% \iffalse
+2. Enable the \Opt{finalizeCache} option.
+% \fi
+3. Typeset the plain \TeX{} document to populate and finalize the cache.
+4. Enable the \m{markdownOptionFrozenCache} option.
+5. Publish the source code of the plain \TeX{} document and the
+   \Opt{cacheDir} directory.
+
+% \iffalse
+For more information, see the examples for the \Opt{finalizeCache} option.
+% \fi
 
 #### File and Directory Names
 
@@ -5849,9 +6339,9 @@ interfaces.
 % \begin{markdown}
 %
 % The \mdef{markdownOptionOutputDir} macro sets the path to the directory that
-% will contain the cache files produced by the Lua implementation and also the
-% auxiliary files produced by the plain \TeX{} implementation. The option
-% defaults to `.`.
+% will contain the auxiliary cache files produced by the Lua implementation and
+% also the auxiliary files produced by the plain \TeX{} implementation. The
+% option defaults to `.`.
 %
 % The path must be set to the same value as the `-output-directory` option of
 % your \TeX{} engine for the package to function correctly. We need this macro
@@ -5877,6 +6367,20 @@ interfaces.
 %  \begin{macrocode}
 \def\markdownOptionCacheDir{\markdownOptionOutputDir/_markdown_\jobname}%
 %    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% The \mdef{markdownOptionFrozenCacheFileName} macro corresponds to the Lua
+% interface \Opt{frozenCacheFileName} option that sets the path to an output
+% file (frozen cache) that will contain a mapping between an enumeration of the
+% markdown documents in the plain \TeX{} document and their auxiliary cache
+% files. The option defaults to `frozenCache.tex`. The same limitations apply
+% here as in the case of the \m{markdownOptionHelperScriptFileName} macro.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\def\markdownOptionFrozenCacheFileName{\markdownOptionCacheDir/frozenCache.tex}
+%    \end{macrocode}
 %
 % \iffalse
 %</tex>
@@ -5890,8 +6394,9 @@ Markdown to \TeX{}:
 - `\markdownOptionInputTempFileName`,
 - `\markdownOptionOutputTempFileName`,
 - `\markdownOptionErrorTempFileName`,
-- `\markdownOptionOutputDir`, and
-- `\markdownOptionCacheDir`.
+- `\markdownOptionOutputDir`,
+- `\markdownOptionCacheDir`, and
+- `\markdownOptionFrozenCacheFileName`.
 
 Using a text editor, create a folder named `output-directory` and a text
 document named `document.tex` with the following content:
@@ -5904,6 +6409,8 @@ document named `document.tex` with the following content:
 \def\markdownOptionErrorTempFileName{error-output.txt}
 \def\markdownOptionOutputDir{output-directory}
 \def\markdownOptionCacheDir{output-directory/cache-directory}
+\markdownOptionFinalizeCachetrue
+\def\markdownOptionFrozenCacheFileName{output-directory/cache-directory/frozen-cache.tex}
 \markdownBegin
 Hello *world*!
 \markdownEnd
@@ -6038,28 +6545,6 @@ A PDF document named `document.pdf` should be produced and contain the text
 %  \begin{macrocode}
 \def\markdownOptionStripPercentSigns{false}%
 %    \end{macrocode}
-% \par
-% \begin{markdown}
-%
-% The \mdef{markdownIfOption}`{`\meta{name}`}` macro is provided for testing,
-% whether the value of `\markdownOption`\meta{name} is `true` or `false`.
-%
-% \end{markdown}
-%  \begin{macrocode}
-\def\markdownIfOption#1{%
-  \def\next##1##2##3##4##5{%
-    \expandafter\def\expandafter\next\expandafter{%
-      \csname iffalse\endcsname}%
-    \if##1t\if##2r\if##3u\if##4e
-      \expandafter\def\expandafter\next\expandafter{%
-        \csname iftrue\endcsname}%
-    \fi\fi\fi\fi
-    \next}%
-  \expandafter\expandafter\expandafter\next
-    \csname markdownOption#1\endcsname\relax\relax\relax\relax\relax}
-%    \end{macrocode}
-% \par
-%
 % \iffalse
 %</tex>
 %<*manual-tokens>
@@ -10284,6 +10769,43 @@ pdflatex --shell-escape document.tex
   \def\markdownOptionUnderscores{#1}}%
 \define@key{markdownOptions}{stripPercentSigns}[true]{%
   \def\markdownOptionStripPercentSigns{#1}}%
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
+% The \m{markdownOptionFinalizeCache} and \m{markdownOptionFrozenCache} plain
+% \TeX{} options are exposed through \LaTeX{} options with keys `finalizeCache`
+% and `frozenCache`.
+%
+% To ensure compatibility with the `minted` package [@poore17, Section
+% 5.1], which supports the `finalizecache` and `frozencache` package options
+% with similar semantics, the Markdown package also recognizes these as aliases
+% and recognizes them as document class options. By passing `finalizecache` and
+% `frozencache` as document class options, you may conveniently control the
+% behavior of both packages at once:
+%
+% ``` tex
+% \documentclass[frozencache]{article}
+% \usepackage{markdown,minted}
+% \begin{document}
+% % ...
+% \end{document}
+% ```````
+%
+% We hope that other packages will support the `finalizecache` and
+% `frozencache` package options in the future, so that they can become a
+% standard interface for preparing \LaTeX{} document sources for distribution.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\define@key{markdownOptions}{finalizeCache}[true]{%
+  \def\markdownOptionFinalizeCache{#1}}%
+\DeclareOption{finalizecache}{\markdownSetup{finalizeCache}}
+\define@key{markdownOptions}{frozenCache}[true]{%
+  \def\markdownOptionFrozenCache{#1}}%
+\DeclareOption{frozencache}{\markdownSetup{frozenCache}}
+\define@key{markdownOptions}{frozenCacheFileName}{%
+  \def\markdownOptionFrozenCacheFileName{#1}}%
 %    \end{macrocode}
 % \par
 % \begin{markdown}
@@ -15581,14 +16103,35 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
     local salt = table.concat(opt_string, ",") .. "," .. metadata.version
 %    \end{macrocode}
 % \begin{markdown}
-% Produce the cache file, transform its filename via the \luam{writer->pack}
-% method, and return the result.
+% Produce the cache file and transform its filename to plain \TeX{} output
+% via the \luam{writer->pack} method.
 % \end{markdown}
 %  \begin{macrocode}
     local name = util.cache(options.cacheDir, input, salt, function(input)
         return util.rope_to_string(parse_blocks_toplevel(input)) .. writer.eof
       end, ".md" .. writer.suffix)
-    return writer.pack(name)
+    local output = writer.pack(name)
+%    \end{macrocode}
+% \begin{markdown}
+% If the \Opt{frozenCache} option is enabled, populate the frozen cache in
+% the file \Opt{frozenCacheFileName} with an entry for markdown document
+% number \Opt{frozenCacheCounter}.
+% \end{markdown}
+%  \begin{macrocode}
+    if options.finalizeCache then
+      local file, mode
+      if options.frozenCacheCounter > 0 then
+        mode = "a"
+      else
+        mode = "w"
+      end
+      file = assert(io.open(options.frozenCacheFileName, mode))
+      assert(file:write([[\expandafter\def\csname markdownFrozenCache]] ..
+        options.frozenCacheCounter .. [[\endcsname{]] .. output .. [[}]] ..
+        "\n"))
+      assert(file:close())
+    end
+    return output
   end
   return self
 end
@@ -15709,6 +16252,23 @@ end
 % \par
 % \begin{markdown}
 %
+%### Finalizing and Freezing the Cache
+%
+% When the \m{markdownOptionFinalizeCache} option is enabled, then the
+% \mdef{markdownFrozenCacheCounter} counter is used to enumerate the markdown
+% documents using the Lua interface \Opt{frozenCacheCounter} option.
+%
+% When the \m{markdownOptionFrozenCache} option is enabled, then the
+% \m{markdownFrozenCacheCounter} counter is used to render markdown documents
+% from the frozen cache without invoking Lua.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\newcount\markdownFrozenCacheCounter
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 %### Token Renderer Prototypes
 % The following definitions should be considered placeholder.
 %
@@ -15821,6 +16381,11 @@ end
 \ifx\markdownOptionDefinitionLists\undefined\else
   definitionLists = \markdownOptionDefinitionLists,
 \fi
+\ifx\markdownOptionFinalizeCache\undefined\else
+  finalizeCache = \markdownOptionFinalizeCache,
+\fi
+  frozenCacheFileName = "\markdownOptionFrozenCacheFileName",
+  frozenCacheCounter = \the\markdownFrozenCacheCounter,
 \ifx\markdownOptionFootnotes\undefined\else
   footnotes = \markdownOptionFootnotes,
 \fi
@@ -15907,6 +16472,24 @@ end
 %
 %### Buffering Markdown Input
 % \label{sec:buffering}
+%
+% The
+% \mdef{markdownIfOption}`{`\meta{name}`}{`\meta{iftrue}`}{`\meta{iffalse}`}`
+% macro is provided for testing, whether the value of
+% `\markdownOption`\meta{name} is `true`. If the value is `true`, then
+% \meta{iftrue} is expanded, otherwise \meta{iffalse} is expanded.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\def\markdownIfOption#1#2#3{%
+  \begingroup
+  \def\next{true}%
+  \expandafter\ifx\csname markdownOption#1\endcsname\next
+    \endgroup#2\else\endgroup#3\fi}%
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 % The macros \mdef{markdownInputFileStream} and \mdef{markdownOutputFileStream}
 % contain the number of the input and output file streams that will be used for
 % the IO operations of the package.
@@ -15957,14 +16540,17 @@ end
     |begingroup@
 %    \end{macrocode}
 % \begin{markdown}
-% Open the \m{markdownOptionInputTempFileName} file for writing.
+% If we are not reading markdown documents from the frozen cache,
+% open the \m{markdownOptionInputTempFileName} file for writing.
 % \end{markdown}
 %  \begin{macrocode}
-    |immediate|openout|markdownOutputFileStream@
-      |markdownOptionInputTempFileName|relax@
-    |markdownInfo{Buffering markdown input into the temporary @
-      input file "|markdownOptionInputTempFileName" and scanning @
-      for the closing token sequence "#1"}@
+    |markdownIfOption{FrozenCache}{}{@
+      |immediate|openout|markdownOutputFileStream@
+        |markdownOptionInputTempFileName|relax@
+      |markdownInfo{Buffering markdown input into the temporary @
+        input file "|markdownOptionInputTempFileName" and scanning @
+        for the closing token sequence "#1"}@
+    }@
 %    \end{macrocode}
 % \begin{markdown}
 % Locally change the category of the special plain \TeX{} characters to
@@ -15987,7 +16573,7 @@ end
 % \end{markdown}
 %  \begin{macrocode}
     |def|markdownReadAndConvertStripPercentSign##1{@
-      |markdownIfOption{StripPercentSigns}@
+      |markdownIfOption{StripPercentSigns}{@
         |if##1%@
           |expandafter|expandafter|expandafter@
             |markdownReadAndConvertProcessLine@
@@ -15996,11 +16582,12 @@ end
             |markdownReadAndConvertProcessLine@
             |expandafter|expandafter|expandafter##1@
         |fi@
-      |else@
+      }{@
         |expandafter@
           |markdownReadAndConvertProcessLine@
           |expandafter##1@
-      |fi}@
+      }@
+    }@
 %    \end{macrocode}
 % \begin{markdown}
 % The \mdef{markdownReadAndConvertProcessLine} macro will process the individual
@@ -16013,12 +16600,17 @@ end
     |def|markdownReadAndConvertProcessLine##1#1##2#1##3|relax{@
 %    \end{macrocode}
 % \begin{markdown}
-% When the ending token sequence does not appear in the line, store the line in
-% the \m{markdownOptionInputTempFileName} file.
+% If we are not reading markdown documents from the frozen cache and the ending
+% token sequence does not appear in the line, store the line in the
+% \m{markdownOptionInputTempFileName} file.
+% If we are reading markdown documents from the frozen cache and the
+% ending token sequence does not appear in the line, gobble the line.
 % \end{markdown}
 %  \begin{macrocode}
       |ifx|relax##3|relax@
-        |immediate|write|markdownOutputFileStream{##1}@
+        |markdownIfOption{FrozenCache}{}{@
+          |immediate|write|markdownOutputFileStream{##1}@
+        }@
       |else@
 %    \end{macrocode}
 % \begin{markdown}
@@ -16032,7 +16624,9 @@ end
 %  \begin{macrocode}
         |def^^M{@
           |markdownInfo{The ending token sequence was found}@
-          |immediate|closeout|markdownOutputFileStream@
+          |markdownIfOption{FrozenCache}{}{@
+            |immediate|closeout|markdownOutputFileStream@
+          }@
           |endgroup@
           |markdownInput{@
             |markdownOptionOutputDir@
@@ -16277,6 +16871,7 @@ end
 % \begin{markdown}
 %
 %### Typesetting Markdown
+%
 % The \m{markdownInput} macro uses an implementation of the
 % \m{markdownLuaExecute} macro to convert the contents of the file whose
 % filename it has received as its single argument from markdown to plain
@@ -16294,7 +16889,25 @@ end
   \catcode`|=0%
   \catcode`\\=12%
   |gdef|markdownInput#1{%
-    |markdownInfo{Including markdown document "#1"}%
+%    \end{macrocode}
+% \begin{markdown}
+% If we are reading from the frozen cache, input it, expand the corresponding
+% `\markdownFrozenCache`\meta{number} macro, and increment
+% \m{markdownFrozenCacheCounter}.
+% \end{markdown}
+%  \begin{macrocode}
+    |markdownIfOption{FrozenCache}{%
+      |ifnum|markdownFrozenCacheCounter=0|relax
+        |markdownInfo{Reading frozen cache from
+          "|markdownOptionFrozenCacheFileName"}%
+        |input|markdownOptionFrozenCacheFileName|relax
+      |fi
+      |markdownInfo{Including markdown document number
+        "|the|markdownFrozenCacheCounter" from frozen cache}%
+      |csname markdownFrozenCache|the|markdownFrozenCacheCounter|endcsname
+      |advance|markdownFrozenCacheCounter by 1|relax
+    }{%
+      |markdownInfo{Including markdown document "#1"}%
 %    \end{macrocode}
 % \begin{markdown}
 % Attempt to open the markdown document to record it in the `.log` and
@@ -16316,7 +16929,18 @@ end
 % has none.
 % \end{markdown}
 %  \begin{macrocode}
-      print(convert(input:gsub("\r\n?", "\n") .. "\n"))}}%
+        print(convert(input:gsub("\r\n?", "\n") .. "\n"))}%
+%    \end{macrocode}
+% \begin{markdown}
+% If we are finalizing the frozen cache, increment
+% \m{markdownFrozenCacheCounter}.
+% \end{markdown}
+%  \begin{macrocode}
+      |markdownIfOption{FinalizeCache}{%
+        |advance|markdownFrozenCacheCounter by 1|relax
+      }%
+    }%
+  }%
 |endgroup
 %    \end{macrocode}
 % \iffalse
