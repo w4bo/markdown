@@ -15886,11 +15886,11 @@ end
 % First, ensure that the \m{markdownOptionCacheDir} directory exists.
 % \end{markdown}
 %  \begin{macrocode}
-local lfs = require("lfs")
-local cacheDir = "\markdownOptionCacheDir"
-if not lfs.isdir(cacheDir) then
-  assert(lfs.mkdir(cacheDir))
-end
+  local lfs = require("lfs")
+  local cacheDir = "\markdownOptionCacheDir"
+  if not lfs.isdir(cacheDir) then
+    assert(lfs.mkdir(cacheDir))
+  end
 %    \end{macrocode}
 % \begin{markdown}
 % Next, load the `markdown` module and create a converter function using
@@ -15898,8 +15898,8 @@ end
 % \m{markdownLuaOptions} macro.
 % \end{markdown}
 %  \begin{macrocode}
-local md = require("markdown")
-local convert = md.new(\markdownLuaOptions)
+  local md = require("markdown")
+  local convert = md.new(\markdownLuaOptions)
 }%
 %    \end{macrocode}
 % \par
