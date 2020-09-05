@@ -2,7 +2,7 @@
 %<*driver>
 \documentclass{ltxdockit}
 \usepackage[american]{babel}
-\usepackage{amsmath,btxdockit,doc,fancyvrb,hologo,microtype,minted,xcolor}
+\usepackage{amsmath,btxdockit,doc,fancyvrb,hologo,microtype,minted}
 \usepackage{fontspec}
 \defaultfontfeatures[\rmfamily,\sffamily,\ttfamily]{}
 
@@ -20,7 +20,7 @@
 \setkomafont{captionlabel}{\bfseries\sffamily\spotcolor}
 \hypersetup{citecolor=spot}
 \let\oldCodelineNo\theCodelineNo
-\def\theCodelineNo{\textcolor{gray}{\oldCodelineNo}}
+\def\theCodelineNo{\textcolor[gray]{0.5}{\oldCodelineNo}}
 
 % Define some markup.
 \let\pkg\relax % A package name
