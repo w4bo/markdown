@@ -10,9 +10,9 @@ jobs:
     steps:
     - restore_cache:
         keys:
-        - markdown-v2.8.2-tl2020-{{ .Branch }}
-        - markdown-v2.8.2-tl2020-master
-        - markdown-v2.8.2-tl2020-
+        - markdown-v2.9.0-tl2020-{{ .Branch }}
+        - markdown-v2.9.0-tl2020-master
+        - markdown-v2.9.0-tl2020-
     # Install TeX Live
     - run: |
         set -e
@@ -30,7 +30,7 @@ jobs:
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache update
         sudo apt-get -o dir::cache::archives="$HOME"/apt-cache install pandoc parallel python-pygments
     - save_cache:
-        key: markdown-v2.8.2-tl2020-{{ .Branch }}
+        key: markdown-v2.9.0-tl2020-{{ .Branch }}
         paths:
         - ~/apt-cache/partial
         - ~/texlive-cache
