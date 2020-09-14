@@ -4920,10 +4920,9 @@ following content:
 ``` tex
 \documentclass{article}
 \usepackage{markdown}
-\usepackage{filecontents}
-\begin{filecontents*}{example.md}
+\begin{filecontents}[overwrite,nosearch,noheader]{example.md}
 ## A section
-\end{filecontents*}
+\end{filecontents}
 \begin{document}
 \markdownInput[shiftHeadings=-1]{example.md}
 \markdownInput{example.md}
@@ -5092,8 +5091,7 @@ following content:
 ``` tex
 \documentclass{article}
 \usepackage[headerAttributes]{markdown}
-\usepackage{filecontents}
-\begin{filecontents*}{hamlet.md}
+\begin{filecontents}[overwrite,nosearch,noheader]{hamlet.md}
 # The Tragedy of Hamlet
 Shakespeare's longest play.
 
@@ -5105,7 +5103,7 @@ Hamlet dies.
 
 ## Act I   {#act-1}
 Hamlet talks to ghost.
-\end{filecontents*}
+\end{filecontents}
 \begin{document}
 \markdownInput[slice=^ ^act-3]{hamlet.md}
 \markdownInput[slice=act-1]{hamlet.md}
@@ -7619,12 +7617,11 @@ Using a text editor, create a text document named `document.tex` with the
 following content:
 ``` tex
 \documentclass{article}
-\usepackage{filecontents}
-\begin{filecontents*}{markdown-languages.json}
+\begin{filecontents}[overwrite,nosearch,noheader]{markdown-languages.json}
 {
   "json": "JavaScript Object Notation",
 }
-\end{filecontents*}
+\end{filecontents}
 \usepackage[contentBlocks]{markdown}
 \markdownSetup{
   renderers = {
