@@ -11,9 +11,11 @@ foo @bar
 codeSpan: citations
 interblockSeparator
 interblockSeparator
+BEGIN textCites
 BEGIN textCite
 - suppressAuthor: false
 - prenote: 
 - postnote: 
 - name: bar
 END textCite
+END textCites

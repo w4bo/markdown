@@ -15639,20 +15639,22 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
 
   larsers.Image         = larsers.DirectImage + larsers.IndirectImage
 
-  larsers.TextCitations = Ct(Cc("")
+  larsers.TextCitations = Ct((parsers.spnl
+                        * Cc("")
                         * parsers.citation_name
                         * ((parsers.spnl
                             * parsers.lbracket
                             * parsers.citation_headless_body
-                            * parsers.rbracket) + Cc("")))
+                            * parsers.rbracket) + Cc("")))^1)
                         / function(raw_cites)
                             return larsers.citations(true, raw_cites)
                           end
   
   larsers.ParenthesizedCitations
-                        = Ct(parsers.lbracket
+                        = Ct((parsers.spnl
+                        * parsers.lbracket
                         * parsers.citation_body
-                        * parsers.rbracket)
+                        * parsers.rbracket)^1)
                         / function(raw_cites)
                             return larsers.citations(false, raw_cites)
                           end

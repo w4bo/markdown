@@ -1,0 +1,89 @@
+\def\markdownOptionCitations{true}
+<<<
+This test ensures that separate text and parenthetical citations
+are merged into strings of citations.
+
+ @doe1992 [; -@doe1993;  @doe1994]
+ @doe1992    -@doe1993   @doe1994
+
+[@doe1992  ; -@doe1993;  @doe1994]
+[@doe1992]  [-@doe1993] [@doe1994]
+>>>
+interblockSeparator
+BEGIN textCites
+BEGIN textCite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1992
+END textCite
+BEGIN textCite
+- suppressAuthor: true
+- prenote: 
+- postnote: 
+- name: doe1993
+END textCite
+BEGIN textCite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1994
+END textCite
+BEGIN textCite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1992
+END textCite
+BEGIN textCite
+- suppressAuthor: true
+- prenote: 
+- postnote: 
+- name: doe1993
+END textCite
+BEGIN textCite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1994
+END textCite
+END textCites
+interblockSeparator
+BEGIN cites
+BEGIN cite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1992
+END cite
+BEGIN cite
+- suppressAuthor: true
+- prenote: 
+- postnote: 
+- name: doe1993
+END cite
+BEGIN cite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1994
+END cite
+BEGIN cite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1992
+END cite
+BEGIN cite
+- suppressAuthor: true
+- prenote: 
+- postnote: 
+- name: doe1993
+END cite
+BEGIN cite
+- suppressAuthor: false
+- prenote: 
+- postnote: 
+- name: doe1994
+END cite
+END cites

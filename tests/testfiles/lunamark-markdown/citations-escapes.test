@@ -21,6 +21,7 @@ suppressed \-@doe99.
 codeSpan: citations
 codeSpan: citationNbsps
 interblockSeparator
+BEGIN cites
 BEGIN cite
 - suppressAuthor: false
 - prenote: see
@@ -33,26 +34,34 @@ BEGIN cite
 - postnote: chap.(nbsp)1
 - name: smit:.(hash)$(percentSign)&-+?<>_/h04
 END cite
+END cites
 interblockSeparator
+BEGIN cites
 BEGIN cite
 - suppressAuthor: false
 - prenote: prenote
 - postnote: 
 - name: doe99
 END cite
+END cites
+BEGIN cites
 BEGIN cite
 - suppressAuthor: false
 - prenote: 
 - postnote: postnote
 - name: smith04
 END cite
+END cites
+BEGIN cites
 BEGIN cite
 - suppressAuthor: false
 - prenote: -
 - postnote: 
 - name: smith04
 END cite
+END cites
 interblockSeparator
+BEGIN textCites
 BEGIN textCite
 - suppressAuthor: false
 - prenote: 
@@ -65,9 +74,12 @@ BEGIN textCite
 - postnote: chap.(nbsp)1
 - name: smit:.(hash)$(percentSign)&-+?<>_/h04
 END textCite
+END textCites
+BEGIN textCites
 BEGIN textCite
 - suppressAuthor: false
 - prenote: 
 - postnote: 
 - name: doe99
 END textCite
+END textCites
