@@ -13846,9 +13846,10 @@ function M.writer.new(options)
 % Define a table \luamdef{escaped_chars} containing the mapping from special
 % plain \TeX{} characters (including the active pipe character (`|`) of
 % \Hologo{ConTeXt}) to their escaped variants. Define tables
-% \luamdef{escaped_minimal_chars} and \luamdef{escaped_minimal_strings}
-% containing the mapping from special plain characters and character strings
-% that need to be escaped even in content that will not be typeset.
+% \luamdef{escaped_uri_chars}, \luamdef{escaped_citation_chars}, and
+% \luamdef{escaped_minimal_strings} containing the mapping from special plain
+% characters and character strings that need to be escaped even in content
+% that will not be typeset.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -13885,10 +13886,10 @@ function M.writer.new(options)
 % \par
 % \begin{markdown}
 %
-% Use the \luam{escaped_chars} table to create an escaper function
-% \luamdef{escape} and the \luam{escaped_minimal_chars} and
-% \luam{escaped_minimal_strings} tables to create an escaper function
-% \luamdef{escape_minimal}.
+% Use the \luam{escaped_chars}, \luam{escaped_uri_chars},
+% \luam{escaped_citation_chars}, and \luam{escaped_minimal_strings} tables
+% to create the \luamdef{escape}, \luamdef{escape_citation}, and
+% \luamdef{escape_uri} escaper functions.
 %
 % \end{markdown}
 %  \begin{macrocode}
@@ -13901,10 +13902,12 @@ function M.writer.new(options)
 % \begin{markdown}
 %
 % Define \luamdef{writer->string} as a function that will transform an input
-% plain text span `s` to the output format and \luamdef{writer->uri} as a
-% function that will transform an input \acro{uri} `u` to the output format.
-% If the \Opt{hybrid} option is enabled, use identity functions. Otherwise,
-% use the \luam{escape} and \luam{escape_minimal} functions.
+% plain text span `s` to the output format, \luamdef{writer->citation} as a
+% function that will transform an input citation name `c` to the output format,
+% and \luamdef{writer->uri} as a function that will transform an input
+% \acro{uri} `u` to the output format. If the \Opt{hybrid} option is enabled,
+% use identity functions. Otherwise, use the \luam{escape},
+% \luam{escape_citation}, and \luam{escape_uri} functions.
 %
 % \end{markdown}
 %  \begin{macrocode}
