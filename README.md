@@ -41,8 +41,9 @@ For further information, consult one of the following:
     - [Writing Posters with Markdown][overleaf-5], and
     - [Using Markdown in LaTeX documents][overleaf-6].
 4. My journal articles published by [TUGboat][]:
-    - [Using Markdown inside TeX documents][tb119], and
-    - [Markdown 2.7.0: Towards lightweight markup in TeX][tb124].
+    - [Using Markdown inside TeX documents][tb119],
+    - [Markdown 2.7.0: Towards lightweight markup in TeX][tb124], and
+    - [Making Markdown into a Microwave Meal][tb129].
 5. My journal articles published by [CSTUG][] (in Czech):
     - [Rendering Markdown inside TeX Documents][10.5300/2016-1-4/78], and
     - [Markdown 2.8.1: Boldly Unto the Throne of Lightweight Markup in TeX][10.5300/2020-1-2/48].
@@ -56,6 +57,7 @@ For further information, consult one of the following:
 
  [tb119]: https://www.tug.org/TUGboat/tb38-2/tb119novotny.pdf           "Using Markdown inside TeX documents"
  [tb124]: https://www.tug.org/TUGboat/tb40-1/tb124novotny-markdown.pdf  "Markdown 2.7.0: Towards lightweight markup in TeX"
+ [tb129]: https://www.tug.org/TUGboat/tb41-3/tb129novotny-frozen.pdf    "Making Markdown into a Microwave Meal"
 
  [10.5300/2016-1-4/78]: https://bulletin.cstug.cz/pdf/2016-1-4.pdf#page=80 "Rendering Markdown inside TeX Documents"
  [10.5300/2020-1-2/48]: https://bulletin.cstug.cz/pdf/2020-1-2.pdf#page=50 "Markdown 2.8.1: Boldly Unto the Throne of Lightweight Markup in TeX"
