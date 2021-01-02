@@ -1,0 +1,25 @@
+\def\markdownOptionHybrid{true}
+<<<
+This test ensures that the Lua `hybrid` option correctly propagates through
+the plain TeX interface. The following autolinks should produce link renderer
+commands, where both the labels and the URLs are escaped even though the
+`hybrid` option is enabled.
+
+<https://en.wikipedia.org/wiki/Value_of_life>
+
+<Value_of_life@Value_of_life.com>
+>>>
+codeSpan: hybrid
+codeSpan: hybrid
+interblockSeparator
+BEGIN link
+- label: https://en.wikipedia.org/wiki/Value(underscore)of(underscore)life
+- URI: https://en.wikipedia.org/wiki/Value(underscore)of(underscore)life
+- title: 
+END link
+interblockSeparator
+BEGIN link
+- label: Value(underscore)of(underscore)life@Value(underscore)of(underscore)life.com
+- URI: mailto:Value(underscore)of(underscore)life@Value(underscore)of(underscore)life.com
+- title: 
+END link

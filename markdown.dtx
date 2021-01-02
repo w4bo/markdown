@@ -13924,13 +13924,25 @@ function M.writer.new(options)
 % \par
 % \begin{markdown}
 %
+% Define \luamdef{writer->escape} as a function that will transform an input
+% plain text span to the output format. Unlike the \luam{writer->string}
+% function, \luam{writer->escape} always uses the \luam{escape} function,
+% even when the \Opt{hybrid} option is enabled.
+%
+% \end{markdown}
+%  \begin{macrocode}
+  self.escape = escape
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 % Define \luamdef{writer->code} as a function that will transform an input
 % inlined code span `s` to the output format.
 %
 % \end{markdown}
 %  \begin{macrocode}
   function self.code(s)
-    return {"\\markdownRendererCodeSpan{",escape(s),"}"}
+    return {"\\markdownRendererCodeSpan{",self.escape(s),"}"}
   end
 %    \end{macrocode}
 % \par
@@ -13944,7 +13956,7 @@ function M.writer.new(options)
 %  \begin{macrocode}
   function self.link(lab,src,tit)
     return {"\\markdownRendererLink{",lab,"}",
-                          "{",self.string(src),"}",
+                          "{",self.escape(src),"}",
                           "{",self.uri(src),"}",
                           "{",self.string(tit or ""),"}"}
   end
@@ -15604,7 +15616,7 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                          * C(parsers.alphanumeric^1 * P("://") * parsers.urlchar^1)
                          * parsers.more
                          / function(url)
-                             return writer.link(writer.string(url), url)
+                             return writer.link(writer.escape(url), url)
                            end
 
   larsers.AutoLinkEmail = parsers.less
@@ -15612,7 +15624,7 @@ larsers.PipeTable = Ct(larsers.table_row * parsers.newline
                         * P("@") * parsers.urlchar^1)
                         * parsers.more
                         / function(email)
-                            return writer.link(writer.string(email),
+                            return writer.link(writer.escape(email),
                                                "mailto:"..email)
                           end
 
