@@ -896,6 +896,17 @@ local md5 = require("md5")
 % \par
 % \begin{markdown}
 %
+% \pkg{xstring}
+%
+%:    A package that provides useful macros for manipulating strings of tokens.
+%
+% \end{markdown}
+%  \begin{macrocode}
+\RequirePackage{xstring}
+%    \end{macrocode}
+% \par
+% \begin{markdown}
+%
 % \pkg{gobble}
 %
 %:    A package that provides the \m{\@gobblethree} \TeX{} command.
@@ -17207,19 +17218,10 @@ end
 %
 % \end{markdown}
 %  \begin{macrocode}
-\newif\ifmarkdownLATEXStrongEmphasisNested
-\markdownLATEXStrongEmphasisNestedfalse
-\markdownSetup{rendererPrototypes={
-  strongEmphasis = {%
-    \ifmarkdownLATEXStrongEmphasisNested
-      \markdownLATEXStrongEmphasisNestedfalse
-      \textmd{#1}%
-      \markdownLATEXStrongEmphasisNestedtrue
-    \else
-      \markdownLATEXStrongEmphasisNestedtrue
-      \textbf{#1}%
-      \markdownLATEXStrongEmphasisNestedfalse
-    \fi}}}
+\def\markdownLATEXStrongEmphasis#1{%
+  \IfSubStr\f@series{b}{\textnormal{#1}}{\textbf{#1}}}
+\markdownSetup{rendererPrototypes={strongEmphasis={%
+  \protect\markdownLATEXStrongEmphasis{#1}}}}
 %    \end{macrocode}
 % \par
 % \begin{markdown}
