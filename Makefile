@@ -14,7 +14,8 @@ EXAMPLES=examples/context-mkii.pdf examples/context-mkiv.pdf \
 TESTS=tests/test.sh tests/support/*.tex tests/templates/*/*.tex.m4 \
   tests/templates/*/COMMANDS.m4 tests/testfiles/*/*.test
 MAKES=Makefile $(addsuffix /Makefile, $(SUBDIRECTORIES)) latexmkrc
-READMES=README.md LICENSE examples/README.md tests/README.md \
+ROOT_README=README.md banner.png
+READMES=$(ROOT_README) LICENSE examples/README.md tests/README.md \
   tests/support/README.md tests/templates/README.md tests/testfiles/README.md \
   tests/templates/*/README.md tests/testfiles/*/README.md
 DTXARCHIVE=markdown.dtx
@@ -25,7 +26,7 @@ TECHNICAL_DOCUMENTATION=markdown.pdf
 MARKDOWN_USER_MANUAL=markdown.md markdown.css
 HTML_USER_MANUAL=markdown.html markdown.css
 USER_MANUAL=$(MARKDOWN_USER_MANUAL) $(HTML_USER_MANUAL)
-DOCUMENTATION=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL)
+DOCUMENTATION=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL) $(ROOT_README)
 INSTALLABLES=markdown.lua markdown-cli.lua markdown.tex markdown.sty t-markdown.tex
 MAKEABLES=$(TECHNICAL_DOCUMENTATION) $(USER_MANUAL) $(INSTALLABLES) $(EXAMPLES)
 RESOURCES=$(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) $(EXAMPLES) \
@@ -84,7 +85,7 @@ dist: implode
 	$(MAKE) clean
 
 # This target produces the TeX directory structure archive.
-$(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLER) $(INSTALLABLES) $(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES) README.md
+$(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLER) $(INSTALLABLES) $(DOCUMENTATION) $(EXAMPLES_RESOURCES) $(EXAMPLES_SOURCES)
 	@# Installing the macro package.
 	mkdir -p tex/generic/markdown tex/luatex/markdown tex/latex/markdown \
 	  tex/context/third/markdown scripts/markdown
@@ -96,7 +97,7 @@ $(TDSARCHIVE): $(DTXARCHIVE) $(INSTALLER) $(INSTALLABLES) $(DOCUMENTATION) $(EXA
 	@# Installing the documentation.
 	mkdir -p doc/generic/markdown doc/latex/markdown/examples \
 	  doc/context/third/markdown/examples
-	cp $(DOCUMENTATION) README.md doc/generic/markdown/
+	cp $(DOCUMENTATION) doc/generic/markdown/
 	cp examples/context.tex $(EXAMPLES_RESOURCES) doc/context/third/markdown/examples/
 	cp examples/latex.tex $(EXAMPLES_RESOURCES) doc/latex/markdown/examples/
 	@# Installing the sources.
